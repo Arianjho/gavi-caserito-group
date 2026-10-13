@@ -182,3 +182,22 @@ it('reparte un cobro del cliente entre sus deudas, la que vence primero', functi
         'party_id' => $party, 'method' => 'yape', 'amount' => 500,
     ])->assertStatus(422)->assertJsonPath('code', 'amount_exceeds_balance');
 });
+
+it('arma el estado de cuenta del cliente con saldo corrido', function (): void {
+    $token = ownerToken();
+    $f = saleFixture($token);
+    $party = $this->withToken($token)->postJson('/api/v1/customers', ['doc_type' => 'NONE', 'name' => 'Tienda Lola'])
+        ->json('data.id');
+    $id = $this->withToken($token)->postJson('/api/v1/sales', [
+        'warehouse_id' => $f['warehouse'], 'party_id' => $party, 'on_credit' => true,
+        'due_date' => now()->addDays(10)->toDateString(),
+        'lines' => [['variant_id' => $f['variant'], 'qty' => 1]], 'payments' => [],
+    ])->assertCreated()->json('data.id');
+    $this->withToken($token)->postJson("/api/v1/sales/{$id}/payments", ['method' => 'yape', 'amount' => 18])->assertCreated();
+
+    $data = $this->withToken($token)->getJson("/api/v1/customers/{$party}/statement")->assertOk()->json('data');
+
+    expect($data['events'])->toHaveCount(2)
+        ->and($data['events'][0]['balance'])->toBe('118.00')
+        ->and($data['balance'])->toBe('100.00');
+});

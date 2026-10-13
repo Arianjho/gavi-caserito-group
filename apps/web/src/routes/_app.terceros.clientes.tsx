@@ -22,6 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ResourceActions } from "@/features/organization/resource-actions";
+import { StatementDialog } from "@/features/sales/statement-dialog";
 import {
   useInvalidateResource,
   useResourceList,
@@ -88,6 +89,7 @@ function CustomersPage() {
     useResourceList<{ id: string; name: string; status: string }>("price-lists").data ?? []
   ).filter((list) => list.status === "active");
 
+  const [statementId, setStatementId] = useState<string | null>(null);
   const [mergeSource, setMergeSource] = useState<Customer | null>(null);
   const [mergeInto, setMergeInto] = useState("");
   const merge = useGuardedMutation({
@@ -233,6 +235,9 @@ function CustomersPage() {
                     />
                   </TableCell>
                   <TableCell className="space-x-1 whitespace-nowrap">
+                    <Button variant="ghost" size="sm" onClick={() => setStatementId(customer.id)}>
+                      Estado de cuenta
+                    </Button>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -258,6 +263,8 @@ function CustomersPage() {
           </Table>
         </Card>
       )}
+
+      <StatementDialog customerId={statementId} onClose={() => setStatementId(null)} />
 
       <FormDialog
         open={mergeSource !== null}

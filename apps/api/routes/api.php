@@ -35,6 +35,7 @@ use App\Modules\Purchasing\Http\Controllers\ExpenseController;
 use App\Modules\Purchasing\Http\Controllers\PurchaseController;
 use App\Modules\Reporting\Http\Controllers\DashboardController;
 use App\Modules\Reporting\Http\Controllers\ReportController;
+use App\Modules\Sales\Http\Controllers\CustomerStatementController;
 use App\Modules\Sales\Http\Controllers\OrderController;
 use App\Modules\Sales\Http\Controllers\QuotationController;
 use App\Modules\Sales\Http\Controllers\ReceivableController;
@@ -111,6 +112,8 @@ Route::prefix('v1')->group(function () {
         ManagedRoutes::register('brands', BrandController::class, 'catalog.brand');
         ManagedRoutes::register('attributes', AttributeController::class, 'catalog.attribute');
         ManagedRoutes::register('customers', CustomerController::class, 'parties.customer');
+        Route::get('customers/{id}/statement', [CustomerStatementController::class, 'show'])
+            ->middleware('permission:parties.customer.view')->name('customers.statement');
         Route::post('customers/{id}/merge', [CustomerController::class, 'merge'])
             ->middleware('permission:parties.customer.merge')->name('customers.merge');
         Route::get('items/lookup', [ItemController::class, 'lookup'])

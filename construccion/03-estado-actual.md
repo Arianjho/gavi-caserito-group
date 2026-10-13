@@ -76,6 +76,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Edición de pedido | `PUT orders/{id}`: reemplaza líneas, tipo de entrega, fecha y notas mientras no haya entregas; libera y vuelve a reservar; no deja el total bajo el anticipo. Pantalla `/ventas/pedidos/nuevo?edit={id}` |
 | Devolución de anticipos | `POST orders/{id}/refund` (solo pedidos cancelados; total o parcial; efectivo sale como egreso del turno abierto); `sales.order_refunds` append-only |
 | Cola de armado | `GET orders?status=confirmed,in_dispatch&with_lines=1`; pantalla Por armar ordena por fecha solicitada y avanza el estado. Sin asignación a armador ni ubicaciones todavía |
+| Estado de cuenta | `GET customers/{id}/statement`: ventas y cobros en orden con saldo corrido; diálogo con impresión en Clientes |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
 
 ## Pantallas web (`apps/web/src/routes`)
