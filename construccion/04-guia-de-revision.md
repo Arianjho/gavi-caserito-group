@@ -34,8 +34,8 @@ cd apps/web && pnpm quality && pnpm build
 7. **Compras:** compra con ingreso de stock, pago parcial, devolución al proveedor, gastos por rubro.
 8. **Caja:** turno, arqueo, caja chica.
 9. **Facturación:** configurar Gavi eFact, comprobantes, bandeja de pendientes.
-11. **Panel del proveedor:** `/operador` (operador de desarrollo `operador@caserito.test` / `caserito-operador`): crear cuenta, plan y límites, suspender y reactivar.
 10. **Administración:** usuarios, perfiles y permisos, auditoría, plan y límites, marca.
+11. **Panel del proveedor:** `/operador` (operador de desarrollo `operador@caserito.test` / `caserito-operador`): crear cuenta, plan y límites, suspender y reactivar.
 
 ## Cosas que NO están probadas contra servicios reales
 
