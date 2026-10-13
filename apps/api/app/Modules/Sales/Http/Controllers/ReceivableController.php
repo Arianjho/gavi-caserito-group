@@ -6,6 +6,7 @@ namespace App\Modules\Sales\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Cash\Application\CashService;
+use App\Modules\Sales\Application\CollectionAllocator;
 use App\Modules\Sales\Application\SaleException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -54,6 +55,32 @@ class ReceivableController extends Controller
                 'overdue_count' => $rows->where('overdue', true)->count(),
             ],
         ]);
+    }
+
+    /**
+     * Registra un solo cobro del cliente y lo reparte entre sus deudas,
+     * empezando por la que vence primero.
+     *
+     * @param Request $request Datos: `party_id`, `method`, `amount` y `reference`.
+     * @param CollectionAllocator $allocator Servicio de reparto.
+     */
+    public function collectParty(Request $request, CollectionAllocator $allocator): JsonResponse
+    {
+        $data = $request->validate([
+            'party_id' => ['required', 'uuid'],
+            'method' => ['required', Rule::in(['cash', 'card', 'yape', 'plin', 'transfer', 'other'])],
+            'amount' => ['required', 'numeric', 'gt:0'],
+            'reference' => ['nullable', 'string', 'max:80'],
+        ]);
+        $amount = number_format((float) $data['amount'], 2, '.', '');
+        assert(is_numeric($amount));
+
+        $applied = $allocator->allocate(
+            $data['party_id'], $data['method'], $amount, $data['reference'] ?? null,
+            (string) $request->user()?->getAuthIdentifier(),
+        );
+
+        return response()->json(['data' => ['applied' => $applied]], 201);
     }
 
     /**

@@ -249,6 +249,8 @@ Route::prefix('v1')->group(function () {
         Route::get('reports/products', [ReportController::class, 'products'])
             ->middleware('permission:reports.view')->name('reports.products');
 
+        Route::post('receivables/collect-party', [ReceivableController::class, 'collectParty'])
+            ->middleware('permission:payments.collection.create')->name('receivables.collect-party');
         Route::get('receivables', [ReceivableController::class, 'index'])
             ->middleware('permission:payments.receivable.view')->name('receivables.index');
         Route::post('sales/{id}/payments', [ReceivableController::class, 'collect'])

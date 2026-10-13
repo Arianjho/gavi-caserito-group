@@ -29,6 +29,7 @@ import { formatPen } from "@/lib/money";
 /** Documento con saldo pendiente. */
 interface Receivable {
   id: string;
+  party_id: string | null;
   series: string;
   number: number;
   party_name: string | null;
@@ -66,15 +67,32 @@ function ReceivablesPage() {
   const [target, setTarget] = useState<Receivable | null>(null);
   const [method, setMethod] = useState<(typeof METHODS)[number]["value"]>("cash");
   const [amount, setAmount] = useState("");
+  const [wholeParty, setWholeParty] = useState(false);
+
+  const partyDebt = target?.party_id
+    ? (list.data?.data ?? [])
+        .filter((row) => row.party_id === target.party_id)
+        .reduce((sum, row) => sum + Number(row.balance), 0)
+    : 0;
+  const partyDocs = target?.party_id
+    ? (list.data?.data ?? []).filter((row) => row.party_id === target.party_id).length
+    : 0;
 
   const collect = useGuardedMutation({
     mutationFn: (_input: void, { signal, idempotencyKey }) =>
-      api(`/sales/${target?.id}/payments`, {
-        method: "POST",
-        signal,
-        idempotencyKey,
-        body: { method, amount: Number(amount) },
-      }),
+      wholeParty
+        ? api("/receivables/collect-party", {
+            method: "POST",
+            signal,
+            idempotencyKey,
+            body: { party_id: target?.party_id, method, amount: Number(amount) },
+          })
+        : api(`/sales/${target?.id}/payments`, {
+            method: "POST",
+            signal,
+            idempotencyKey,
+            body: { method, amount: Number(amount) },
+          }),
     successMessage: "Cobro registrado",
     onSuccess: () => {
       setTarget(null);
@@ -87,6 +105,7 @@ function ReceivablesPage() {
     collect.reset();
     setMethod("cash");
     setAmount(Number(row.balance).toFixed(2));
+    setWholeParty(false);
     setTarget(row);
   };
 
@@ -194,6 +213,22 @@ function ReceivablesPage() {
             ))}
           </div>
         </div>
+        {partyDocs > 1 && (
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={wholeParty}
+              onChange={(event) => {
+                setWholeParty(event.target.checked);
+                setAmount(
+                  (event.target.checked ? partyDebt : Number(target?.balance ?? 0)).toFixed(2),
+                );
+              }}
+            />
+            Aplicar a todas sus deudas ({partyDocs} documentos, {formatPen(partyDebt)}), la que
+            vence primero
+          </label>
+        )}
         <div className="grid gap-2">
           <Label htmlFor="collect-amount">Monto</Label>
           <Input

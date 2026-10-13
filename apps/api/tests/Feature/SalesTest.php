@@ -155,3 +155,30 @@ it('una venta a credito exige cliente y un contado no admite cobro parcial', fun
         'lines' => [['variant_id' => $f['variant'], 'qty' => 1]], 'payments' => [],
     ])->assertStatus(422)->assertJsonPath('code', 'payment_mismatch');
 });
+
+it('reparte un cobro del cliente entre sus deudas, la que vence primero', function (): void {
+    $token = ownerToken();
+    $f = saleFixture($token);
+    $party = $this->withToken($token)->postJson('/api/v1/customers', ['doc_type' => 'NONE', 'name' => 'Tienda Lola'])
+        ->json('data.id');
+    $ids = [];
+    foreach ([20, 5] as $days) {
+        $ids[$days] = $this->withToken($token)->postJson('/api/v1/sales', [
+            'warehouse_id' => $f['warehouse'], 'party_id' => $party, 'on_credit' => true,
+            'due_date' => now()->addDays($days)->toDateString(),
+            'lines' => [['variant_id' => $f['variant'], 'qty' => 1]], 'payments' => [],
+        ])->assertCreated()->json('data.id');
+    }
+
+    $applied = $this->withToken($token)->postJson('/api/v1/receivables/collect-party', [
+        'party_id' => $party, 'method' => 'yape', 'amount' => 150,
+    ])->assertCreated()->json('data.applied');
+
+    expect($applied)->toHaveCount(2)
+        ->and($applied[0]['document_id'])->toBe($ids[5])
+        ->and($applied[0]['applied'])->toBe('118.00')
+        ->and($applied[1]['applied'])->toBe('32.00');
+    $this->withToken($token)->postJson('/api/v1/receivables/collect-party', [
+        'party_id' => $party, 'method' => 'yape', 'amount' => 500,
+    ])->assertStatus(422)->assertJsonPath('code', 'amount_exceeds_balance');
+});

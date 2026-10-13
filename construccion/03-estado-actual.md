@@ -71,6 +71,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Cobros y pagos | `GET collections` y `GET payments` (filtros from/to/method, total del rango); pantallas Cobros y Pagos |
 | Atributos | `cat.attributes` (nombre + valores sugeridos); el diálogo de variantes los ofrece y precarga valores |
 | Recordatorio automático de deudas | `notify:debts` (diario 09:00): avisa por WhatsApp saldos que vencen en `--days` (2) o ya vencidos, solo con consentimiento, sin repetir el mismo documento antes de `--repeat` (7) días |
+| Cobro a varias deudas | `POST receivables/collect-party`: un solo cobro del cliente se reparte entre sus documentos, el que vence primero, un `document_payments` por documento; checkbox en Por cobrar |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
 
 ## Pantallas web (`apps/web/src/routes`)
