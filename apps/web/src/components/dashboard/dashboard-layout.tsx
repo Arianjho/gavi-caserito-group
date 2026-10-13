@@ -20,7 +20,7 @@ interface DashboardLayoutProps {
  */
 export function DashboardLayout({ title, description, actions, children }: DashboardLayoutProps) {
   return (
-    <div className="mx-auto w-full max-w-7xl">
+    <div className="w-full">
       <header className="grid grid-cols-[minmax(0,1fr)_auto] items-start gap-3 sm:flex sm:flex-wrap sm:items-center sm:justify-between">
         <div className="min-w-0">
           <h1 className="truncate text-xl font-bold sm:text-2xl">{title}</h1>
