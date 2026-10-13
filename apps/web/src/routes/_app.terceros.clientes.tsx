@@ -88,6 +88,23 @@ function CustomersPage() {
     useResourceList<{ id: string; name: string; status: string }>("price-lists").data ?? []
   ).filter((list) => list.status === "active");
 
+  const [mergeSource, setMergeSource] = useState<Customer | null>(null);
+  const [mergeInto, setMergeInto] = useState("");
+  const merge = useGuardedMutation({
+    mutationFn: (_input: void, { signal, idempotencyKey }) =>
+      api(`/customers/${mergeSource?.id}/merge`, {
+        method: "POST",
+        signal,
+        idempotencyKey,
+        body: { into_id: mergeInto },
+      }),
+    successMessage: "Clientes unidos: el historial pasó al que conservas",
+    onSuccess: () => {
+      setMergeSource(null);
+      void invalidate();
+    },
+  });
+
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<Customer | null>(null);
   const [form, setForm] = useState<CustomerForm>(emptyForm);
@@ -215,7 +232,18 @@ function CustomersPage() {
                       tone={customer.status === "active" ? "success" : "neutral"}
                     />
                   </TableCell>
-                  <TableCell>
+                  <TableCell className="space-x-1 whitespace-nowrap">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        merge.reset();
+                        setMergeInto("");
+                        setMergeSource(customer);
+                      }}
+                    >
+                      Unir
+                    </Button>
                     <ResourceActions
                       path="customers"
                       id={customer.id}
@@ -230,6 +258,43 @@ function CustomersPage() {
           </Table>
         </Card>
       )}
+
+      <FormDialog
+        open={mergeSource !== null}
+        onOpenChange={(value) => !value && setMergeSource(null)}
+        title="Unir clientes duplicados"
+        description={
+          mergeSource
+            ? `Todo el historial de "${mergeSource.name}" pasará al cliente que elijas y este registro dejará de usarse.`
+            : undefined
+        }
+        size="sm"
+        submitLabel="Unir clientes"
+        processingLabel="Uniendo…"
+        processing={merge.isProcessing}
+        slow={merge.isSlow}
+        onSubmit={() => (mergeInto ? void merge.run() : undefined)}
+      >
+        <div className="grid gap-2">
+          <Label htmlFor="merge-into">Conservar a</Label>
+          <select
+            id="merge-into"
+            value={mergeInto}
+            onChange={(event) => setMergeInto(event.target.value)}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="">Elige un cliente…</option>
+            {(list.data ?? [])
+              .filter((customer) => customer.id !== mergeSource?.id)
+              .map((customer) => (
+                <option key={customer.id} value={customer.id}>
+                  {customer.name}
+                  {customer.doc_number ? ` · ${customer.doc_number}` : ""}
+                </option>
+              ))}
+          </select>
+        </div>
+      </FormDialog>
 
       <FormDialog
         open={open}

@@ -111,6 +111,8 @@ Route::prefix('v1')->group(function () {
         ManagedRoutes::register('brands', BrandController::class, 'catalog.brand');
         ManagedRoutes::register('attributes', AttributeController::class, 'catalog.attribute');
         ManagedRoutes::register('customers', CustomerController::class, 'parties.customer');
+        Route::post('customers/{id}/merge', [CustomerController::class, 'merge'])
+            ->middleware('permission:parties.customer.merge')->name('customers.merge');
         Route::get('items/lookup', [ItemController::class, 'lookup'])
             ->middleware('permission:catalog.item.view')->name('items.lookup');
         ManagedRoutes::register('suppliers', SupplierController::class, 'parties.supplier');

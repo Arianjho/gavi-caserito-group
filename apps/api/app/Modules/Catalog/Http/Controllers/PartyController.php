@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Catalog\Http\Controllers;
 
+use App\Modules\Catalog\Application\PartyMerger;
 use App\Modules\Catalog\Models\Party;
 use App\Modules\Catalog\Models\PriceList;
 use App\Shared\Http\ManagedResourceController;
@@ -107,5 +108,19 @@ class PartyController extends ManagedResourceController
         return response()->json([
             'data' => $query->limit(200)->get()->map(fn (Model $party): array => $this->present($party))->values(),
         ]);
+    }
+
+    /**
+     * Une este tercero (duplicado) dentro de otro que se conserva.
+     *
+     * @param Request $request Datos: `into_id`.
+     * @param string $id Tercero duplicado.
+     * @param PartyMerger $merger Servicio de unión.
+     */
+    public function merge(Request $request, string $id, PartyMerger $merger): JsonResponse
+    {
+        $data = $request->validate(['into_id' => ['required', 'uuid']]);
+
+        return response()->json(['data' => ['moved' => $merger->merge($id, $data['into_id'])]]);
     }
 }
