@@ -5,6 +5,7 @@ import { useState } from "react";
 import { EmptyState } from "@/components/common/empty-state";
 import { ErrorState } from "@/components/common/error-state";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -18,6 +19,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { api } from "@/lib/api";
+import { downloadCsv } from "@/lib/csv";
 import { formatPen } from "@/lib/money";
 
 /** Reporte de ventas del periodo. */
@@ -185,7 +187,29 @@ function ReportsPage() {
           </div>
 
           <section className="space-y-2">
-            <h2 className="text-base font-semibold">Ventas por producto</h2>
+            <div className="flex items-center justify-between">
+              <h2 className="text-base font-semibold">Ventas por producto</h2>
+              <Button
+                variant="outline"
+                size="sm"
+                disabled={!products.data || products.data.length === 0}
+                onClick={() =>
+                  downloadCsv(
+                    `ventas-por-producto-${from}_${to}.csv`,
+                    [
+                      { header: "Producto", value: (r: ProductRow) => r.name },
+                      { header: "Cantidad", value: (r) => r.qty },
+                      { header: "Ingreso neto", value: (r) => r.revenue },
+                      { header: "Costo", value: (r) => r.cost },
+                      { header: "Margen", value: (r) => r.margin },
+                    ],
+                    products.data ?? [],
+                  )
+                }
+              >
+                Exportar CSV
+              </Button>
+            </div>
             {products.data?.length === 0 && (
               <EmptyState title="Sin ventas" description="No hay ventas en este periodo." />
             )}

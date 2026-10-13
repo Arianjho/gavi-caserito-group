@@ -78,6 +78,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Cola de armado | `GET orders?status=confirmed,in_dispatch&with_lines=1`; pantalla Por armar ordena por fecha solicitada y avanza el estado. Sin asignación a armador ni ubicaciones todavía |
 | Estado de cuenta | `GET customers/{id}/statement`: ventas y cobros en orden con saldo corrido; diálogo con impresión en Clientes |
 | Marca | `GET/PUT branding` (color #RRGGBB y lema por cuenta); el seguimiento público devuelve `brand` y la pantalla lo aplica. Marca blanca completa (dominio propio, logo) pendiente |
+| Exportar y valorizar | CSV (con BOM para Excel) desde Cobros, Pagos y Ventas por producto (`lib/csv.ts`); Stock muestra valor a costo promedio |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
 
 ## Pantallas web (`apps/web/src/routes`)

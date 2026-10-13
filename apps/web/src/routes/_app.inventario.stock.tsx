@@ -16,6 +16,7 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -24,7 +25,7 @@ import { useResourceList, type Warehouse } from "@/features/organization/resourc
 import { useGuardedMutation } from "@/hooks/use-guarded-mutation";
 import { api } from "@/lib/api";
 import { expandVariants } from "@/lib/variants";
-import { formatPen } from "@/lib/money";
+import { formatPen, roundMoney } from "@/lib/money";
 
 /** Fila de existencias. */
 interface StockRow {
@@ -148,6 +149,7 @@ function StockPage() {
                 <TableHead>Almacén</TableHead>
                 <TableHead className="text-right">Existencias</TableHead>
                 <TableHead className="text-right">Costo promedio</TableHead>
+                <TableHead className="text-right">Valor</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -164,9 +166,29 @@ function StockPage() {
                   <TableCell className="text-right tabular-nums">
                     {formatPen(row.avg_cost)}
                   </TableCell>
+                  <TableCell className="text-right tabular-nums">
+                    {formatPen(roundMoney(Number(row.on_hand) * Number(row.avg_cost)))}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TableCell colSpan={4} className="text-right font-medium">
+                  Valor del inventario (a costo promedio)
+                </TableCell>
+                <TableCell className="text-right font-bold tabular-nums">
+                  {formatPen(
+                    roundMoney(
+                      stock.data.reduce(
+                        (sum, row) => sum + Number(row.on_hand) * Number(row.avg_cost),
+                        0,
+                      ),
+                    ),
+                  )}
+                </TableCell>
+              </TableRow>
+            </TableFooter>
           </Table>
         </Card>
       )}

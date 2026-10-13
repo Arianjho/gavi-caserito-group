@@ -16,7 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
 import { api } from "@/lib/api";
+import { downloadCsv } from "@/lib/csv";
 import { formatPen } from "@/lib/money";
 
 /** Movimiento de cobro o pago. */
@@ -96,9 +98,32 @@ export function LedgerPage({ title, description, endpoint, partyLabel }: LedgerP
           </select>
         </div>
         {list.data && (
-          <p className="ml-auto text-sm">
-            Total: <strong className="tabular-nums">{formatPen(list.data.meta.total)}</strong>
-          </p>
+          <div className="ml-auto flex items-center gap-3">
+            <p className="text-sm">
+              Total: <strong className="tabular-nums">{formatPen(list.data.meta.total)}</strong>
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={list.data.data.length === 0}
+              onClick={() =>
+                downloadCsv(
+                  `${endpoint.slice(1)}-${new Date().toISOString().slice(0, 10)}.csv`,
+                  [
+                    { header: "Fecha", value: (r) => r.paid_at },
+                    { header: partyLabel, value: (r) => r.party_name },
+                    { header: "Documento", value: (r) => r.document_number },
+                    { header: "Medio", value: (r) => METHODS[r.method] ?? r.method },
+                    { header: "Referencia", value: (r) => r.reference },
+                    { header: "Importe", value: (r) => r.amount },
+                  ],
+                  list.data.data,
+                )
+              }
+            >
+              Exportar CSV
+            </Button>
+          </div>
         )}
       </div>
 
