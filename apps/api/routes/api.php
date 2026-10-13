@@ -203,6 +203,8 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:orders.order.update')->name('orders.advance');
         Route::post('orders/{id}/deliver', [OrderController::class, 'deliver'])
             ->middleware('permission:orders.order.confirm')->name('orders.deliver');
+        Route::post('orders/{id}/refund', [OrderController::class, 'refund'])
+            ->middleware('permission:orders.order.cancel')->name('orders.refund');
         Route::post('orders/{id}/cancel', [OrderController::class, 'cancel'])
             ->middleware('permission:orders.order.cancel')->name('orders.cancel');
 

@@ -222,6 +222,50 @@ final class OrderService
     }
 
     /**
+     * Devuelve al cliente el anticipo no aplicado de un pedido cancelado.
+     *
+     * @param string $orderId Pedido cancelado.
+     * @param string $method Medio con el que se devuelve.
+     * @param numeric-string|null $amount Importe; nulo devuelve todo lo disponible.
+     * @param string|null $reason Observación.
+     * @return array<string, mixed>
+     *
+     * @throws SaleException Si el pedido no está cancelado o el importe supera lo disponible.
+     */
+    public function refundPrepaid(string $orderId, string $method, ?string $amount, ?string $reason): array
+    {
+        return DB::transaction(function () use ($orderId, $method, $amount, $reason): array {
+            $order = $this->lock($orderId);
+            if ($order->status !== 'cancelled') {
+                throw new SaleException('order_not_cancelled', 'Solo se devuelve el anticipo de pedidos cancelados.', 409);
+            }
+            $refunded = Decimal::of(DB::table('sales.order_refunds')->where('order_id', $orderId)->sum('amount'));
+            $available = bcsub(bcsub(Decimal::of($order->prepaid_total), Decimal::of($order->prepaid_applied), 2), $refunded, 2);
+            $value = $amount ?? $available;
+            if (bccomp($value, '0', 2) <= 0 || bccomp($value, $available, 2) > 0) {
+                throw new SaleException('refund_exceeds_prepaid', "El importe supera el anticipo disponible ({$available}).", 422);
+            }
+
+            $userId = (string) request()->user()?->getAuthIdentifier();
+            $sessionId = null;
+            if ($method === 'cash') {
+                $this->cash->assertSessionIfRequired((string) $order->branch_id, $userId, true);
+                $sessionId = $this->cash->currentSessionId($userId);
+            }
+            DB::table('sales.order_refunds')->insert([
+                'id' => (string) Str::uuid(), 'tenant_id' => $order->tenant_id, 'order_id' => $orderId,
+                'method' => $method, 'amount' => $value, 'reason' => $reason,
+                'cash_session_id' => $sessionId, 'created_by' => $userId,
+            ]);
+            if ($sessionId !== null) {
+                $this->cash->addMovement((string) $order->tenant_id, $userId, $sessionId, 'out', $value, "Devolución de anticipo del pedido #{$order->number}");
+            }
+
+            return $this->find($orderId);
+        });
+    }
+
+    /**
      * Devuelve un pedido con líneas, anticipos y ventas generadas.
      *
      * @param string $orderId Pedido.
@@ -238,6 +282,7 @@ final class OrderService
             'party_name' => DB::table('cat.parties')->where('id', $order->party_id)->value('name'),
             'lines' => DB::table('sales.order_lines')->where('order_id', $orderId)->orderBy('line_no')->get()->all(),
             'prepayments' => DB::table('sales.order_payments')->where('order_id', $orderId)->orderBy('paid_at')->get()->all(),
+            'refunds' => DB::table('sales.order_refunds')->where('order_id', $orderId)->orderBy('refunded_at')->get()->all(),
             'sales' => DB::table('sales.sales_documents')->where('order_id', $orderId)
                 ->orderBy('issued_at')->get(['id', 'series', 'number', 'status', 'total'])->all(),
         ];

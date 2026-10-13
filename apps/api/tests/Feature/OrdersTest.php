@@ -138,3 +138,26 @@ it('edita un pedido sin entregas y reajusta la reserva', function (): void {
         'lines' => [['variant_id' => $f['variant'], 'qty' => 0.5, 'unit_price' => 100]],
     ])->assertStatus(422)->assertJsonPath('code', 'prepaid_exceeds_total');
 });
+
+it('devuelve el anticipo de un pedido cancelado, sin pasarse de lo disponible', function (): void {
+    $token = ownerToken();
+    $f = orderFixture($token);
+    $order = $this->withToken($token)->postJson('/api/v1/orders', [
+        'warehouse_id' => $f['warehouse'], 'party_id' => $f['party'],
+        'lines' => [['variant_id' => $f['variant'], 'qty' => 1, 'unit_price' => 118]],
+        'prepaid' => ['method' => 'yape', 'amount' => 100],
+    ])->assertCreated()->json('data');
+
+    $this->withToken($token)->postJson("/api/v1/orders/{$order['id']}/refund", ['method' => 'yape'])
+        ->assertStatus(409)->assertJsonPath('code', 'order_not_cancelled');
+    $this->withToken($token)->postJson("/api/v1/orders/{$order['id']}/cancel", ['reason' => 'Cliente desistió'])->assertOk();
+
+    $this->withToken($token)->postJson("/api/v1/orders/{$order['id']}/refund", ['method' => 'yape', 'amount' => 150])
+        ->assertStatus(422)->assertJsonPath('code', 'refund_exceeds_prepaid');
+    $this->withToken($token)->postJson("/api/v1/orders/{$order['id']}/refund", ['method' => 'yape', 'amount' => 40])
+        ->assertCreated();
+    $done = $this->withToken($token)->postJson("/api/v1/orders/{$order['id']}/refund", ['method' => 'yape'])
+        ->assertCreated()->json('data');
+
+    expect($done['refunds'])->toHaveCount(2)->and($done['refunds'][1]['amount'])->toBe('60.00');
+});

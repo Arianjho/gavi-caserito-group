@@ -70,6 +70,26 @@ class OrderController extends Controller
     }
 
     /**
+     * Devuelve el anticipo disponible de un pedido cancelado.
+     *
+     * @param Request $request Datos: `method`, `amount` (opcional) y `reason`.
+     * @param string $id Pedido.
+     * @param OrderService $orders Servicio de pedidos.
+     */
+    public function refund(Request $request, string $id, OrderService $orders): JsonResponse
+    {
+        $data = $request->validate([
+            'method' => ['required', Rule::in(['cash', 'card', 'yape', 'plin', 'transfer', 'other'])],
+            'amount' => ['nullable', 'numeric', 'gt:0'],
+            'reason' => ['nullable', 'string', 'max:255'],
+        ]);
+        $amount = isset($data['amount']) ? number_format((float) $data['amount'], 2, '.', '') : null;
+        /** @var numeric-string|null $amount */
+
+        return response()->json(['data' => $orders->refundPrepaid($id, $data['method'], $amount, $data['reason'] ?? null)], 201);
+    }
+
+    /**
      * Edita las líneas y datos de un pedido sin entregas.
      *
      * @param Request $request Datos: líneas, tipo de entrega, fecha y notas.
@@ -124,8 +144,10 @@ class OrderController extends Controller
         $query = DB::table('sales.orders as o')
             ->join('cat.parties as p', 'p.id', '=', 'o.party_id')
             ->orderByDesc('o.created_at')->limit(200)
-            ->select(['o.id', 'o.number', 'o.status', 'o.total', 'o.prepaid_total', 'o.delivery_type',
-                'o.requested_date', 'o.created_at', 'p.name as party_name']);
+            ->selectRaw('o.id, o.number, o.status, o.total, o.prepaid_total, o.delivery_type, o.requested_date, '
+                .'o.created_at, p.name as party_name, '
+                .'(o.prepaid_total - o.prepaid_applied - coalesce((select sum(r.amount) from sales.order_refunds r '
+                .'where r.order_id = o.id), 0)) as prepaid_available');
 
         if ($request->filled('status')) {
             $query->where('o.status', $request->query('status'));

@@ -74,6 +74,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Cobro a varias deudas | `POST receivables/collect-party`: un solo cobro del cliente se reparte entre sus documentos, el que vence primero, un `document_payments` por documento; checkbox en Por cobrar |
 | Unir clientes | `POST customers/{id}/merge {into_id}`: mueve ventas, pedidos, cotizaciones, envíos, mensajes, compras y gastos al cliente que se conserva; el duplicado queda `deleted` |
 | Edición de pedido | `PUT orders/{id}`: reemplaza líneas, tipo de entrega, fecha y notas mientras no haya entregas; libera y vuelve a reservar; no deja el total bajo el anticipo. Pantalla `/ventas/pedidos/nuevo?edit={id}` |
+| Devolución de anticipos | `POST orders/{id}/refund` (solo pedidos cancelados; total o parcial; efectivo sale como egreso del turno abierto); `sales.order_refunds` append-only |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
 
 ## Pantallas web (`apps/web/src/routes`)

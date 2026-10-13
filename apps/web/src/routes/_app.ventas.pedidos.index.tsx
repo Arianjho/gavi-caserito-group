@@ -35,6 +35,7 @@ interface OrderRow {
   status: OrderStatus;
   total: string;
   prepaid_total: string;
+  prepaid_available: string;
   party_name: string;
   created_at: string;
 }
@@ -157,6 +158,24 @@ function OrdersPage() {
     },
   });
 
+  // Devolución de anticipo
+  const [refundOrder, setRefundOrder] = useState<OrderRow | null>(null);
+  const [refundMethod, setRefundMethod] = useState("cash");
+  const refund = useGuardedMutation({
+    mutationFn: (_input: void, { signal, idempotencyKey }) =>
+      api(`/orders/${refundOrder?.id}/refund`, {
+        method: "POST",
+        signal,
+        idempotencyKey,
+        body: { method: refundMethod },
+      }),
+    successMessage: "Anticipo devuelto",
+    onSuccess: () => {
+      setRefundOrder(null);
+      refresh();
+    },
+  });
+
   return (
     <DashboardLayout
       title="Pedidos"
@@ -228,6 +247,19 @@ function OrdersPage() {
                           onClick={() => void advance.run(order.id)}
                         >
                           {nextLabel}
+                        </Button>
+                      )}
+                      {order.status === "cancelled" && Number(order.prepaid_available) > 0 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            refund.reset();
+                            setRefundMethod("cash");
+                            setRefundOrder(order);
+                          }}
+                        >
+                          Devolver anticipo
                         </Button>
                       )}
                       {open && (
@@ -335,6 +367,38 @@ function OrdersPage() {
             </select>
           </div>
         )}
+      </FormDialog>
+
+      <FormDialog
+        open={refundOrder !== null}
+        onOpenChange={(value) => !value && setRefundOrder(null)}
+        title="Devolver anticipo"
+        description={
+          refundOrder
+            ? `Se devuelve ${formatPen(refundOrder.prepaid_available)} a ${refundOrder.party_name}.`
+            : undefined
+        }
+        size="sm"
+        submitLabel="Devolver anticipo"
+        processingLabel="Devolviendo…"
+        processing={refund.isProcessing}
+        slow={refund.isSlow}
+        onSubmit={() => void refund.run()}
+      >
+        <div className="grid gap-2">
+          <Label htmlFor="refund-method">Medio de devolución</Label>
+          <select
+            id="refund-method"
+            value={refundMethod}
+            onChange={(event) => setRefundMethod(event.target.value)}
+            className="h-9 rounded-md border border-input bg-background px-3 text-sm"
+          >
+            <option value="cash">Efectivo (sale de la caja)</option>
+            <option value="yape">Yape</option>
+            <option value="plin">Plin</option>
+            <option value="transfer">Transferencia</option>
+          </select>
+        </div>
       </FormDialog>
 
       <FormDialog
