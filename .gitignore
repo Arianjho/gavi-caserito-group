@@ -26,3 +26,4 @@ coverage/
 
 # Archivos locales de Claude Code
 .claude/settings.local.json
+.tanstack/
