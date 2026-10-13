@@ -231,6 +231,13 @@ function OrdersPage() {
                         </Button>
                       )}
                       {open && (
+                        <Button variant="ghost" size="sm" asChild>
+                          <Link to="/ventas/pedidos/nuevo" search={{ edit: order.id }}>
+                            Editar
+                          </Link>
+                        </Button>
+                      )}
+                      {open && (
                         <Button size="sm" onClick={() => openDeliver(order.id)}>
                           Entregar
                         </Button>

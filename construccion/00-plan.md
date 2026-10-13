@@ -198,7 +198,7 @@ Antes de completar la Fase 0, construir un recorrido mínimo, en un sprint corto
 ### Avance por fases (actualizado 2026-10-12)
 | Fase | Estado | Notas |
 |---|---|---|
-| 3 Pedidos | Parcial | Pedidos con reserva, anticipo, estados, entrega parcial y cancelación. Cotizaciones con conversión a pedido. Faltan edición de pedido, devolución de anticipos y cola de picking |
+| 3 Pedidos | Parcial | Pedidos con reserva, anticipo, estados, entrega parcial y cancelación. Cotizaciones con conversión a pedido. Edición de pedido sin entregas. Faltan devolución de anticipos y cola de picking |
 | 4 Cobranzas y caja | Parcial | Crédito, cuentas por cobrar y cobro parcial; cajas, turnos, arqueo y caja chica. Ventas en espera (en el navegador) y devoluciones parciales. Cobro repartido entre varias deudas del cliente. Faltan notas de crédito fiscales |
 | 5 Compras y pagos | Parcial | Proveedores, compras con ingreso de stock, pagos parciales, por pagar. Gastos con rubro y descuento de caja y devoluciones al proveedor. Falta aplicar el saldo a favor |
 | 6 Envíos | Parcial | Agencias, envíos con estados y línea de tiempo, rótulo. Faltan adjuntos de la agencia, picking y guía de remisión |

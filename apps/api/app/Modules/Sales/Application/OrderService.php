@@ -82,6 +82,60 @@ final class OrderService
     }
 
     /**
+     * Reemplaza las líneas y datos de un pedido que aún no tuvo entregas:
+     * libera lo reservado y reserva de nuevo con las líneas nuevas.
+     *
+     * @param string $orderId Pedido.
+     * @param list<array{variant_id: string, qty: numeric-string, unit_price: numeric-string, discount_pct?: numeric-string|null}> $lines Líneas nuevas.
+     * @param array{delivery_type: string|null, requested_date: string|null, notes: string|null} $header Datos editables.
+     * @return array<string, mixed>
+     *
+     * @throws SaleException Si el pedido ya tuvo entregas, está cerrado o el total queda bajo el anticipo.
+     */
+    public function update(string $orderId, array $lines, array $header): array
+    {
+        return DB::transaction(function () use ($orderId, $lines, $header): array {
+            $order = $this->lock($orderId);
+            if (in_array($order->status, ['cancelled', 'delivered'], true)
+                || DB::table('sales.order_lines')->where('order_id', $orderId)->where('qty_delivered', '>', 0)->exists()) {
+                throw new SaleException('order_not_editable', 'El pedido ya tuvo entregas o está cerrado; no se puede editar.', 409);
+            }
+            [$computed, $total] = $this->computeLines($lines);
+            if (bccomp(Decimal::of($order->prepaid_total), $total, 2) > 0) {
+                throw new SaleException('prepaid_exceeds_total', 'El nuevo total queda por debajo del anticipo recibido.', 422);
+            }
+
+            $this->releaseReservations($order);
+            DB::table('sales.order_lines')->where('order_id', $orderId)->delete();
+            $this->persistLines((string) $order->tenant_id, $orderId, (string) $order->warehouse_id, $computed);
+            DB::table('sales.orders')->where('id', $orderId)->update([
+                'total' => $total, 'delivery_type' => $header['delivery_type'] ?? $order->delivery_type,
+                'requested_date' => $header['requested_date'], 'notes' => $header['notes'],
+                'updated_at' => now(), 'version' => $order->version + 1,
+            ]);
+
+            return $this->find($orderId);
+        });
+    }
+
+    /**
+     * Libera las reservas vigentes de las líneas de un pedido.
+     *
+     * @param stdClass $order Pedido bloqueado.
+     */
+    private function releaseReservations(stdClass $order): void
+    {
+        $lines = DB::table('sales.order_lines')->where('order_id', $order->id)->lockForUpdate()->get();
+        foreach ($lines as $line) {
+            if (bccomp(Decimal::of($line->qty_reserved), '0', 3) > 0) {
+                /** @var numeric-string $reserved */
+                $reserved = Decimal::of($line->qty_reserved);
+                $this->stock->release($order->warehouse_id, $line->variant_id, $reserved);
+            }
+        }
+    }
+
+    /**
      * Avanza el pedido al siguiente estado de despacho.
      *
      * @param string $orderId Pedido.
@@ -156,14 +210,7 @@ final class OrderService
                 throw new SaleException('invalid_transition', 'El pedido ya está cerrado.', 409);
             }
 
-            $lines = DB::table('sales.order_lines')->where('order_id', $orderId)->lockForUpdate()->get();
-            foreach ($lines as $line) {
-                if (bccomp(Decimal::of($line->qty_reserved), '0', 3) > 0) {
-                    /** @var numeric-string $reserved */
-                    $reserved = Decimal::of($line->qty_reserved);
-                    $this->stock->release($order->warehouse_id, $line->variant_id, $reserved);
-                }
-            }
+            $this->releaseReservations($order);
             DB::table('sales.order_lines')->where('order_id', $orderId)->update(['qty_reserved' => 0]);
             DB::table('sales.orders')->where('id', $orderId)->update([
                 'status' => 'cancelled', 'cancelled_at' => now(), 'cancel_reason' => $reason,
@@ -188,6 +235,7 @@ final class OrderService
         }
 
         return (array) $order + [
+            'party_name' => DB::table('cat.parties')->where('id', $order->party_id)->value('name'),
             'lines' => DB::table('sales.order_lines')->where('order_id', $orderId)->orderBy('line_no')->get()->all(),
             'prepayments' => DB::table('sales.order_payments')->where('order_id', $orderId)->orderBy('paid_at')->get()->all(),
             'sales' => DB::table('sales.sales_documents')->where('order_id', $orderId)

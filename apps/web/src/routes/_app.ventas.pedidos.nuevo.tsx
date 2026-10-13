@@ -46,6 +46,8 @@ interface Line {
  */
 function NewOrderPage() {
   const navigate = useNavigate();
+  const { edit } = Route.useSearch();
+  const editing = edit !== undefined;
   const warehouses = useResourceList<Warehouse>("warehouses");
   const [warehouseId, setWarehouseId] = useState("");
   useEffect(() => {
@@ -84,6 +86,46 @@ function NewOrderPage() {
   const [prepaid, setPrepaid] = useState("");
   const [method, setMethod] = useState("cash");
   const [notes, setNotes] = useState("");
+
+  const existing = useQuery({
+    queryKey: ["orders", edit],
+    enabled: editing,
+    queryFn: async () =>
+      (
+        await api<{
+          data: {
+            party_id: string;
+            party_name: string | null;
+            warehouse_id: string;
+            notes: string | null;
+            lines: {
+              variant_id: string;
+              description: string;
+              qty_ordered: string;
+              unit_price: string;
+            }[];
+          };
+        }>(`/orders/${edit}`)
+      ).data,
+  });
+  const [loaded, setLoaded] = useState(false);
+  useEffect(() => {
+    const order = existing.data;
+    if (!order || loaded) return;
+    setLoaded(true);
+    setCustomer({ id: order.party_id, name: order.party_name ?? "Cliente", doc_number: null });
+    setWarehouseId(order.warehouse_id);
+    setNotes(order.notes ?? "");
+    setLines(
+      order.lines.map((line) => ({
+        variantId: line.variant_id,
+        name: line.description,
+        price: Number(line.unit_price),
+        qty: Number(line.qty_ordered),
+        manual: true,
+      })),
+    );
+  }, [existing.data, loaded]);
 
   useListPricing(customer?.id ?? null, lines, setLines);
 
@@ -124,30 +166,38 @@ function NewOrderPage() {
 
   const save = useGuardedMutation({
     mutationFn: (_input: void, { signal, idempotencyKey }) =>
-      api("/orders", {
-        method: "POST",
+      api(editing ? `/orders/${edit}` : "/orders", {
+        method: editing ? "PUT" : "POST",
         signal,
         idempotencyKey,
         body: {
-          warehouse_id: warehouseId,
-          party_id: customer?.id,
+          ...(editing ? {} : { warehouse_id: warehouseId, party_id: customer?.id }),
           notes: notes || null,
           lines: lines.map((line) => ({
             variant_id: line.variantId,
             qty: line.qty,
             unit_price: line.price,
           })),
-          ...(Number(prepaid) > 0 ? { prepaid: { method, amount: Number(prepaid) } } : {}),
+          ...(!editing && Number(prepaid) > 0
+            ? { prepaid: { method, amount: Number(prepaid) } }
+            : {}),
         },
       }),
-    successMessage: "Pedido registrado y stock reservado",
+    successMessage: editing ? "Pedido actualizado" : "Pedido registrado y stock reservado",
     onSuccess: () => void navigate({ to: "/ventas/pedidos" }),
   });
 
   const partyError = save.fieldErrors["party_id"]?.[0];
 
   return (
-    <DashboardLayout title="Nuevo pedido" description="Reserva el stock para tu cliente.">
+    <DashboardLayout
+      title={editing ? "Editar pedido" : "Nuevo pedido"}
+      description={
+        editing
+          ? "Cambia productos y cantidades; la reserva se recalcula."
+          : "Reserva el stock para tu cliente."
+      }
+    >
       <div className="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
         <div className="space-y-4">
           <Card>
@@ -161,9 +211,11 @@ function NewOrderPage() {
                       <span className="ml-2 text-muted-foreground">{customer.doc_number}</span>
                     )}
                   </span>
-                  <Button variant="ghost" size="sm" onClick={() => setCustomer(null)}>
-                    Cambiar
-                  </Button>
+                  {!editing && (
+                    <Button variant="ghost" size="sm" onClick={() => setCustomer(null)}>
+                      Cambiar
+                    </Button>
+                  )}
                 </div>
               ) : (
                 <div className="relative">
@@ -303,7 +355,7 @@ function NewOrderPage() {
                   ))}
               </select>
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className={editing ? "hidden" : "grid grid-cols-2 gap-3"}>
               <div className="grid gap-2">
                 <Label htmlFor="order-prepaid">Anticipo (opcional)</Label>
                 <Input
@@ -345,10 +397,10 @@ function NewOrderPage() {
               size="lg"
               disabled={!customer || lines.length === 0 || !warehouseId}
               processing={save.isProcessing}
-              processingLabel="Registrando pedido…"
+              processingLabel={editing ? "Guardando…" : "Registrando pedido…"}
               onClick={() => void save.run()}
             >
-              Registrar pedido
+              {editing ? "Guardar cambios" : "Registrar pedido"}
             </ActionButton>
             {!customer && (
               <p className="text-xs text-muted-foreground">Elige un cliente para continuar.</p>
@@ -361,5 +413,9 @@ function NewOrderPage() {
 }
 
 export const Route = createFileRoute("/_app/ventas/pedidos/nuevo")({
+  validateSearch: (search: Record<string, unknown>): { edit?: string | undefined } => {
+    const edit = search["edit"];
+    return typeof edit === "string" ? { edit } : {};
+  },
   component: NewOrderPage,
 });

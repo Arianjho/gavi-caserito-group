@@ -70,6 +70,35 @@ class OrderController extends Controller
     }
 
     /**
+     * Edita las líneas y datos de un pedido sin entregas.
+     *
+     * @param Request $request Datos: líneas, tipo de entrega, fecha y notas.
+     * @param string $id Pedido.
+     * @param OrderService $orders Servicio de pedidos.
+     */
+    public function update(Request $request, string $id, OrderService $orders): JsonResponse
+    {
+        $data = $request->validate([
+            'delivery_type' => ['sometimes', Rule::in(['pickup', 'shipment', 'delivery'])],
+            'requested_date' => ['nullable', 'date'],
+            'notes' => ['nullable', 'string', 'max:1000'],
+            'lines' => ['required', 'array', 'min:1', 'max:200'],
+            'lines.*.variant_id' => ['required', 'uuid', Rule::exists(ItemVariant::class, 'id')->where('status', 'active')],
+            'lines.*.qty' => ['required', 'numeric', 'gt:0'],
+            'lines.*.unit_price' => ['required', 'numeric', 'min:0'],
+            'lines.*.discount_pct' => ['nullable', 'numeric', 'min:0', 'max:100'],
+        ]);
+        /** @var list<array{variant_id: string, qty: numeric-string, unit_price: numeric-string, discount_pct: numeric-string|null}> $lines */
+        $lines = $this->normalizeLines($data['lines']);
+
+        return response()->json(['data' => $orders->update($id, $lines, [
+            'delivery_type' => $data['delivery_type'] ?? null,
+            'requested_date' => $data['requested_date'] ?? null,
+            'notes' => $data['notes'] ?? null,
+        ])]);
+    }
+
+    /**
      * Convierte las líneas validadas a texto decimal para el servicio.
      *
      * @param list<array<string, mixed>> $lines Líneas validadas.

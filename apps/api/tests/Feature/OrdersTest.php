@@ -114,3 +114,27 @@ it('cancelar libera la reserva y el estado avanza en orden', function (): void {
     $stock = $this->withToken($token)->getJson('/api/v1/inventory/stock')->json('data.0');
     expect((float) $stock['reserved'])->toBe(0.0);
 });
+
+it('edita un pedido sin entregas y reajusta la reserva', function (): void {
+    $token = ownerToken();
+    $f = orderFixture($token);
+    $order = $this->withToken($token)->postJson('/api/v1/orders', [
+        'warehouse_id' => $f['warehouse'], 'party_id' => $f['party'],
+        'lines' => [['variant_id' => $f['variant'], 'qty' => 4, 'unit_price' => 118]],
+        'prepaid' => ['method' => 'yape', 'amount' => 100],
+    ])->assertCreated()->json('data');
+
+    $updated = $this->withToken($token)->putJson("/api/v1/orders/{$order['id']}", [
+        'delivery_type' => 'shipment', 'notes' => 'Entregar el viernes',
+        'lines' => [['variant_id' => $f['variant'], 'qty' => 2, 'unit_price' => 118]],
+    ])->assertOk()->json('data');
+
+    expect($updated['total'])->toBe('236.00')->and($updated['delivery_type'])->toBe('shipment');
+    $stock = $this->withToken($token)->getJson('/api/v1/inventory/stock')->json('data.0');
+    expect((float) $stock['reserved'])->toBe(2.0);
+
+    $this->withToken($token)->putJson("/api/v1/orders/{$order['id']}", [
+        'delivery_type' => 'pickup',
+        'lines' => [['variant_id' => $f['variant'], 'qty' => 0.5, 'unit_price' => 100]],
+    ])->assertStatus(422)->assertJsonPath('code', 'prepaid_exceeds_total');
+});

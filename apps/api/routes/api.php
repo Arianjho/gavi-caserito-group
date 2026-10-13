@@ -197,6 +197,8 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:orders.order.create')->name('orders.store');
         Route::get('orders/{id}', [OrderController::class, 'show'])
             ->middleware('permission:orders.order.view')->name('orders.show');
+        Route::put('orders/{id}', [OrderController::class, 'update'])
+            ->middleware('permission:orders.order.update')->name('orders.update');
         Route::post('orders/{id}/advance', [OrderController::class, 'advance'])
             ->middleware('permission:orders.order.update')->name('orders.advance');
         Route::post('orders/{id}/deliver', [OrderController::class, 'deliver'])
