@@ -5,6 +5,8 @@ declare(strict_types=1);
 use App\Http\Controllers\HealthController;
 use App\Modules\Cash\Http\Controllers\CashRegisterController;
 use App\Modules\Cash\Http\Controllers\CashSessionController;
+use App\Modules\Cash\Http\Controllers\PaymentLedgerController;
+use App\Modules\Catalog\Http\Controllers\AttributeController;
 use App\Modules\Catalog\Http\Controllers\BrandController;
 use App\Modules\Catalog\Http\Controllers\CategoryController;
 use App\Modules\Catalog\Http\Controllers\CustomerController;
@@ -107,6 +109,7 @@ Route::prefix('v1')->group(function () {
 
         ManagedRoutes::register('categories', CategoryController::class, 'catalog.category');
         ManagedRoutes::register('brands', BrandController::class, 'catalog.brand');
+        ManagedRoutes::register('attributes', AttributeController::class, 'catalog.attribute');
         ManagedRoutes::register('customers', CustomerController::class, 'parties.customer');
         Route::get('items/lookup', [ItemController::class, 'lookup'])
             ->middleware('permission:catalog.item.view')->name('items.lookup');
@@ -211,6 +214,10 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:fiscal.queue.retry')->name('fiscal.documents.retry');
 
         Route::get('plan', [PlanController::class, 'show'])->name('plan.show');
+        Route::get('collections', [PaymentLedgerController::class, 'collections'])
+            ->middleware('permission:payments.collection.view')->name('collections.index');
+        Route::get('payments', [PaymentLedgerController::class, 'payments'])
+            ->middleware('permission:payments.payment.view')->name('payments.index');
         Route::get('users', [UserController::class, 'index'])
             ->middleware('permission:settings.user.view')->name('users.index');
         Route::post('users', [UserController::class, 'store'])

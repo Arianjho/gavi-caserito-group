@@ -72,9 +72,9 @@ export const navigation: NavEntry[] = [
     icon: Banknote,
     items: [
       { title: "Por cobrar", to: "/cobranzas/por-cobrar", permission: "payments.receivable.view" },
-      { title: "Cobros", permission: "payments.collection.view" },
+      { title: "Cobros", to: "/cobranzas/cobros", permission: "payments.collection.view" },
       { title: "Por pagar", to: "/pagos/por-pagar", permission: "payments.payable.view" },
-      { title: "Pagos", permission: "payments.payment.view" },
+      { title: "Pagos", to: "/pagos/pagos", permission: "payments.payment.view" },
     ],
   },
   {
@@ -109,7 +109,7 @@ export const navigation: NavEntry[] = [
       { title: "Productos", to: "/catalogo/productos", permission: "catalog.item.view" },
       { title: "Categorías", to: "/catalogo/categorias", permission: "catalog.category.view" },
       { title: "Marcas", to: "/catalogo/marcas", permission: "catalog.brand.view" },
-      { title: "Atributos", permission: "catalog.attribute.view" },
+      { title: "Atributos", to: "/catalogo/atributos", permission: "catalog.attribute.view" },
       {
         title: "Listas de precios",
         to: "/catalogo/listas-precios",

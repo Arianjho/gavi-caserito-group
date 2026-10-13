@@ -18,11 +18,13 @@ import { Route as AppDesignSystemRouteImport } from './routes/_app.design-system
 import { Route as AppReportesRouteImport } from './routes/_app.reportes'
 import { Route as SeguimientoTokenRouteImport } from './routes/seguimiento.$token'
 import { Route as AppCajaTurnoRouteImport } from './routes/_app.caja.turno'
+import { Route as AppCatalogoAtributosRouteImport } from './routes/_app.catalogo.atributos'
 import { Route as AppCatalogoCategoriasRouteImport } from './routes/_app.catalogo.categorias'
 import { Route as AppCatalogoEtiquetasRouteImport } from './routes/_app.catalogo.etiquetas'
 import { Route as AppCatalogoListasPreciosRouteImport } from './routes/_app.catalogo.listas-precios'
 import { Route as AppCatalogoMarcasRouteImport } from './routes/_app.catalogo.marcas'
 import { Route as AppCatalogoProductosRouteImport } from './routes/_app.catalogo.productos'
+import { Route as AppCobranzasCobrosRouteImport } from './routes/_app.cobranzas.cobros'
 import { Route as AppCobranzasPorCobrarRouteImport } from './routes/_app.cobranzas.por-cobrar'
 import { Route as AppComprasIndexRouteImport } from './routes/_app.compras.index'
 import { Route as AppComprasGastosRouteImport } from './routes/_app.compras.gastos'
@@ -44,6 +46,7 @@ import { Route as AppInventarioKardexRouteImport } from './routes/_app.inventari
 import { Route as AppInventarioStockRouteImport } from './routes/_app.inventario.stock'
 import { Route as AppInventarioTomaFisicaRouteImport } from './routes/_app.inventario.toma-fisica'
 import { Route as AppInventarioTrasladosRouteImport } from './routes/_app.inventario.traslados'
+import { Route as AppPagosPagosRouteImport } from './routes/_app.pagos.pagos'
 import { Route as AppPagosPorPagarRouteImport } from './routes/_app.pagos.por-pagar'
 import { Route as AppTercerosClientesRouteImport } from './routes/_app.terceros.clientes'
 import { Route as AppTercerosProveedoresRouteImport } from './routes/_app.terceros.proveedores'
@@ -98,6 +101,11 @@ const AppCajaTurnoRoute = AppCajaTurnoRouteImport.update({
   path: '/caja/turno',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCatalogoAtributosRoute = AppCatalogoAtributosRouteImport.update({
+  id: '/catalogo/atributos',
+  path: '/catalogo/atributos',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppCatalogoCategoriasRoute = AppCatalogoCategoriasRouteImport.update({
   id: '/catalogo/categorias',
   path: '/catalogo/categorias',
@@ -122,6 +130,11 @@ const AppCatalogoMarcasRoute = AppCatalogoMarcasRouteImport.update({
 const AppCatalogoProductosRoute = AppCatalogoProductosRouteImport.update({
   id: '/catalogo/productos',
   path: '/catalogo/productos',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCobranzasCobrosRoute = AppCobranzasCobrosRouteImport.update({
+  id: '/cobranzas/cobros',
+  path: '/cobranzas/cobros',
   getParentRoute: () => AppRoute,
 } as any)
 const AppCobranzasPorCobrarRoute = AppCobranzasPorCobrarRouteImport.update({
@@ -238,6 +251,11 @@ const AppInventarioTrasladosRoute = AppInventarioTrasladosRouteImport.update({
   path: '/inventario/traslados',
   getParentRoute: () => AppRoute,
 } as any)
+const AppPagosPagosRoute = AppPagosPagosRouteImport.update({
+  id: '/pagos/pagos',
+  path: '/pagos/pagos',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPagosPorPagarRoute = AppPagosPorPagarRouteImport.update({
   id: '/pagos/por-pagar',
   path: '/pagos/por-pagar',
@@ -295,11 +313,13 @@ export interface FileRoutesByFullPath {
   '/reportes': typeof AppReportesRoute
   '/seguimiento/$token': typeof SeguimientoTokenRoute
   '/caja/turno': typeof AppCajaTurnoRoute
+  '/catalogo/atributos': typeof AppCatalogoAtributosRoute
   '/catalogo/categorias': typeof AppCatalogoCategoriasRoute
   '/catalogo/etiquetas': typeof AppCatalogoEtiquetasRoute
   '/catalogo/listas-precios': typeof AppCatalogoListasPreciosRoute
   '/catalogo/marcas': typeof AppCatalogoMarcasRoute
   '/catalogo/productos': typeof AppCatalogoProductosRoute
+  '/cobranzas/cobros': typeof AppCobranzasCobrosRoute
   '/cobranzas/por-cobrar': typeof AppCobranzasPorCobrarRoute
   '/compras/gastos': typeof AppComprasGastosRoute
   '/compras/nueva': typeof AppComprasNuevaRoute
@@ -319,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/inventario/stock': typeof AppInventarioStockRoute
   '/inventario/toma-fisica': typeof AppInventarioTomaFisicaRoute
   '/inventario/traslados': typeof AppInventarioTrasladosRoute
+  '/pagos/pagos': typeof AppPagosPagosRoute
   '/pagos/por-pagar': typeof AppPagosPorPagarRoute
   '/terceros/clientes': typeof AppTercerosClientesRoute
   '/terceros/proveedores': typeof AppTercerosProveedoresRoute
@@ -340,11 +361,13 @@ export interface FileRoutesByTo {
   '/seguimiento/$token': typeof SeguimientoTokenRoute
   '/': typeof AppIndexRoute
   '/caja/turno': typeof AppCajaTurnoRoute
+  '/catalogo/atributos': typeof AppCatalogoAtributosRoute
   '/catalogo/categorias': typeof AppCatalogoCategoriasRoute
   '/catalogo/etiquetas': typeof AppCatalogoEtiquetasRoute
   '/catalogo/listas-precios': typeof AppCatalogoListasPreciosRoute
   '/catalogo/marcas': typeof AppCatalogoMarcasRoute
   '/catalogo/productos': typeof AppCatalogoProductosRoute
+  '/cobranzas/cobros': typeof AppCobranzasCobrosRoute
   '/cobranzas/por-cobrar': typeof AppCobranzasPorCobrarRoute
   '/compras/gastos': typeof AppComprasGastosRoute
   '/compras/nueva': typeof AppComprasNuevaRoute
@@ -364,6 +387,7 @@ export interface FileRoutesByTo {
   '/inventario/stock': typeof AppInventarioStockRoute
   '/inventario/toma-fisica': typeof AppInventarioTomaFisicaRoute
   '/inventario/traslados': typeof AppInventarioTrasladosRoute
+  '/pagos/pagos': typeof AppPagosPagosRoute
   '/pagos/por-pagar': typeof AppPagosPorPagarRoute
   '/terceros/clientes': typeof AppTercerosClientesRoute
   '/terceros/proveedores': typeof AppTercerosProveedoresRoute
@@ -387,11 +411,13 @@ export interface FileRoutesById {
   '/seguimiento/$token': typeof SeguimientoTokenRoute
   '/_app/': typeof AppIndexRoute
   '/_app/caja/turno': typeof AppCajaTurnoRoute
+  '/_app/catalogo/atributos': typeof AppCatalogoAtributosRoute
   '/_app/catalogo/categorias': typeof AppCatalogoCategoriasRoute
   '/_app/catalogo/etiquetas': typeof AppCatalogoEtiquetasRoute
   '/_app/catalogo/listas-precios': typeof AppCatalogoListasPreciosRoute
   '/_app/catalogo/marcas': typeof AppCatalogoMarcasRoute
   '/_app/catalogo/productos': typeof AppCatalogoProductosRoute
+  '/_app/cobranzas/cobros': typeof AppCobranzasCobrosRoute
   '/_app/cobranzas/por-cobrar': typeof AppCobranzasPorCobrarRoute
   '/_app/compras/gastos': typeof AppComprasGastosRoute
   '/_app/compras/nueva': typeof AppComprasNuevaRoute
@@ -411,6 +437,7 @@ export interface FileRoutesById {
   '/_app/inventario/stock': typeof AppInventarioStockRoute
   '/_app/inventario/toma-fisica': typeof AppInventarioTomaFisicaRoute
   '/_app/inventario/traslados': typeof AppInventarioTrasladosRoute
+  '/_app/pagos/pagos': typeof AppPagosPagosRoute
   '/_app/pagos/por-pagar': typeof AppPagosPorPagarRoute
   '/_app/terceros/clientes': typeof AppTercerosClientesRoute
   '/_app/terceros/proveedores': typeof AppTercerosProveedoresRoute
@@ -434,11 +461,13 @@ export interface FileRouteTypes {
     | '/reportes'
     | '/seguimiento/$token'
     | '/caja/turno'
+    | '/catalogo/atributos'
     | '/catalogo/categorias'
     | '/catalogo/etiquetas'
     | '/catalogo/listas-precios'
     | '/catalogo/marcas'
     | '/catalogo/productos'
+    | '/cobranzas/cobros'
     | '/cobranzas/por-cobrar'
     | '/compras/gastos'
     | '/compras/nueva'
@@ -458,6 +487,7 @@ export interface FileRouteTypes {
     | '/inventario/stock'
     | '/inventario/toma-fisica'
     | '/inventario/traslados'
+    | '/pagos/pagos'
     | '/pagos/por-pagar'
     | '/terceros/clientes'
     | '/terceros/proveedores'
@@ -479,11 +509,13 @@ export interface FileRouteTypes {
     | '/seguimiento/$token'
     | '/'
     | '/caja/turno'
+    | '/catalogo/atributos'
     | '/catalogo/categorias'
     | '/catalogo/etiquetas'
     | '/catalogo/listas-precios'
     | '/catalogo/marcas'
     | '/catalogo/productos'
+    | '/cobranzas/cobros'
     | '/cobranzas/por-cobrar'
     | '/compras/gastos'
     | '/compras/nueva'
@@ -503,6 +535,7 @@ export interface FileRouteTypes {
     | '/inventario/stock'
     | '/inventario/toma-fisica'
     | '/inventario/traslados'
+    | '/pagos/pagos'
     | '/pagos/por-pagar'
     | '/terceros/clientes'
     | '/terceros/proveedores'
@@ -525,11 +558,13 @@ export interface FileRouteTypes {
     | '/seguimiento/$token'
     | '/_app/'
     | '/_app/caja/turno'
+    | '/_app/catalogo/atributos'
     | '/_app/catalogo/categorias'
     | '/_app/catalogo/etiquetas'
     | '/_app/catalogo/listas-precios'
     | '/_app/catalogo/marcas'
     | '/_app/catalogo/productos'
+    | '/_app/cobranzas/cobros'
     | '/_app/cobranzas/por-cobrar'
     | '/_app/compras/gastos'
     | '/_app/compras/nueva'
@@ -549,6 +584,7 @@ export interface FileRouteTypes {
     | '/_app/inventario/stock'
     | '/_app/inventario/toma-fisica'
     | '/_app/inventario/traslados'
+    | '/_app/pagos/pagos'
     | '/_app/pagos/por-pagar'
     | '/_app/terceros/clientes'
     | '/_app/terceros/proveedores'
@@ -635,6 +671,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCajaTurnoRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/catalogo/atributos': {
+      id: '/_app/catalogo/atributos'
+      path: '/catalogo/atributos'
+      fullPath: '/catalogo/atributos'
+      preLoaderRoute: typeof AppCatalogoAtributosRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/catalogo/categorias': {
       id: '/_app/catalogo/categorias'
       path: '/catalogo/categorias'
@@ -668,6 +711,13 @@ declare module '@tanstack/react-router' {
       path: '/catalogo/productos'
       fullPath: '/catalogo/productos'
       preLoaderRoute: typeof AppCatalogoProductosRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/cobranzas/cobros': {
+      id: '/_app/cobranzas/cobros'
+      path: '/cobranzas/cobros'
+      fullPath: '/cobranzas/cobros'
+      preLoaderRoute: typeof AppCobranzasCobrosRouteImport
       parentRoute: typeof AppRoute
     }
     '/_app/cobranzas/por-cobrar': {
@@ -817,6 +867,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppInventarioTrasladosRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/pagos/pagos': {
+      id: '/_app/pagos/pagos'
+      path: '/pagos/pagos'
+      fullPath: '/pagos/pagos'
+      preLoaderRoute: typeof AppPagosPagosRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/pagos/por-pagar': {
       id: '/_app/pagos/por-pagar'
       path: '/pagos/por-pagar'
@@ -888,11 +945,13 @@ interface AppRouteChildren {
   AppReportesRoute: typeof AppReportesRoute
   AppIndexRoute: typeof AppIndexRoute
   AppCajaTurnoRoute: typeof AppCajaTurnoRoute
+  AppCatalogoAtributosRoute: typeof AppCatalogoAtributosRoute
   AppCatalogoCategoriasRoute: typeof AppCatalogoCategoriasRoute
   AppCatalogoEtiquetasRoute: typeof AppCatalogoEtiquetasRoute
   AppCatalogoListasPreciosRoute: typeof AppCatalogoListasPreciosRoute
   AppCatalogoMarcasRoute: typeof AppCatalogoMarcasRoute
   AppCatalogoProductosRoute: typeof AppCatalogoProductosRoute
+  AppCobranzasCobrosRoute: typeof AppCobranzasCobrosRoute
   AppCobranzasPorCobrarRoute: typeof AppCobranzasPorCobrarRoute
   AppComprasGastosRoute: typeof AppComprasGastosRoute
   AppComprasNuevaRoute: typeof AppComprasNuevaRoute
@@ -912,6 +971,7 @@ interface AppRouteChildren {
   AppInventarioStockRoute: typeof AppInventarioStockRoute
   AppInventarioTomaFisicaRoute: typeof AppInventarioTomaFisicaRoute
   AppInventarioTrasladosRoute: typeof AppInventarioTrasladosRoute
+  AppPagosPagosRoute: typeof AppPagosPagosRoute
   AppPagosPorPagarRoute: typeof AppPagosPorPagarRoute
   AppTercerosClientesRoute: typeof AppTercerosClientesRoute
   AppTercerosProveedoresRoute: typeof AppTercerosProveedoresRoute
@@ -930,11 +990,13 @@ const AppRouteChildren: AppRouteChildren = {
   AppReportesRoute: AppReportesRoute,
   AppIndexRoute: AppIndexRoute,
   AppCajaTurnoRoute: AppCajaTurnoRoute,
+  AppCatalogoAtributosRoute: AppCatalogoAtributosRoute,
   AppCatalogoCategoriasRoute: AppCatalogoCategoriasRoute,
   AppCatalogoEtiquetasRoute: AppCatalogoEtiquetasRoute,
   AppCatalogoListasPreciosRoute: AppCatalogoListasPreciosRoute,
   AppCatalogoMarcasRoute: AppCatalogoMarcasRoute,
   AppCatalogoProductosRoute: AppCatalogoProductosRoute,
+  AppCobranzasCobrosRoute: AppCobranzasCobrosRoute,
   AppCobranzasPorCobrarRoute: AppCobranzasPorCobrarRoute,
   AppComprasGastosRoute: AppComprasGastosRoute,
   AppComprasNuevaRoute: AppComprasNuevaRoute,
@@ -954,6 +1016,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppInventarioStockRoute: AppInventarioStockRoute,
   AppInventarioTomaFisicaRoute: AppInventarioTomaFisicaRoute,
   AppInventarioTrasladosRoute: AppInventarioTrasladosRoute,
+  AppPagosPagosRoute: AppPagosPagosRoute,
   AppPagosPorPagarRoute: AppPagosPorPagarRoute,
   AppTercerosClientesRoute: AppTercerosClientesRoute,
   AppTercerosProveedoresRoute: AppTercerosProveedoresRoute,

@@ -33,6 +33,15 @@ export interface SimpleRecord {
   id: string;
   name: string;
   status: LifecycleStatus;
+  [extra: string]: unknown;
+}
+
+/** Campo de texto adicional opcional del maestro. */
+export interface ExtraField {
+  /** Nombre del campo en la API. */
+  key: string;
+  label: string;
+  placeholder?: string;
 }
 
 /** Propiedades de {@link SimpleMasterPage}. */
@@ -49,6 +58,8 @@ interface SimpleMasterPageProps {
   gender: "f" | "m";
   /** Acciones adicionales por fila (por ejemplo "Precios"). */
   rowActions?: (record: SimpleRecord) => ReactNode;
+  /** Campo de texto adicional que se envía junto al nombre. */
+  extraField?: ExtraField;
 }
 
 /**
@@ -63,17 +74,19 @@ export function SimpleMasterPage({
   singular,
   gender,
   rowActions,
+  extraField,
 }: SimpleMasterPageProps) {
   const list = useResourceList<SimpleRecord>(path);
   const invalidate = useInvalidateResource(path);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<SimpleRecord | null>(null);
   const [name, setName] = useState("");
+  const [extra, setExtra] = useState("");
 
   const newLabel = `${gender === "f" ? "Nueva" : "Nuevo"} ${singular}`;
 
   const save = useGuardedMutation({
-    mutationFn: (input: { name: string }, { signal, idempotencyKey }) =>
+    mutationFn: (input: Record<string, string>, { signal, idempotencyKey }) =>
       editing
         ? api(`/${path}/${editing.id}`, { method: "PUT", body: input, signal })
         : api(`/${path}`, { method: "POST", body: input, signal, idempotencyKey }),
@@ -88,6 +101,7 @@ export function SimpleMasterPage({
     save.reset();
     setEditing(record);
     setName(record?.name ?? "");
+    setExtra(extraField ? String(record?.[extraField.key] ?? "") : "");
     setOpen(true);
   };
 
@@ -118,6 +132,7 @@ export function SimpleMasterPage({
             <TableHeader>
               <TableRow>
                 <TableHead>Nombre</TableHead>
+                {extraField && <TableHead>{extraField.label}</TableHead>}
                 <TableHead>Estado</TableHead>
                 <TableHead className="w-10" />
               </TableRow>
@@ -126,6 +141,11 @@ export function SimpleMasterPage({
               {list.data.map((record) => (
                 <TableRow key={record.id}>
                   <TableCell className="font-medium">{record.name}</TableCell>
+                  {extraField && (
+                    <TableCell className="text-muted-foreground">
+                      {String(record[extraField.key] ?? "") || "—"}
+                    </TableCell>
+                  )}
                   <TableCell>
                     <StatusChip
                       label={record.status === "active" ? "Activo" : "Inactivo"}
@@ -158,7 +178,7 @@ export function SimpleMasterPage({
         processingLabel={editing ? "Guardando…" : "Registrando…"}
         processing={save.isProcessing}
         slow={save.isSlow}
-        onSubmit={() => void save.run({ name })}
+        onSubmit={() => void save.run(extraField ? { name, [extraField.key]: extra } : { name })}
       >
         <div className="grid gap-2">
           <Label htmlFor="name">Nombre</Label>
@@ -170,6 +190,17 @@ export function SimpleMasterPage({
           />
           {nameError && <p className="text-xs text-destructive">{nameError}</p>}
         </div>
+        {extraField && (
+          <div className="grid gap-2">
+            <Label htmlFor="extra">{extraField.label}</Label>
+            <Input
+              id="extra"
+              value={extra}
+              placeholder={extraField.placeholder}
+              onChange={(event) => setExtra(event.target.value)}
+            />
+          </div>
+        )}
       </FormDialog>
     </DashboardLayout>
   );

@@ -68,6 +68,8 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Traslados y toma física | `GET/POST inventory/transfers` (salen al costo promedio y entran con ese costo), `POST inventory/counts` (ajusta solo diferencias; deja movimientos `adjustment_*` con documento de toma) |
 | Devolución a proveedor | `POST purchases/{id}/returns` (saca stock al costo de la compra y reduce su total; si ya estaba pagada deja saldo negativo = a favor) |
 | Plan y límites | `core.tenants.plan_code/max_users/max_companies/max_documents_month` (nulo = sin tope); `GET plan` con uso; crear usuario/empresa sobre el tope responde 403 `plan_limit_reached`. Tope de documentos por mes aún solo informativo |
+| Cobros y pagos | `GET collections` y `GET payments` (filtros from/to/method, total del rango); pantallas Cobros y Pagos |
+| Atributos | `cat.attributes` (nombre + valores sugeridos); el diálogo de variantes los ofrece y precarga valores |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
 
 ## Pantallas web (`apps/web/src/routes`)

@@ -20,7 +20,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useInvalidateResource } from "@/features/organization/resources";
+import { useInvalidateResource, useResourceList } from "@/features/organization/resources";
 import { useGuardedMutation } from "@/hooks/use-guarded-mutation";
 import { api } from "@/lib/api";
 
@@ -69,6 +69,10 @@ export function VariantsDialog({
   variants,
 }: VariantsDialogProps) {
   const invalidate = useInvalidateResource("items");
+  const attributes = useResourceList<{ id: string; name: string; suggested_values: string | null }>(
+    "attributes",
+  );
+  const suggestions = attributes.data ?? [];
   const [axisA, setAxisA] = useState({ name: "Talla", values: "" });
   const [axisB, setAxisB] = useState({ name: "Color", values: "" });
 
@@ -162,6 +166,11 @@ export function VariantsDialog({
           <p className="text-xs text-muted-foreground">
             Escribe los valores separados por coma. Hereda precio y costo del producto.
           </p>
+          <datalist id="attribute-names">
+            {suggestions.map((attribute) => (
+              <option key={attribute.id} value={attribute.name} />
+            ))}
+          </datalist>
           {[
             { axis: axisA, set: setAxisA, id: "a" },
             { axis: axisB, set: setAxisB, id: "b" },
@@ -172,7 +181,17 @@ export function VariantsDialog({
                 <Input
                   id={`axis-${id}-name`}
                   value={axis.name}
-                  onChange={(event) => set({ ...axis, name: event.target.value })}
+                  list="attribute-names"
+                  onChange={(event) => {
+                    const name = event.target.value;
+                    const match = suggestions.find(
+                      (attribute) => attribute.name.toLowerCase() === name.trim().toLowerCase(),
+                    );
+                    set({
+                      name,
+                      values: axis.values === "" ? (match?.suggested_values ?? "") : axis.values,
+                    });
+                  }}
                 />
               </div>
               <div className="grid gap-1">
