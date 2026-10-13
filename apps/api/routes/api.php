@@ -25,6 +25,7 @@ use App\Modules\Platform\Http\Controllers\AuthController;
 use App\Modules\Platform\Http\Controllers\BranchController;
 use App\Modules\Platform\Http\Controllers\CompanyController;
 use App\Modules\Platform\Http\Controllers\PasswordResetController;
+use App\Modules\Platform\Http\Controllers\PlanController;
 use App\Modules\Platform\Http\Controllers\RoleController;
 use App\Modules\Platform\Http\Controllers\UserController;
 use App\Modules\Platform\Http\Controllers\WarehouseController;
@@ -209,6 +210,7 @@ Route::prefix('v1')->group(function () {
         Route::post('fiscal/documents/{id}/retry', [FiscalDocumentController::class, 'retry'])
             ->middleware('permission:fiscal.queue.retry')->name('fiscal.documents.retry');
 
+        Route::get('plan', [PlanController::class, 'show'])->name('plan.show');
         Route::get('users', [UserController::class, 'index'])
             ->middleware('permission:settings.user.view')->name('users.index');
         Route::post('users', [UserController::class, 'store'])

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Platform\Application\PlanLimits;
 use App\Modules\Platform\Models\Role;
 use App\Modules\Platform\Models\User;
 use App\Shared\Lifecycle\LifecycleService;
@@ -50,6 +51,8 @@ class UserController extends Controller
             'role_ids' => ['required', 'array', 'min:1'],
             'role_ids.*' => ['uuid', Rule::exists(Role::class, 'id')->where('status', 'active')],
         ]);
+
+        app(PlanLimits::class)->ensureCanCreate((string) $request->user()?->tenant_id, 'users');
 
         $user = DB::transaction(function () use ($data, $request): User {
             $user = User::create([

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Platform\Http\Controllers;
 
 use App\Modules\Platform\Application\OrganizationDeletionGuards;
+use App\Modules\Platform\Application\PlanLimits;
 use App\Modules\Platform\Models\Company;
 use App\Shared\Http\ManagedResourceController;
 use App\Shared\Lifecycle\DeletionGuard;
@@ -33,6 +34,19 @@ class CompanyController extends ManagedResourceController
     protected function guard(): DeletionGuard
     {
         return OrganizationDeletionGuards::forCompany();
+    }
+
+    /**
+     * Verifica el tope de empresas del plan antes de crear.
+     *
+     * @param array<string, mixed> $data Datos validados.
+     * @return array<string, mixed>
+     */
+    protected function extraOnCreate(array $data): array
+    {
+        app(PlanLimits::class)->ensureCanCreate((string) request()->user()?->tenant_id, 'companies');
+
+        return [];
     }
 
     /**

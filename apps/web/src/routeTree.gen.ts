@@ -33,6 +33,7 @@ import { Route as AppConfiguracionFacturacionRouteImport } from './routes/_app.c
 import { Route as AppConfiguracionImportarRouteImport } from './routes/_app.configuracion.importar'
 import { Route as AppConfiguracionNotificacionesRouteImport } from './routes/_app.configuracion.notificaciones'
 import { Route as AppConfiguracionPerfilesRouteImport } from './routes/_app.configuracion.perfiles'
+import { Route as AppConfiguracionPlanRouteImport } from './routes/_app.configuracion.plan'
 import { Route as AppConfiguracionSucursalesRouteImport } from './routes/_app.configuracion.sucursales'
 import { Route as AppConfiguracionUsuariosRouteImport } from './routes/_app.configuracion.usuarios'
 import { Route as AppDevInteraccionRouteImport } from './routes/_app.dev.interaccion'
@@ -179,6 +180,11 @@ const AppConfiguracionPerfilesRoute =
     path: '/configuracion/perfiles',
     getParentRoute: () => AppRoute,
   } as any)
+const AppConfiguracionPlanRoute = AppConfiguracionPlanRouteImport.update({
+  id: '/configuracion/plan',
+  path: '/configuracion/plan',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppConfiguracionSucursalesRoute =
   AppConfiguracionSucursalesRouteImport.update({
     id: '/configuracion/sucursales',
@@ -303,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/configuracion/importar': typeof AppConfiguracionImportarRoute
   '/configuracion/notificaciones': typeof AppConfiguracionNotificacionesRoute
   '/configuracion/perfiles': typeof AppConfiguracionPerfilesRoute
+  '/configuracion/plan': typeof AppConfiguracionPlanRoute
   '/configuracion/sucursales': typeof AppConfiguracionSucursalesRoute
   '/configuracion/usuarios': typeof AppConfiguracionUsuariosRoute
   '/dev/interaccion': typeof AppDevInteraccionRoute
@@ -347,6 +354,7 @@ export interface FileRoutesByTo {
   '/configuracion/importar': typeof AppConfiguracionImportarRoute
   '/configuracion/notificaciones': typeof AppConfiguracionNotificacionesRoute
   '/configuracion/perfiles': typeof AppConfiguracionPerfilesRoute
+  '/configuracion/plan': typeof AppConfiguracionPlanRoute
   '/configuracion/sucursales': typeof AppConfiguracionSucursalesRoute
   '/configuracion/usuarios': typeof AppConfiguracionUsuariosRoute
   '/dev/interaccion': typeof AppDevInteraccionRoute
@@ -393,6 +401,7 @@ export interface FileRoutesById {
   '/_app/configuracion/importar': typeof AppConfiguracionImportarRoute
   '/_app/configuracion/notificaciones': typeof AppConfiguracionNotificacionesRoute
   '/_app/configuracion/perfiles': typeof AppConfiguracionPerfilesRoute
+  '/_app/configuracion/plan': typeof AppConfiguracionPlanRoute
   '/_app/configuracion/sucursales': typeof AppConfiguracionSucursalesRoute
   '/_app/configuracion/usuarios': typeof AppConfiguracionUsuariosRoute
   '/_app/dev/interaccion': typeof AppDevInteraccionRoute
@@ -439,6 +448,7 @@ export interface FileRouteTypes {
     | '/configuracion/importar'
     | '/configuracion/notificaciones'
     | '/configuracion/perfiles'
+    | '/configuracion/plan'
     | '/configuracion/sucursales'
     | '/configuracion/usuarios'
     | '/dev/interaccion'
@@ -483,6 +493,7 @@ export interface FileRouteTypes {
     | '/configuracion/importar'
     | '/configuracion/notificaciones'
     | '/configuracion/perfiles'
+    | '/configuracion/plan'
     | '/configuracion/sucursales'
     | '/configuracion/usuarios'
     | '/dev/interaccion'
@@ -528,6 +539,7 @@ export interface FileRouteTypes {
     | '/_app/configuracion/importar'
     | '/_app/configuracion/notificaciones'
     | '/_app/configuracion/perfiles'
+    | '/_app/configuracion/plan'
     | '/_app/configuracion/sucursales'
     | '/_app/configuracion/usuarios'
     | '/_app/dev/interaccion'
@@ -728,6 +740,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppConfiguracionPerfilesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/configuracion/plan': {
+      id: '/_app/configuracion/plan'
+      path: '/configuracion/plan'
+      fullPath: '/configuracion/plan'
+      preLoaderRoute: typeof AppConfiguracionPlanRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/configuracion/sucursales': {
       id: '/_app/configuracion/sucursales'
       path: '/configuracion/sucursales'
@@ -883,6 +902,7 @@ interface AppRouteChildren {
   AppConfiguracionImportarRoute: typeof AppConfiguracionImportarRoute
   AppConfiguracionNotificacionesRoute: typeof AppConfiguracionNotificacionesRoute
   AppConfiguracionPerfilesRoute: typeof AppConfiguracionPerfilesRoute
+  AppConfiguracionPlanRoute: typeof AppConfiguracionPlanRoute
   AppConfiguracionSucursalesRoute: typeof AppConfiguracionSucursalesRoute
   AppConfiguracionUsuariosRoute: typeof AppConfiguracionUsuariosRoute
   AppDevInteraccionRoute: typeof AppDevInteraccionRoute
@@ -924,6 +944,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppConfiguracionImportarRoute: AppConfiguracionImportarRoute,
   AppConfiguracionNotificacionesRoute: AppConfiguracionNotificacionesRoute,
   AppConfiguracionPerfilesRoute: AppConfiguracionPerfilesRoute,
+  AppConfiguracionPlanRoute: AppConfiguracionPlanRoute,
   AppConfiguracionSucursalesRoute: AppConfiguracionSucursalesRoute,
   AppConfiguracionUsuariosRoute: AppConfiguracionUsuariosRoute,
   AppDevInteraccionRoute: AppDevInteraccionRoute,

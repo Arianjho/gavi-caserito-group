@@ -190,6 +190,7 @@ export const navigation: NavEntry[] = [
       },
       { title: "Importar", to: "/configuracion/importar", permission: "import.run" },
       { title: "Auditoría", to: "/configuracion/auditoria", permission: "audit.log.view" },
+      { title: "Mi plan", to: "/configuracion/plan" },
     ],
   },
   {

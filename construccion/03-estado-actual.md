@@ -67,6 +67,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Seguimiento público | `GET public/tracking/{token}` (pedido o envío, sin ingreso, datos mínimos); pantalla `/seguimiento/{token}`; el aviso de pedido por WhatsApp incluye el enlace |
 | Traslados y toma física | `GET/POST inventory/transfers` (salen al costo promedio y entran con ese costo), `POST inventory/counts` (ajusta solo diferencias; deja movimientos `adjustment_*` con documento de toma) |
 | Devolución a proveedor | `POST purchases/{id}/returns` (saca stock al costo de la compra y reduce su total; si ya estaba pagada deja saldo negativo = a favor) |
+| Plan y límites | `core.tenants.plan_code/max_users/max_companies/max_documents_month` (nulo = sin tope); `GET plan` con uso; crear usuario/empresa sobre el tope responde 403 `plan_limit_reached`. Tope de documentos por mes aún solo informativo |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
 
 ## Pantallas web (`apps/web/src/routes`)
