@@ -1,0 +1,64 @@
+# Integración continua: calidad y pruebas de la API y calidad de la web.
+# Hoy el repositorio no tiene remoto; este archivo queda listo para cuando exista.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    defaults:
+      run:
+        working-directory: apps/api
+    env:
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.3"
+          extensions: pdo_pgsql, bcmath, mbstring, intl
+          tools: composer:v2
+      - name: Crear rol sin superusuario y base de pruebas
+        # El propietario no debe ser superusuario: así RLS se aplica igual que en producción.
+        run: |
+          psql -h 127.0.0.1 -U postgres -c "CREATE ROLE caserito_owner LOGIN PASSWORD 'caserito_dev' CREATEDB"
+          psql -h 127.0.0.1 -U postgres -c "CREATE DATABASE caserito_test OWNER caserito_owner"
+      - run: composer install --no-interaction --prefer-dist
+      - run: cp .env.example .env && php artisan key:generate
+      - run: composer quality
+        env:
+          DB_HOST: 127.0.0.1
+          DB_USERNAME: caserito_owner
+          DB_PASSWORD: caserito_dev
+
+  web:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm quality
+      - run: pnpm build

@@ -91,7 +91,7 @@ Notas de crédito y baja fiscales, portal del cliente con cuenta (estado de cuen
 - Desarrollo: PostgreSQL 17 local (`caserito`, usuario `caserito_owner`) y Redis en Docker.
 - `search_path` de la conexión: `public,core,cat,inv,sales,cash,purch,ship,fiscal` (para que `migrate:fresh` limpie todos los esquemas).
 - Zona horaria de la aplicación: `America/Lima` (los "días" de ventas, vencimientos y reportes se cuentan en hora de Perú).
-- Sin repositorio remoto ni commits todavía (decisión del usuario).
+- Sin repositorio remoto (decisión del usuario). Hay commits locales en `main`. CI lista en `.github/workflows/ci.yml` (API con PostgreSQL sin superusuario + web), sin ejecutar aún.
 
 ## Pendientes de verificar contra eFact real
 
