@@ -16,6 +16,8 @@ import { Route as RestablecerRouteImport } from './routes/restablecer'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppDesignSystemRouteImport } from './routes/_app.design-system'
 import { Route as AppReportesRouteImport } from './routes/_app.reportes'
+import { Route as OperadorIndexRouteImport } from './routes/operador.index'
+import { Route as OperadorLoginRouteImport } from './routes/operador.login'
 import { Route as SeguimientoTokenRouteImport } from './routes/seguimiento.$token'
 import { Route as AppCajaTurnoRouteImport } from './routes/_app.caja.turno'
 import { Route as AppCatalogoAtributosRouteImport } from './routes/_app.catalogo.atributos'
@@ -92,6 +94,16 @@ const AppReportesRoute = AppReportesRouteImport.update({
   id: '/reportes',
   path: '/reportes',
   getParentRoute: () => AppRoute,
+} as any)
+const OperadorIndexRoute = OperadorIndexRouteImport.update({
+  id: '/operador/',
+  path: '/operador/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OperadorLoginRoute = OperadorLoginRouteImport.update({
+  id: '/operador/login',
+  path: '/operador/login',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SeguimientoTokenRoute = SeguimientoTokenRouteImport.update({
   id: '/seguimiento/$token',
@@ -323,7 +335,9 @@ export interface FileRoutesByFullPath {
   '/restablecer': typeof RestablecerRoute
   '/design-system': typeof AppDesignSystemRoute
   '/reportes': typeof AppReportesRoute
+  '/operador/login': typeof OperadorLoginRoute
   '/seguimiento/$token': typeof SeguimientoTokenRoute
+  '/operador/': typeof OperadorIndexRoute
   '/caja/turno': typeof AppCajaTurnoRoute
   '/catalogo/atributos': typeof AppCatalogoAtributosRoute
   '/catalogo/categorias': typeof AppCatalogoCategoriasRoute
@@ -372,8 +386,10 @@ export interface FileRoutesByTo {
   '/restablecer': typeof RestablecerRoute
   '/design-system': typeof AppDesignSystemRoute
   '/reportes': typeof AppReportesRoute
+  '/operador/login': typeof OperadorLoginRoute
   '/seguimiento/$token': typeof SeguimientoTokenRoute
   '/': typeof AppIndexRoute
+  '/operador': typeof OperadorIndexRoute
   '/caja/turno': typeof AppCajaTurnoRoute
   '/catalogo/atributos': typeof AppCatalogoAtributosRoute
   '/catalogo/categorias': typeof AppCatalogoCategoriasRoute
@@ -424,8 +440,10 @@ export interface FileRoutesById {
   '/restablecer': typeof RestablecerRoute
   '/_app/design-system': typeof AppDesignSystemRoute
   '/_app/reportes': typeof AppReportesRoute
+  '/operador/login': typeof OperadorLoginRoute
   '/seguimiento/$token': typeof SeguimientoTokenRoute
   '/_app/': typeof AppIndexRoute
+  '/operador/': typeof OperadorIndexRoute
   '/_app/caja/turno': typeof AppCajaTurnoRoute
   '/_app/catalogo/atributos': typeof AppCatalogoAtributosRoute
   '/_app/catalogo/categorias': typeof AppCatalogoCategoriasRoute
@@ -477,7 +495,9 @@ export interface FileRouteTypes {
     | '/restablecer'
     | '/design-system'
     | '/reportes'
+    | '/operador/login'
     | '/seguimiento/$token'
+    | '/operador/'
     | '/caja/turno'
     | '/catalogo/atributos'
     | '/catalogo/categorias'
@@ -526,8 +546,10 @@ export interface FileRouteTypes {
     | '/restablecer'
     | '/design-system'
     | '/reportes'
+    | '/operador/login'
     | '/seguimiento/$token'
     | '/'
+    | '/operador'
     | '/caja/turno'
     | '/catalogo/atributos'
     | '/catalogo/categorias'
@@ -577,8 +599,10 @@ export interface FileRouteTypes {
     | '/restablecer'
     | '/_app/design-system'
     | '/_app/reportes'
+    | '/operador/login'
     | '/seguimiento/$token'
     | '/_app/'
+    | '/operador/'
     | '/_app/caja/turno'
     | '/_app/catalogo/atributos'
     | '/_app/catalogo/categorias'
@@ -627,7 +651,9 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   OlvideMiClaveRoute: typeof OlvideMiClaveRoute
   RestablecerRoute: typeof RestablecerRoute
+  OperadorLoginRoute: typeof OperadorLoginRoute
   SeguimientoTokenRoute: typeof SeguimientoTokenRoute
+  OperadorIndexRoute: typeof OperadorIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -680,6 +706,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/reportes'
       preLoaderRoute: typeof AppReportesRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/operador/': {
+      id: '/operador/'
+      path: '/operador'
+      fullPath: '/operador/'
+      preLoaderRoute: typeof OperadorIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/operador/login': {
+      id: '/operador/login'
+      path: '/operador/login'
+      fullPath: '/operador/login'
+      preLoaderRoute: typeof OperadorLoginRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/seguimiento/$token': {
       id: '/seguimiento/$token'
@@ -1079,7 +1119,9 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   OlvideMiClaveRoute: OlvideMiClaveRoute,
   RestablecerRoute: RestablecerRoute,
+  OperadorLoginRoute: OperadorLoginRoute,
   SeguimientoTokenRoute: SeguimientoTokenRoute,
+  OperadorIndexRoute: OperadorIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -2,6 +2,10 @@ import { ApiError, type ApiErrorBody } from "@/lib/api-error";
 
 const BASE_URL = "/api/v1";
 const TOKEN_KEY = "caserito-token";
+const OPERATOR_TOKEN_KEY = "caserito-operator-token";
+
+/** Quién hace la petición: un usuario de cuenta o un operador del panel SaaS. */
+export type ApiScope = "account" | "operator";
 
 /**
  * Lee el token de sesión guardado en el navegador.
@@ -30,8 +34,37 @@ export function setToken(token: string | null): void {
   }
 }
 
+/**
+ * Lee el token del operador del panel SaaS.
+ *
+ * @returns Token o `null` si no hay sesión de operador.
+ */
+export function getOperatorToken(): string | null {
+  try {
+    return localStorage.getItem(OPERATOR_TOKEN_KEY);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Guarda o elimina el token del operador.
+ *
+ * @param token Token nuevo, o `null` para cerrar la sesión local.
+ */
+export function setOperatorToken(token: string | null): void {
+  try {
+    if (token) localStorage.setItem(OPERATOR_TOKEN_KEY, token);
+    else localStorage.removeItem(OPERATOR_TOKEN_KEY);
+  } catch {
+    /* el almacenamiento puede no estar disponible */
+  }
+}
+
 /** Opciones de una petición a la API. */
 export interface RequestOptions {
+  /** Sesión que firma la petición; por defecto la de la cuenta. */
+  scope?: ApiScope;
   /** Método HTTP; por defecto `GET`. */
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   /** Cuerpo JSON. */
@@ -56,7 +89,8 @@ export interface RequestOptions {
  */
 export async function api<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const headers: Record<string, string> = { Accept: "application/json" };
-  const token = getToken();
+  const operator = options.scope === "operator";
+  const token = operator ? getOperatorToken() : getToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
   if (options.body !== undefined) headers["Content-Type"] = "application/json";
   if (options.idempotencyKey) headers["Idempotency-Key"] = options.idempotencyKey;
@@ -73,8 +107,13 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   }
 
   if (response.status === 401 && token) {
-    setToken(null);
-    window.location.assign("/login");
+    if (operator) {
+      setOperatorToken(null);
+      window.location.assign("/operador/login");
+    } else {
+      setToken(null);
+      window.location.assign("/login");
+    }
   }
 
   const text = await response.text();

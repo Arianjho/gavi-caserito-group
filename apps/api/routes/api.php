@@ -27,6 +27,8 @@ use App\Modules\Platform\Http\Controllers\AuthController;
 use App\Modules\Platform\Http\Controllers\BranchController;
 use App\Modules\Platform\Http\Controllers\BrandingController;
 use App\Modules\Platform\Http\Controllers\CompanyController;
+use App\Modules\Platform\Http\Controllers\OperatorAuthController;
+use App\Modules\Platform\Http\Controllers\OperatorTenantController;
 use App\Modules\Platform\Http\Controllers\PasswordResetController;
 use App\Modules\Platform\Http\Controllers\PlanController;
 use App\Modules\Platform\Http\Controllers\RoleController;
@@ -47,6 +49,7 @@ use App\Modules\Shipping\Http\Controllers\PublicTrackingController;
 use App\Modules\Shipping\Http\Controllers\ShipmentController;
 use App\Shared\Http\Idempotent;
 use App\Shared\Http\ManagedRoutes;
+use App\Shared\Tenancy\ResolveOperatorContext;
 use App\Shared\Tenancy\ResolveTenantContext;
 use Illuminate\Support\Facades\Route;
 
@@ -282,5 +285,19 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:inventory.transfer.create')->name('inventory.transfers.store');
         Route::post('inventory/adjustments', [InventoryController::class, 'adjust'])
             ->middleware('permission:inventory.adjustment.create')->name('inventory.adjust');
+    });
+});
+
+// Panel SaaS: operadores del proveedor (fuera del contexto de cualquier cuenta).
+Route::prefix('v1/operator')->group(function (): void {
+    Route::post('auth/login', [OperatorAuthController::class, 'login'])->middleware('throttle:10,1');
+
+    Route::middleware(ResolveOperatorContext::class)->group(function (): void {
+        Route::get('auth/me', [OperatorAuthController::class, 'me']);
+        Route::post('auth/logout', [OperatorAuthController::class, 'logout']);
+        Route::get('tenants', [OperatorTenantController::class, 'index']);
+        Route::post('tenants', [OperatorTenantController::class, 'store']);
+        Route::get('tenants/{id}', [OperatorTenantController::class, 'show']);
+        Route::put('tenants/{id}/plan', [OperatorTenantController::class, 'updatePlan']);
     });
 });

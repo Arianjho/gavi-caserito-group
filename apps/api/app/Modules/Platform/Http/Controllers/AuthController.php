@@ -10,6 +10,7 @@ use App\Modules\Platform\Models\User;
 use App\Shared\Tenancy\TenantContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -39,6 +40,17 @@ class AuthController extends Controller
                 ->where('status', 'active')
                 ->first()
         );
+
+        $suspended = $user !== null && in_array(
+            TenantContext::asProvider(fn () => DB::table('core.tenants')->where('id', $user->tenant_id)->value('plan_status')),
+            ['suspended', 'closed'],
+            true,
+        );
+        if ($suspended && Hash::check($data['password'], (string) $user?->password)) {
+            return response()->json([
+                'code' => 'account_suspended', 'message' => 'Tu cuenta está suspendida. Comunícate con soporte.',
+            ], 403);
+        }
 
         if ($user === null || ! Hash::check($data['password'], $user->password)) {
             return response()->json([

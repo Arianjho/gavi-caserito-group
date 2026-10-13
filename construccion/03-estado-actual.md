@@ -79,6 +79,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Estado de cuenta | `GET customers/{id}/statement`: ventas y cobros en orden con saldo corrido; diálogo con impresión en Clientes |
 | Marca | `GET/PUT branding` (color #RRGGBB y lema por cuenta); el seguimiento público devuelve `brand` y la pantalla lo aplica. Marca blanca completa (dominio propio, logo) pendiente |
 | Exportar y valorizar | CSV (con BOM para Excel) desde Cobros, Pagos y Ventas por producto (`lib/csv.ts`); Stock muestra valor a costo promedio |
+| Panel SaaS (proveedor) | Operadores en `core.operators` (fuera de toda cuenta), login propio `POST v1/operator/auth/login` con throttle y tokens que no sirven en rutas de cuentas (ni al revés). `GET/POST operator/tenants`, `GET operator/tenants/{id}`, `PUT operator/tenants/{id}/plan` (plan, estado, fin de prueba, topes), con bitácora inmutable. Cuenta `suspended`/`closed`: 403 `account_suspended` en login y API. Pantallas `/operador/login` y `/operador`. Crear operador: `php artisan operator:create correo nombre`; en desarrollo lo crea el seeder |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
 
 ## Pantallas web (`apps/web/src/routes`)

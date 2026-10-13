@@ -55,7 +55,7 @@ final class TenantContext
     }
 
     /**
-     * Ejecuta una función con contexto de proveedor y lo limpia al terminar.
+     * Ejecuta una función con contexto de proveedor y restaura el contexto anterior al terminar.
      *
      * @template T
      *
@@ -64,11 +64,15 @@ final class TenantContext
      */
     public static function asProvider(callable $callback): mixed
     {
+        $previousTenant = self::current();
+        $previousScope = (string) DB::scalar("SELECT current_setting('app.scope', true)");
+
         self::useProvider();
         try {
             return $callback();
         } finally {
-            self::clear();
+            self::set('app.tenant_id', $previousTenant);
+            self::set('app.scope', $previousScope);
         }
     }
 

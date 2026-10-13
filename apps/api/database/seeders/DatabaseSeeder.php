@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Modules\Platform\Application\ProvisionAccount;
+use App\Modules\Platform\Models\Operator;
 use App\Modules\Platform\Models\User;
 use App\Shared\Tenancy\TenantContext;
 use Illuminate\Database\Seeder;
@@ -30,5 +31,10 @@ class DatabaseSeeder extends Seeder
                 'Jugueteria Demo', 'Usuario de desarrollo', 'dev@caserito.test', 'caserito-dev'
             );
         }
+
+        Operator::query()->firstOrCreate(
+            ['email' => 'operador@caserito.test'],
+            ['name' => 'Operador de desarrollo', 'password' => 'caserito-operador'],
+        );
     }
 }
