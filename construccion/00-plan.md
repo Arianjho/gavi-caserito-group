@@ -204,8 +204,8 @@ Antes de completar la Fase 0, construir un recorrido mínimo, en un sprint corto
 | 6 Envíos | Parcial | Agencias, envíos con estados y línea de tiempo, rótulo. Faltan adjuntos de la agencia, picking y guía de remisión |
 | 7 Fiscal | Parcial | `FiscalEngine` + cliente Gavi eFact (idempotente con `external_id`), cola con reintentos, webhook con HMAC y deduplicación, bandeja y configuración. Reconciliador cada 10 min. Faltan aprovisionamiento por bridge, NC/baja y cupo mensual |
 | 1 Inventario | Parcial | Saldos, movimientos con costo promedio, ajustes, kardex, traslados entre almacenes y toma física. Faltan reservas por ubicación y lotes/series |
-| 2 Catálogo | Parcial | Importación de productos desde Excel con validación previa. Variantes por combinación, listas de precios con escalas y etiquetas con código de barras. Falta el catálogo de atributos |
-| 8 Panel | Parcial | Panel de inicio con datos reales por permiso. Reportes de ventas, margen y resultado estimado. Avisos por WhatsApp (Evolution) con consentimiento. Faltan portal del cliente, avisos automáticos y marca blanca |
+| 2 Catálogo | Parcial | Importación de productos desde Excel con validación previa. Variantes por combinación, listas de precios con escalas y etiquetas con código de barras. Catálogo de atributos con valores sugeridos |
+| 8 Panel | Parcial | Panel de inicio con datos reales por permiso. Reportes de ventas, margen y resultado estimado. Avisos por WhatsApp (Evolution) con consentimiento. Recordatorio automático de deudas. Faltan portal del cliente con cuenta y marca blanca |
 
 ## 9. Puertas de calidad por fase
 Una fase no se da por cerrada hasta cumplir:

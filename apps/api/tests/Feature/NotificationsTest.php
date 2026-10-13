@@ -74,3 +74,21 @@ it('rechaza un telefono que no es celular peruano', function (): void {
     $this->withToken($token)->postJson('/api/v1/notifications/test', ['phone' => '12345'])
         ->assertStatus(422)->assertJsonPath('code', 'invalid_phone');
 });
+
+it('recuerda automaticamente una deuda por vencer y no repite el aviso', function (): void {
+    Http::fake(['evo.example.test/*' => Http::response(['key' => ['id' => 'ABC123']], 201)]);
+    $token = ownerToken();
+    $f = notifyFixture($token, true);
+    $ware = test()->withToken($token)->getJson('/api/v1/warehouses')->json('data.0.id');
+    $variant = test()->withToken($token)->getJson('/api/v1/items')->json('data.0.variants.0.id');
+    test()->withToken($token)->postJson('/api/v1/sales', [
+        'warehouse_id' => $ware, 'party_id' => $f['party'], 'on_credit' => true,
+        'due_date' => now()->addDay()->toDateString(),
+        'lines' => [['variant_id' => $variant, 'qty' => 1]], 'payments' => [],
+    ])->assertCreated();
+
+    $this->artisan('notify:debts')->expectsOutputToContain('encolados: 1')->assertSuccessful();
+    $this->artisan('notify:debts')->expectsOutputToContain('encolados: 0')->assertSuccessful();
+
+    Http::assertSentCount(1);
+});

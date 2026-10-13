@@ -70,6 +70,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Plan y límites | `core.tenants.plan_code/max_users/max_companies/max_documents_month` (nulo = sin tope); `GET plan` con uso; crear usuario/empresa sobre el tope responde 403 `plan_limit_reached`. Tope de documentos por mes aún solo informativo |
 | Cobros y pagos | `GET collections` y `GET payments` (filtros from/to/method, total del rango); pantallas Cobros y Pagos |
 | Atributos | `cat.attributes` (nombre + valores sugeridos); el diálogo de variantes los ofrece y precarga valores |
+| Recordatorio automático de deudas | `notify:debts` (diario 09:00): avisa por WhatsApp saldos que vencen en `--days` (2) o ya vencidos, solo con consentimiento, sin repetir el mismo documento antes de `--repeat` (7) días |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
 
 ## Pantallas web (`apps/web/src/routes`)
