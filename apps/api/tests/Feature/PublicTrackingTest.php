@@ -40,3 +40,20 @@ it('el token de un envio muestra su linea de tiempo', function (): void {
     expect($view['kind'])->toBe('shipment')->and($view['carrier'])->toBe('Olva')
         ->and($view['events'])->toHaveCount(2)->and($view['status_label'])->toBe('Despachado');
 });
+
+it('el seguimiento publico lleva la marca configurada del negocio', function (): void {
+    $token = ownerToken();
+    $f = orderFixture($token);
+    $this->withToken($token)->putJson('/api/v1/branding', [
+        'brand_color' => '#ff6600', 'brand_tagline' => 'Juguetes con cariño',
+    ])->assertOk();
+    $this->withToken($token)->putJson('/api/v1/branding', ['brand_color' => 'rojo'])->assertStatus(422);
+    $order = $this->withToken($token)->postJson('/api/v1/orders', [
+        'warehouse_id' => $f['warehouse'], 'party_id' => $f['party'],
+        'lines' => [['variant_id' => $f['variant'], 'qty' => 1, 'unit_price' => 118]],
+    ])->assertCreated()->json('data');
+
+    $view = $this->getJson("/api/v1/public/tracking/{$order['public_token']}")->assertOk()->json('data');
+
+    expect($view['brand'])->toBe(['color' => '#ff6600', 'tagline' => 'Juguetes con cariño']);
+});

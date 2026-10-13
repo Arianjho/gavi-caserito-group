@@ -22,6 +22,7 @@ interface ShipmentView {
 interface TrackingView extends ShipmentView {
   kind: "order" | "shipment";
   business: string;
+  brand?: { color: string | null; tagline: string | null };
   status: string;
   total?: string;
   prepaid?: string;
@@ -112,6 +113,12 @@ function TrackingPage() {
       description={data.business}
     >
       <div className="space-y-4">
+        {data.brand?.color && (
+          <div className="h-1.5 rounded-full" style={{ backgroundColor: data.brand.color }} />
+        )}
+        {data.brand?.tagline && (
+          <p className="text-sm italic text-muted-foreground">{data.brand.tagline}</p>
+        )}
         <StatusChip
           label={data.status_label}
           tone={data.status === "cancelled" ? "danger" : "info"}

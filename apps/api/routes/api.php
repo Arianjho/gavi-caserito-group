@@ -25,6 +25,7 @@ use App\Modules\Notifications\Http\Controllers\NotificationController;
 use App\Modules\Platform\Http\Controllers\AuditLogController;
 use App\Modules\Platform\Http\Controllers\AuthController;
 use App\Modules\Platform\Http\Controllers\BranchController;
+use App\Modules\Platform\Http\Controllers\BrandingController;
 use App\Modules\Platform\Http\Controllers\CompanyController;
 use App\Modules\Platform\Http\Controllers\PasswordResetController;
 use App\Modules\Platform\Http\Controllers\PlanController;
@@ -223,6 +224,10 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:fiscal.queue.retry')->name('fiscal.documents.retry');
 
         Route::get('plan', [PlanController::class, 'show'])->name('plan.show');
+        Route::get('branding', [BrandingController::class, 'show'])
+            ->middleware('permission:settings.template.view')->name('branding.show');
+        Route::put('branding', [BrandingController::class, 'update'])
+            ->middleware('permission:settings.template.update')->name('branding.update');
         Route::get('collections', [PaymentLedgerController::class, 'collections'])
             ->middleware('permission:payments.collection.view')->name('collections.index');
         Route::get('payments', [PaymentLedgerController::class, 'payments'])

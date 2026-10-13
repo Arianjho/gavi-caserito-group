@@ -88,6 +88,7 @@ class PublicTrackingController extends Controller
         return [
             'kind' => 'order',
             'business' => $this->companyName((string) $order->company_id),
+            'brand' => $this->brandOf((string) $order->company_id),
             'number' => $order->number,
             'status' => $order->status,
             'status_label' => self::ORDER_STATES[$order->status] ?? $order->status,
@@ -120,6 +121,7 @@ class PublicTrackingController extends Controller
         return [
             'kind' => 'shipment',
             'business' => $this->companyName((string) $shipment->company_id),
+            'brand' => $this->brandOf((string) $shipment->company_id),
             'number' => $shipment->number,
             'status' => $shipment->status,
             'status_label' => self::SHIPMENT_STATES[$shipment->status] ?? $shipment->status,
@@ -143,5 +145,19 @@ class PublicTrackingController extends Controller
         $company = DB::table('core.companies')->where('id', $companyId)->first(['trade_name', 'legal_name']);
 
         return (string) ($company->trade_name ?? $company->legal_name ?? '');
+    }
+
+    /**
+     * Color y lema de la marca de la cuenta dueña de la empresa.
+     *
+     * @param string $companyId Empresa.
+     * @return array{color: string|null, tagline: string|null}
+     */
+    private function brandOf(string $companyId): array
+    {
+        $row = DB::table('core.companies as c')->join('core.tenants as t', 't.id', '=', 'c.tenant_id')
+            ->where('c.id', $companyId)->first(['t.brand_color', 't.brand_tagline']);
+
+        return ['color' => $row->brand_color ?? null, 'tagline' => $row->brand_tagline ?? null];
     }
 }

@@ -33,6 +33,7 @@ import { Route as AppConfiguracionAuditoriaRouteImport } from './routes/_app.con
 import { Route as AppConfiguracionEmpresasRouteImport } from './routes/_app.configuracion.empresas'
 import { Route as AppConfiguracionFacturacionRouteImport } from './routes/_app.configuracion.facturacion'
 import { Route as AppConfiguracionImportarRouteImport } from './routes/_app.configuracion.importar'
+import { Route as AppConfiguracionMarcaRouteImport } from './routes/_app.configuracion.marca'
 import { Route as AppConfiguracionNotificacionesRouteImport } from './routes/_app.configuracion.notificaciones'
 import { Route as AppConfiguracionPerfilesRouteImport } from './routes/_app.configuracion.perfiles'
 import { Route as AppConfiguracionPlanRouteImport } from './routes/_app.configuracion.plan'
@@ -182,6 +183,11 @@ const AppConfiguracionImportarRoute =
     path: '/configuracion/importar',
     getParentRoute: () => AppRoute,
   } as any)
+const AppConfiguracionMarcaRoute = AppConfiguracionMarcaRouteImport.update({
+  id: '/configuracion/marca',
+  path: '/configuracion/marca',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppConfiguracionNotificacionesRoute =
   AppConfiguracionNotificacionesRouteImport.update({
     id: '/configuracion/notificaciones',
@@ -333,6 +339,7 @@ export interface FileRoutesByFullPath {
   '/configuracion/empresas': typeof AppConfiguracionEmpresasRoute
   '/configuracion/facturacion': typeof AppConfiguracionFacturacionRoute
   '/configuracion/importar': typeof AppConfiguracionImportarRoute
+  '/configuracion/marca': typeof AppConfiguracionMarcaRoute
   '/configuracion/notificaciones': typeof AppConfiguracionNotificacionesRoute
   '/configuracion/perfiles': typeof AppConfiguracionPerfilesRoute
   '/configuracion/plan': typeof AppConfiguracionPlanRoute
@@ -382,6 +389,7 @@ export interface FileRoutesByTo {
   '/configuracion/empresas': typeof AppConfiguracionEmpresasRoute
   '/configuracion/facturacion': typeof AppConfiguracionFacturacionRoute
   '/configuracion/importar': typeof AppConfiguracionImportarRoute
+  '/configuracion/marca': typeof AppConfiguracionMarcaRoute
   '/configuracion/notificaciones': typeof AppConfiguracionNotificacionesRoute
   '/configuracion/perfiles': typeof AppConfiguracionPerfilesRoute
   '/configuracion/plan': typeof AppConfiguracionPlanRoute
@@ -433,6 +441,7 @@ export interface FileRoutesById {
   '/_app/configuracion/empresas': typeof AppConfiguracionEmpresasRoute
   '/_app/configuracion/facturacion': typeof AppConfiguracionFacturacionRoute
   '/_app/configuracion/importar': typeof AppConfiguracionImportarRoute
+  '/_app/configuracion/marca': typeof AppConfiguracionMarcaRoute
   '/_app/configuracion/notificaciones': typeof AppConfiguracionNotificacionesRoute
   '/_app/configuracion/perfiles': typeof AppConfiguracionPerfilesRoute
   '/_app/configuracion/plan': typeof AppConfiguracionPlanRoute
@@ -484,6 +493,7 @@ export interface FileRouteTypes {
     | '/configuracion/empresas'
     | '/configuracion/facturacion'
     | '/configuracion/importar'
+    | '/configuracion/marca'
     | '/configuracion/notificaciones'
     | '/configuracion/perfiles'
     | '/configuracion/plan'
@@ -533,6 +543,7 @@ export interface FileRouteTypes {
     | '/configuracion/empresas'
     | '/configuracion/facturacion'
     | '/configuracion/importar'
+    | '/configuracion/marca'
     | '/configuracion/notificaciones'
     | '/configuracion/perfiles'
     | '/configuracion/plan'
@@ -583,6 +594,7 @@ export interface FileRouteTypes {
     | '/_app/configuracion/empresas'
     | '/_app/configuracion/facturacion'
     | '/_app/configuracion/importar'
+    | '/_app/configuracion/marca'
     | '/_app/configuracion/notificaciones'
     | '/_app/configuracion/perfiles'
     | '/_app/configuracion/plan'
@@ -788,6 +800,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppConfiguracionImportarRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/configuracion/marca': {
+      id: '/_app/configuracion/marca'
+      path: '/configuracion/marca'
+      fullPath: '/configuracion/marca'
+      preLoaderRoute: typeof AppConfiguracionMarcaRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/configuracion/notificaciones': {
       id: '/_app/configuracion/notificaciones'
       path: '/configuracion/notificaciones'
@@ -978,6 +997,7 @@ interface AppRouteChildren {
   AppConfiguracionEmpresasRoute: typeof AppConfiguracionEmpresasRoute
   AppConfiguracionFacturacionRoute: typeof AppConfiguracionFacturacionRoute
   AppConfiguracionImportarRoute: typeof AppConfiguracionImportarRoute
+  AppConfiguracionMarcaRoute: typeof AppConfiguracionMarcaRoute
   AppConfiguracionNotificacionesRoute: typeof AppConfiguracionNotificacionesRoute
   AppConfiguracionPerfilesRoute: typeof AppConfiguracionPerfilesRoute
   AppConfiguracionPlanRoute: typeof AppConfiguracionPlanRoute
@@ -1024,6 +1044,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppConfiguracionEmpresasRoute: AppConfiguracionEmpresasRoute,
   AppConfiguracionFacturacionRoute: AppConfiguracionFacturacionRoute,
   AppConfiguracionImportarRoute: AppConfiguracionImportarRoute,
+  AppConfiguracionMarcaRoute: AppConfiguracionMarcaRoute,
   AppConfiguracionNotificacionesRoute: AppConfiguracionNotificacionesRoute,
   AppConfiguracionPerfilesRoute: AppConfiguracionPerfilesRoute,
   AppConfiguracionPlanRoute: AppConfiguracionPlanRoute,

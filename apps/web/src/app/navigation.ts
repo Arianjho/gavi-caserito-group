@@ -176,7 +176,7 @@ export const navigation: NavEntry[] = [
       { title: "Usuarios", to: "/configuracion/usuarios", permission: "settings.user.view" },
       { title: "Perfiles", to: "/configuracion/perfiles", permission: "settings.role.view" },
       { title: "Medios de pago", permission: "settings.payment.view" },
-      { title: "Plantillas y marca", permission: "settings.template.view" },
+      { title: "Marca", to: "/configuracion/marca", permission: "settings.template.view" },
       {
         title: "Facturación electrónica",
         to: "/configuracion/facturacion",
