@@ -60,7 +60,7 @@ export const navigation: NavEntry[] = [
     title: "Despacho y envíos",
     icon: Truck,
     items: [
-      { title: "Por armar", permission: "shipping.picking.view" },
+      { title: "Por armar", to: "/envios/por-armar", permission: "orders.order.view" },
       { title: "Envíos", to: "/envios", permission: "shipping.shipment.view" },
       { title: "Agencias", to: "/envios/agencias", permission: "shipping.carrier.view" },
     ],

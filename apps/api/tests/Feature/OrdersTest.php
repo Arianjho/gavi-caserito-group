@@ -161,3 +161,18 @@ it('devuelve el anticipo de un pedido cancelado, sin pasarse de lo disponible', 
 
     expect($done['refunds'])->toHaveCount(2)->and($done['refunds'][1]['amount'])->toBe('60.00');
 });
+
+it('lista pedidos por varios estados con sus lineas para armar', function (): void {
+    $token = ownerToken();
+    $f = orderFixture($token);
+    $this->withToken($token)->postJson('/api/v1/orders', [
+        'warehouse_id' => $f['warehouse'], 'party_id' => $f['party'],
+        'lines' => [['variant_id' => $f['variant'], 'qty' => 2, 'unit_price' => 118]],
+    ])->assertCreated();
+
+    $rows = $this->withToken($token)->getJson('/api/v1/orders?status=confirmed,in_dispatch&with_lines=1')
+        ->assertOk()->json('data');
+
+    expect($rows)->toHaveCount(1)->and($rows[0]['lines'])->toHaveCount(1)
+        ->and((float) $rows[0]['lines'][0]['qty_ordered'])->toBe(2.0);
+});

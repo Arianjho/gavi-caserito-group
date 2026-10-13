@@ -41,6 +41,7 @@ import { Route as AppConfiguracionUsuariosRouteImport } from './routes/_app.conf
 import { Route as AppDevInteraccionRouteImport } from './routes/_app.dev.interaccion'
 import { Route as AppEnviosIndexRouteImport } from './routes/_app.envios.index'
 import { Route as AppEnviosAgenciasRouteImport } from './routes/_app.envios.agencias'
+import { Route as AppEnviosPorArmarRouteImport } from './routes/_app.envios.por-armar'
 import { Route as AppFacturacionComprobantesRouteImport } from './routes/_app.facturacion.comprobantes'
 import { Route as AppInventarioKardexRouteImport } from './routes/_app.inventario.kardex'
 import { Route as AppInventarioStockRouteImport } from './routes/_app.inventario.stock'
@@ -225,6 +226,11 @@ const AppEnviosAgenciasRoute = AppEnviosAgenciasRouteImport.update({
   path: '/envios/agencias',
   getParentRoute: () => AppRoute,
 } as any)
+const AppEnviosPorArmarRoute = AppEnviosPorArmarRouteImport.update({
+  id: '/envios/por-armar',
+  path: '/envios/por-armar',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppFacturacionComprobantesRoute =
   AppFacturacionComprobantesRouteImport.update({
     id: '/facturacion/comprobantes',
@@ -334,6 +340,7 @@ export interface FileRoutesByFullPath {
   '/configuracion/usuarios': typeof AppConfiguracionUsuariosRoute
   '/dev/interaccion': typeof AppDevInteraccionRoute
   '/envios/agencias': typeof AppEnviosAgenciasRoute
+  '/envios/por-armar': typeof AppEnviosPorArmarRoute
   '/facturacion/comprobantes': typeof AppFacturacionComprobantesRoute
   '/inventario/kardex': typeof AppInventarioKardexRoute
   '/inventario/stock': typeof AppInventarioStockRoute
@@ -382,6 +389,7 @@ export interface FileRoutesByTo {
   '/configuracion/usuarios': typeof AppConfiguracionUsuariosRoute
   '/dev/interaccion': typeof AppDevInteraccionRoute
   '/envios/agencias': typeof AppEnviosAgenciasRoute
+  '/envios/por-armar': typeof AppEnviosPorArmarRoute
   '/facturacion/comprobantes': typeof AppFacturacionComprobantesRoute
   '/inventario/kardex': typeof AppInventarioKardexRoute
   '/inventario/stock': typeof AppInventarioStockRoute
@@ -432,6 +440,7 @@ export interface FileRoutesById {
   '/_app/configuracion/usuarios': typeof AppConfiguracionUsuariosRoute
   '/_app/dev/interaccion': typeof AppDevInteraccionRoute
   '/_app/envios/agencias': typeof AppEnviosAgenciasRoute
+  '/_app/envios/por-armar': typeof AppEnviosPorArmarRoute
   '/_app/facturacion/comprobantes': typeof AppFacturacionComprobantesRoute
   '/_app/inventario/kardex': typeof AppInventarioKardexRoute
   '/_app/inventario/stock': typeof AppInventarioStockRoute
@@ -482,6 +491,7 @@ export interface FileRouteTypes {
     | '/configuracion/usuarios'
     | '/dev/interaccion'
     | '/envios/agencias'
+    | '/envios/por-armar'
     | '/facturacion/comprobantes'
     | '/inventario/kardex'
     | '/inventario/stock'
@@ -530,6 +540,7 @@ export interface FileRouteTypes {
     | '/configuracion/usuarios'
     | '/dev/interaccion'
     | '/envios/agencias'
+    | '/envios/por-armar'
     | '/facturacion/comprobantes'
     | '/inventario/kardex'
     | '/inventario/stock'
@@ -579,6 +590,7 @@ export interface FileRouteTypes {
     | '/_app/configuracion/usuarios'
     | '/_app/dev/interaccion'
     | '/_app/envios/agencias'
+    | '/_app/envios/por-armar'
     | '/_app/facturacion/comprobantes'
     | '/_app/inventario/kardex'
     | '/_app/inventario/stock'
@@ -832,6 +844,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppEnviosAgenciasRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/envios/por-armar': {
+      id: '/_app/envios/por-armar'
+      path: '/envios/por-armar'
+      fullPath: '/envios/por-armar'
+      preLoaderRoute: typeof AppEnviosPorArmarRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/facturacion/comprobantes': {
       id: '/_app/facturacion/comprobantes'
       path: '/facturacion/comprobantes'
@@ -966,6 +985,7 @@ interface AppRouteChildren {
   AppConfiguracionUsuariosRoute: typeof AppConfiguracionUsuariosRoute
   AppDevInteraccionRoute: typeof AppDevInteraccionRoute
   AppEnviosAgenciasRoute: typeof AppEnviosAgenciasRoute
+  AppEnviosPorArmarRoute: typeof AppEnviosPorArmarRoute
   AppFacturacionComprobantesRoute: typeof AppFacturacionComprobantesRoute
   AppInventarioKardexRoute: typeof AppInventarioKardexRoute
   AppInventarioStockRoute: typeof AppInventarioStockRoute
@@ -1011,6 +1031,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppConfiguracionUsuariosRoute: AppConfiguracionUsuariosRoute,
   AppDevInteraccionRoute: AppDevInteraccionRoute,
   AppEnviosAgenciasRoute: AppEnviosAgenciasRoute,
+  AppEnviosPorArmarRoute: AppEnviosPorArmarRoute,
   AppFacturacionComprobantesRoute: AppFacturacionComprobantesRoute,
   AppInventarioKardexRoute: AppInventarioKardexRoute,
   AppInventarioStockRoute: AppInventarioStockRoute,

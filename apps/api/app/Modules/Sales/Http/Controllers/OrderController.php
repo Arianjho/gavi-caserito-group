@@ -150,10 +150,20 @@ class OrderController extends Controller
                 .'where r.order_id = o.id), 0)) as prepaid_available');
 
         if ($request->filled('status')) {
-            $query->where('o.status', $request->query('status'));
+            $query->whereIn('o.status', explode(',', (string) $request->query('status')));
+        }
+        $rows = $query->get();
+
+        if ($request->boolean('with_lines') && $rows->isNotEmpty()) {
+            $lines = DB::table('sales.order_lines')->whereIn('order_id', $rows->pluck('id'))
+                ->orderBy('line_no')->get(['order_id', 'description', 'qty_ordered', 'qty_delivered'])
+                ->groupBy('order_id');
+            $rows->each(function (object $row) use ($lines): void {
+                $row->lines = $lines->get($row->id, collect())->values();
+            });
         }
 
-        return response()->json(['data' => $query->get()]);
+        return response()->json(['data' => $rows]);
     }
 
     /**
