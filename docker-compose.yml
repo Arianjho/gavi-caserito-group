@@ -1,0 +1,47 @@
+# Servicios de apoyo para desarrollo local de Gavi Caserito.
+# Uso:  docker compose up -d redis            (solo Redis; PostgreSQL local ya existe)
+#       docker compose --profile db up -d     (también PostgreSQL en el puerto 5433)
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: caserito-redis
+    ports:
+      - "6379:6379"
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - caserito_redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: caserito-postgres
+    profiles: ["db"]
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: caserito
+      POSTGRES_USER: caserito_owner
+      POSTGRES_PASSWORD: caserito_dev
+    volumes:
+      - caserito_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U caserito_owner -d caserito"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: caserito-mailpit
+    profiles: ["mail"]
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+
+volumes:
+  caserito_redis:
+  caserito_pg:

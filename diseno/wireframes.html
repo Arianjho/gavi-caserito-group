@@ -1,0 +1,1142 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Gavi Caserito · Wireframes</title>
+<style>
+  :root {
+    --bg: #f4f5f7; --surface: #ffffff; --ink: #1d2433; --muted: #6b7384; --line: #dde1e8;
+    --soft: #eef0f4; --accent: #2f5bea; --accent-soft: #e6ecff;
+    --ok: #1f8a4c; --ok-soft: #e3f4ea; --warn: #b7791f; --warn-soft: #fdf3dc;
+    --bad: #c0392b; --bad-soft: #fbe6e3; --info: #2b6cb0; --info-soft: #e3effb;
+    --radius: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #12151c; --surface: #1b202b; --ink: #e8ebf2; --muted: #9aa3b5; --line: #2d3443;
+      --soft: #232a38; --accent: #7b9cff; --accent-soft: #232f55;
+      --ok: #55c58a; --ok-soft: #173325; --warn: #e0b04a; --warn-soft: #3a2f14;
+      --bad: #ee7c6f; --bad-soft: #3c1d19; --info: #6fb0ec; --info-soft: #15283b;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: var(--ink); background: var(--bg); }
+  button, input, select { font: inherit; color: inherit; }
+  h1, h2, h3, h4 { margin: 0; }
+
+  /* ---------- Marco del documento ---------- */
+  .doc { display: grid; grid-template-columns: 250px 1fr; min-height: 100%; }
+  .index { background: var(--surface); border-right: 1px solid var(--line); padding: 16px 12px; position: sticky; top: 0; height: 100vh; overflow: auto; }
+  .index h1 { font-size: 15px; margin: 4px 8px 2px; }
+  .index p { margin: 0 8px 12px; color: var(--muted); font-size: 12px; }
+  .index a { display: flex; gap: 8px; padding: 7px 8px; border-radius: 6px; color: var(--ink); text-decoration: none; font-size: 13px; }
+  .index a:hover { background: var(--soft); }
+  .index a.on { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+  .index a b { width: 20px; color: var(--muted); font-weight: 600; }
+  .index .grp { margin: 14px 8px 4px; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .content { padding: 20px 24px 60px; min-width: 0; }
+  .screen { display: none; }
+  .screen.on { display: block; }
+  .screen-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: flex-end; justify-content: space-between; margin-bottom: 14px; }
+  .screen-head h2 { font-size: 20px; }
+  .screen-head p { margin: 2px 0 0; color: var(--muted); }
+  .seg { display: inline-flex; background: var(--soft); border-radius: 8px; padding: 3px; gap: 2px; flex-wrap: wrap; }
+  .seg button { border: 0; background: transparent; padding: 6px 10px; border-radius: 6px; cursor: pointer; color: var(--muted); }
+  .seg button.on { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,.08); font-weight: 600; }
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 18px; align-items: start; }
+  .notes { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px; font-size: 13px; position: sticky; top: 16px; }
+  .notes h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); margin: 12px 0 4px; }
+  .notes h3:first-child { margin-top: 0; }
+  .notes ul { margin: 0; padding-left: 18px; }
+  .notes li { margin: 2px 0; }
+  .tag { display: inline-block; padding: 1px 8px; border-radius: 999px; background: var(--soft); font-size: 12px; margin: 0 4px 4px 0; }
+  .view { display: none; }
+  .view.on { display: block; }
+
+  /* ---------- Maqueta de la aplicación ---------- */
+  .frame { background: var(--surface); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; box-shadow: 0 8px 28px rgba(0,0,0,.06); position: relative; }
+  .frame.phone { width: 360px; max-width: 100%; margin: 0 auto; border-radius: 26px; border-width: 6px; }
+  .app { display: grid; grid-template-columns: 210px 1fr; min-height: 560px; }
+  .app.nosb { grid-template-columns: 1fr; }
+  .sb { background: var(--soft); border-right: 1px solid var(--line); padding: 10px; font-size: 13px; }
+  .sb .brand { font-weight: 700; padding: 6px 8px 10px; display: flex; gap: 8px; align-items: center; }
+  .sb .logo { width: 22px; height: 22px; border-radius: 6px; background: var(--accent); }
+  .sb a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted); margin-bottom: 1px; }
+  .sb a.on { background: var(--surface); color: var(--ink); font-weight: 600; }
+  .sb .top-item { font-weight: 600; }
+  .sb .grp { margin: 1px 0; }
+  .sb .grp-btn { display: flex; width: 100%; justify-content: space-between; align-items: center; border: 0; background: transparent; padding: 6px 8px; border-radius: 6px; cursor: pointer; font-weight: 600; color: var(--ink); text-align: left; }
+  .sb .grp-btn:hover { background: var(--surface); }
+  .sb .grp-btn i { font-style: normal; color: var(--muted); transition: transform .15s; }
+  .sb .grp.open .grp-btn i { transform: rotate(90deg); }
+  .sb .sub { display: none; margin: 1px 0 4px 10px; padding-left: 8px; border-left: 1px solid var(--line); }
+  .sb .grp.open .sub { display: block; }
+  .sb .sub a { padding: 5px 8px; }
+  .sb .g { font-size: 10px; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); padding: 10px 8px 3px; }
+  .main { min-width: 0; display: flex; flex-direction: column; }
+  .top { display: flex; gap: 10px; align-items: center; padding: 8px 14px; border-bottom: 1px solid var(--line); font-size: 13px; flex-wrap: wrap; }
+  .top .sp { flex: 1; }
+  .pill { border: 1px solid var(--line); padding: 3px 10px; border-radius: 999px; background: var(--surface); font-size: 12px; }
+  .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 5px; }
+  .page { padding: 14px; flex: 1; }
+  .ph { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 12px; flex-wrap: wrap; }
+  .ph h4 { font-size: 16px; }
+  .ph small { color: var(--muted); display: block; }
+
+  .btn { border: 1px solid var(--line); background: var(--surface); padding: 6px 12px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+  .btn.pri { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+  .btn.dng { color: var(--bad); border-color: var(--bad); }
+  .btn.sm { padding: 3px 8px; font-size: 12px; }
+  .btn.lg { padding: 11px 14px; font-size: 15px; }
+  .btn.block { display: block; width: 100%; text-align: center; }
+  .btn[disabled], .btn.dis { opacity: .55; cursor: not-allowed; }
+  .card { border: 1px solid var(--line); border-radius: var(--radius); padding: 12px; background: var(--surface); }
+  .card h5 { margin: 0 0 8px; font-size: 13px; color: var(--muted); font-weight: 600; }
+  .grid { display: grid; gap: 10px; }
+  .g2 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .g3 { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .g4 { grid-template-columns: repeat(4, minmax(0,1fr)); }
+  .g2-1 { grid-template-columns: 2fr 1fr; }
+  .kpi b { font-size: 22px; display: block; }
+  .kpi span { color: var(--muted); font-size: 12px; }
+  .muted { color: var(--muted); }
+  .right { text-align: right; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .row.sb2 { justify-content: space-between; }
+  .sp8 { margin-top: 8px; } .sp12 { margin-top: 12px; }
+
+  .field { display: block; margin-bottom: 9px; }
+  .field > span { display: block; font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+  .inp { width: 100%; border: 1px solid var(--line); background: var(--surface); border-radius: 6px; padding: 6px 9px; min-height: 32px; }
+  .inp.err { border-color: var(--bad); background: var(--bad-soft); }
+  .hint { font-size: 12px; color: var(--bad); margin-top: 2px; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 600; color: var(--muted); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--line); background: var(--soft); }
+  td { padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+  td.n, th.n { text-align: right; font-variant-numeric: tabular-nums; }
+  tr.sel td { background: var(--accent-soft); }
+  .chip { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 12px; background: var(--soft); }
+  .chip.ok { background: var(--ok-soft); color: var(--ok); }
+  .chip.warn { background: var(--warn-soft); color: var(--warn); }
+  .chip.bad { background: var(--bad-soft); color: var(--bad); }
+  .chip.info { background: var(--info-soft); color: var(--info); }
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 12px; flex-wrap: wrap; }
+  .tabs span { padding: 7px 12px; color: var(--muted); border-bottom: 2px solid transparent; cursor: default; }
+  .tabs span.on { color: var(--accent); border-color: var(--accent); font-weight: 600; }
+  .steps { display: flex; gap: 4px; margin: 6px 0 12px; flex-wrap: wrap; }
+  .steps span { flex: 1; min-width: 70px; text-align: center; padding: 6px 4px; background: var(--soft); border-radius: 6px; font-size: 12px; color: var(--muted); }
+  .steps span.done { background: var(--ok-soft); color: var(--ok); }
+  .steps span.cur { background: var(--accent-soft); color: var(--accent); font-weight: 700; }
+  .tl { margin: 0; padding: 0; list-style: none; }
+  .tl li { position: relative; padding: 0 0 12px 22px; border-left: 2px solid var(--line); margin-left: 6px; }
+  .tl li::before { content: ""; position: absolute; left: -7px; top: 2px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--line); }
+  .tl li.done::before { background: var(--ok); border-color: var(--ok); }
+  .tl li.cur::before { background: var(--accent); border-color: var(--accent); }
+  .tl small { color: var(--muted); display: block; }
+  .prod { border: 1px solid var(--line); border-radius: 8px; padding: 8px; text-align: center; background: var(--surface); }
+  .prod i { display: block; height: 64px; background: var(--soft); border-radius: 6px; margin-bottom: 6px; position: relative; }
+  .prod i::after { content: "🧸"; position: absolute; inset: 0; display: grid; place-items: center; font-size: 26px; font-style: normal; opacity: .55; }
+  .prod b { display: block; font-size: 13px; }
+  .bar { height: 8px; background: var(--soft); border-radius: 4px; overflow: hidden; }
+  .bar i { display: block; height: 100%; background: var(--accent); }
+  .chart { height: 130px; display: flex; align-items: flex-end; gap: 6px; padding-top: 6px; }
+  .chart i { flex: 1; background: var(--accent-soft); border-top: 3px solid var(--accent); border-radius: 3px 3px 0 0; }
+
+  /* ---------- Superposiciones ---------- */
+  .scrim { position: absolute; inset: 0; background: rgba(15, 20, 30, .42); display: flex; align-items: center; justify-content: center; padding: 14px; z-index: 5; }
+  .scrim.right { justify-content: flex-end; align-items: stretch; padding: 0; }
+  .modal { background: var(--surface); border-radius: 10px; width: 100%; max-width: 520px; max-height: 94%; overflow: auto; box-shadow: 0 20px 50px rgba(0,0,0,.25); }
+  .modal.wide { max-width: 680px; }
+  .sheet { background: var(--surface); width: min(430px, 100%); height: 100%; overflow: auto; box-shadow: -12px 0 30px rgba(0,0,0,.2); }
+  .mh { display: flex; justify-content: space-between; align-items: center; padding: 12px 14px; border-bottom: 1px solid var(--line); }
+  .mh h4 { font-size: 15px; }
+  .mb { padding: 14px; }
+  .mf { display: flex; justify-content: flex-end; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--line); background: var(--soft); }
+  .toasts { position: absolute; right: 12px; bottom: 12px; display: grid; gap: 8px; z-index: 9; width: min(330px, calc(100% - 24px)); }
+  .toast { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--info); border-radius: 8px; padding: 9px 12px; box-shadow: 0 6px 18px rgba(0,0,0,.14); font-size: 13px; }
+  .toast.ok { border-left-color: var(--ok); } .toast.warn { border-left-color: var(--warn); }
+  .toast.bad { border-left-color: var(--bad); } .toast b { display: block; }
+  .toast small { color: var(--muted); }
+  .skel { background: linear-gradient(90deg, var(--soft) 25%, var(--line) 50%, var(--soft) 75%); background-size: 200% 100%; animation: sh 1.3s infinite; border-radius: 4px; height: 12px; }
+  @keyframes sh { to { background-position: -200% 0; } }
+  .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: rot .8s linear infinite; vertical-align: -2px; margin-right: 6px; }
+  @keyframes rot { to { transform: rotate(360deg); } }
+  .lock { opacity: .6; pointer-events: none; }
+  .banner { padding: 8px 12px; border-radius: 6px; font-size: 13px; margin-bottom: 10px; }
+  .banner.warn { background: var(--warn-soft); color: var(--warn); }
+  .banner.info { background: var(--info-soft); color: var(--info); }
+  .banner.bad { background: var(--bad-soft); color: var(--bad); }
+
+  /* Estados controlados por data-state */
+  [data-state] .only { display: none; }
+  [data-state="normal"] .only.normal, [data-state="processing"] .only.processing,
+  [data-state="error"] .only.error, [data-state="success"] .only.success,
+  [data-state="timeout"] .only.timeout, [data-state="empty"] .only.empty,
+  [data-state="loading"] .only.loading, [data-state="open"] .only.open,
+  [data-state="closed"] .only.closed { display: block; }
+  [data-state] .only.inline.normal, [data-state] .only.inline.processing { display: none; }
+  [data-state="normal"] .only.inline.normal, [data-state="processing"] .only.inline.processing,
+  [data-state="error"] .only.inline.error { display: inline; }
+
+  @media (max-width: 1100px) {
+    .doc { grid-template-columns: 1fr; }
+    .index { position: static; height: auto; }
+    .layout { grid-template-columns: 1fr; }
+    .notes { position: static; }
+    .app { grid-template-columns: 1fr; }
+    .sb { display: none; }
+    .g3, .g4 { grid-template-columns: repeat(2, minmax(0,1fr)); }
+    .g2-1 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+  <nav class="index" aria-label="Pantallas">
+    <h1>Gavi Caserito</h1>
+    <p>Wireframes de baja fidelidad · v0.1<br>Referencia: <code>04-flujos-y-pantallas.md</code></p>
+    <div class="grp">Pantallas</div>
+    <a href="#home" data-go="home"><b>0</b> Cómo leer esto</a>
+    <a href="#pos" data-go="pos"><b>1</b> POS</a>
+    <a href="#producto" data-go="producto"><b>2</b> Producto con variantes</a>
+    <a href="#pedido" data-go="pedido"><b>3</b> Pedido</a>
+    <a href="#envio" data-go="envio"><b>4</b> Envío</a>
+    <a href="#inicio" data-go="inicio"><b>5</b> Panel de inicio</a>
+    <a href="#caja" data-go="caja"><b>6</b> Caja</a>
+    <a href="#cobrar" data-go="cobrar"><b>7</b> Por cobrar y cobro</a>
+    <a href="#portal" data-go="portal"><b>8</b> Portal del cliente</a>
+    <a href="#baja" data-go="baja"><b>9</b> Eliminar / desactivar / fusionar</a>
+    <a href="#interaccion" data-go="interaccion"><b>10</b> Bloqueo y avisos</a>
+    <a href="#impresion" data-go="impresion"><b>11</b> Impresión por sucursal</a>
+  </nav>
+
+  <main class="content">
+
+<!-- ============================ 0. HOME ============================ -->
+<section class="screen" id="s-home">
+  <div class="screen-head"><div><h2>Cómo leer estos wireframes</h2><p>Baja fidelidad: estructura, contenido y comportamiento. No es el diseño visual final.</p></div></div>
+  <div class="layout">
+    <div class="grid">
+      <div class="card"><h5>Qué es cada cosa</h5>
+        <ul>
+          <li>Cada pantalla tiene <b>vistas</b> (botones arriba) y, en las críticas, <b>estados</b> que se pueden alternar.</li>
+          <li>El panel derecho resume <b>dónde vive</b> la pantalla, <b>permisos</b>, <b>reglas</b> y casos especiales.</li>
+          <li>Los contenedores siguen la regla: <span class="tag">Modal</span> CRUD simple · <span class="tag">Panel lateral</span> formulario medio · <span class="tag">Página</span> documentos · <span class="tag">POS</span> pantalla propia.</li>
+        </ul>
+      </div>
+      <div class="card"><h5>Leyenda de estados</h5>
+        <div class="row"><span class="chip">Borrador</span><span class="chip info">Confirmado</span><span class="chip ok">Éxito / Entregado</span><span class="chip warn">Advertencia / Pendiente</span><span class="chip bad">Error / Vencido</span></div>
+      </div>
+      <div class="card"><h5>Datos de ejemplo</h5><p class="muted" style="margin:0">Negocio: juguetería. Productos: peluches, rompecabezas, autos a control remoto. Variantes: color, tamaño y edad. Empaques: unidad, docena, caja.</p></div>
+      <div class="card"><h5>Decisiones de la revisión</h5>
+        <ul><li><b>Decidido:</b> el POS muestra imagen del producto.</li><li><b>Decidido:</b> el vendedor es quien crea el pedido; el portal solo consulta y solicita.</li><li><b>Decidido:</b> el tablero de despacho usa Confirmados · En despacho · Listos.</li><li><b>Pendiente:</b> datos del rótulo de envío.</li></ul>
+      </div>
+    </div>
+    <aside class="notes"><h3>Cómo se probó</h3><ul><li>Desde un navegador de escritorio y en tamaño móvil.</li><li>Sin conexión a internet: es un solo archivo.</li></ul><h3>Siguiente</h3><ul><li>Revisar con 2 negocios reales.</li><li>Ajustar y construir <code>apps/web</code>.</li></ul></aside>
+  </div>
+</section>
+
+<!-- ============================ 1. POS ============================ -->
+<section class="screen" id="s-pos">
+  <div class="screen-head"><div><h2>1 · POS (punto de venta)</h2><p>Pantalla propia. Vender rápido con lector de códigos, pago mixto y crédito.</p></div>
+    <div class="seg" data-views="pos"><button class="on" data-v="pos-desktop">Escritorio</button><button data-v="pos-phone">Móvil</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="view on" data-view="pos-desktop">
+        <div class="seg" style="margin-bottom:8px" data-states="pos-frame"><button class="on" data-s="normal">Venta en curso</button><button data-s="pay">Panel de cobro</button><button data-s="processing">Procesando</button><button data-s="done">Resultado</button></div>
+        <div class="frame" id="pos-frame" data-state="normal" style="min-height:620px">
+          <div class="top"><b>Sucursal Centro</b><span class="pill">Caja 1 · turno abierto 08:02</span><span class="pill">Juan P.</span><span class="sp"></span><span class="pill"><i class="dot"></i>En línea</span><span class="pill">En espera (2)</span></div>
+          <div class="page" style="display:grid;grid-template-columns:1.5fr 1fr;gap:12px">
+            <div>
+              <input class="inp" placeholder="🔍 Buscar o escanear código de barras…  (F2)">
+              <div class="row sp8"><span class="chip info">Todos</span><span class="chip">Peluches</span><span class="chip">Rompecabezas</span><span class="chip">Autos</span><span class="chip">Didácticos</span></div>
+              <div class="grid g3 sp12">
+                <div class="prod"><i></i><b>Oso de peluche</b><span class="muted">S/ 35.00</span></div>
+                <div class="prod"><i></i><b>Rompecabezas 100p</b><span class="muted">S/ 18.00</span></div>
+                <div class="prod"><i></i><b>Auto a control</b><span class="muted">S/ 79.90</span></div>
+                <div class="prod"><i></i><b>Bloques x50</b><span class="muted">S/ 42.00</span></div>
+                <div class="prod"><i></i><b>Muñeca Lía</b><span class="muted">S/ 55.00</span></div>
+                <div class="prod"><i></i><b>Pelota N°5</b><span class="muted">S/ 25.00</span></div>
+              </div>
+              <p class="muted" style="font-size:12px">Al elegir un producto con variantes aparece un selector (color · tamaño) antes de agregarlo.</p>
+            </div>
+            <div class="card">
+              <div class="row sb2"><b>Cliente: Varios</b><button class="btn sm">Cambiar</button></div>
+              <table class="sp8">
+                <tr><td>Oso peluche · Café · M<br><span class="muted">2 × 35.00</span></td><td class="n">70.00</td></tr>
+                <tr><td>Rompecabezas 100p<br><span class="muted">1 × 18.00 · Docena -5%</span></td><td class="n">17.10</td></tr>
+                <tr><td>Auto a control · Rojo<br><span class="muted">1 × 79.90</span></td><td class="n">79.90</td></tr>
+              </table>
+              <div class="sp8 row sb2"><span class="muted">Subtotal</span><span>167.00</span></div>
+              <div class="row sb2"><span class="muted">Descuento</span><button class="btn sm">Agregar</button></div>
+              <div class="row sb2 sp8"><b style="font-size:18px">TOTAL</b><b style="font-size:20px">S/ 167.00</b></div>
+              <div class="row sp8"><span class="chip">Nota de venta</span><span class="chip info">Boleta</span><span class="chip">Factura</span></div>
+              <button class="btn pri lg block sp12">COBRAR  (F8)</button>
+              <div class="row sp8"><button class="btn sm">En espera (F9)</button><button class="btn sm">Cliente (F4)</button><button class="btn sm dng">Vaciar</button></div>
+            </div>
+          </div>
+          <!-- panel de cobro -->
+          <div class="scrim" style="display:none" id="pos-pay">
+            <div class="modal">
+              <div class="mh"><h4>Cobrar · S/ 167.00</h4><button class="btn sm only closed normal" style="display:inline-block">✕</button></div>
+              <div class="mb" id="pos-pay-body">
+                <div class="seg"><button class="on">Contado</button><button>Crédito</button></div>
+                <table class="sp12">
+                  <tr><th>Medio</th><th>Referencia</th><th class="n">Monto</th><th></th></tr>
+                  <tr><td>Efectivo</td><td>—</td><td class="n">100.00</td><td>🗑</td></tr>
+                  <tr><td>Yape</td><td>Op. 884213</td><td class="n">67.00</td><td>🗑</td></tr>
+                </table>
+                <button class="btn sm sp8">+ Agregar medio</button>
+                <div class="grid g3 sp12">
+                  <div class="card kpi"><span>Total</span><b>167.00</b></div>
+                  <div class="card kpi"><span>Pagado</span><b>167.00</b></div>
+                  <div class="card kpi"><span>Saldo / vuelto</span><b>0.00</b></div>
+                </div>
+                <p class="muted" style="font-size:12px">Efectivo recibido 100.00 · vuelto 0.00. Con crédito: fecha de vencimiento y cuotas.</p>
+              </div>
+              <div class="mf"><button class="btn" id="pos-cancel">Cancelar</button><button class="btn pri" id="pos-confirm">Confirmar venta</button></div>
+            </div>
+          </div>
+          <div class="scrim" style="display:none" id="pos-done">
+            <div class="modal"><div class="mb" style="text-align:center">
+              <h3 style="margin-bottom:6px">✔ Venta registrada</h3>
+              <p class="muted">Boleta B001-000124 · S/ 167.00 · Emitiendo a SUNAT…</p>
+              <div class="row" style="justify-content:center"><button class="btn">Imprimir ticket</button><button class="btn">Enviar por WhatsApp</button><button class="btn pri">Nueva venta</button></div>
+            </div></div>
+          </div>
+          <div class="toasts" id="pos-toasts"></div>
+        </div>
+      </div>
+
+      <div class="view" data-view="pos-phone">
+        <div class="frame phone">
+          <div class="top"><b>POS</b><span class="sp"></span><span class="pill"><i class="dot"></i>En línea</span></div>
+          <div class="page">
+            <input class="inp" placeholder="🔍 Buscar o escanear (cámara)">
+            <div class="row sp8"><span class="chip info">Todos</span><span class="chip">Peluches</span><span class="chip">Autos</span></div>
+            <div class="grid g2 sp8">
+              <div class="prod"><i></i><b>Oso peluche</b><span class="muted">S/ 35</span></div>
+              <div class="prod"><i></i><b>Rompecabezas</b><span class="muted">S/ 18</span></div>
+              <div class="prod"><i></i><b>Auto control</b><span class="muted">S/ 79.90</span></div>
+              <div class="prod"><i></i><b>Bloques x50</b><span class="muted">S/ 42</span></div>
+            </div>
+            <div class="card sp12">
+              <div class="row sb2"><span><b>3 ítems</b> · Cliente Varios</span><b>S/ 167.00</b></div>
+              <button class="btn pri lg block sp8">Ver ticket y cobrar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">POS</span><span class="tag">Ventas → POS</span>
+      <h3>Permisos</h3><ul><li><code>sales.pos.use</code></li><li><code>sales.discount.apply</code> (con límite)</li><li><code>cash.session.operate</code></li></ul>
+      <h3>Reglas</h3>
+      <ul><li>El código escaneado agrega la línea; si hay varias coincidencias abre selector.</li><li>Tipo de documento según el modo fiscal de la empresa.</li><li>Cobrar bloquea el panel (ver pantalla 10).</li><li>Con la emisión caída la venta no se detiene.</li><li>Cliente obligatorio para factura y crédito.</li></ul>
+      <h3>Atajos</h3><ul><li>F2 buscar · F4 cliente · F8 cobrar · F9 espera</li></ul>
+      <h3>Estados</h3><ul><li>Sin turno abierto (si la caja lo exige): pide abrir turno.</li><li>Sin conexión: botón "Guardar en este equipo" (v1.5).</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 2. PRODUCTO ============================ -->
+<section class="screen" id="s-producto">
+  <div class="screen-head"><div><h2>2 · Producto con variantes, empaques y códigos</h2><p>Página con pestañas. Servicio o bien, unidad de medida y afectación por defecto.</p></div>
+    <div class="seg" data-views="producto"><button class="on" data-v="prod-general">General</button><button data-v="prod-var">Variantes</button><button data-v="prod-emp">Empaques y precios</button><button data-v="prod-cod">Códigos</button><button data-v="prod-list">Lista</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="frame"><div class="app" data-sidebar="catalogo">
+        <div class="main">
+          <div class="top"><span class="pill">Mi Juguetería SAC</span><span class="pill">Sucursal Centro</span><span class="sp"></span><span class="pill">Admin</span></div>
+          <div class="page">
+
+            <div class="view on" data-view="prod-general">
+              <div class="ph"><div><h4>Peluche oso</h4><small>Producto · Código P-0012 · <span class="chip ok">Activo</span></small></div><div class="row"><button class="btn">Desactivar</button><button class="btn pri">Guardar</button></div></div>
+              <div class="tabs"><span class="on">General</span><span>Variantes</span><span>Empaques y precios</span><span>Códigos de barras</span><span>Stock</span><span>Imágenes</span></div>
+              <div class="grid g2">
+                <label class="field"><span>Tipo</span><div class="seg"><button class="on">Bien</button><button>Servicio</button></div></label>
+                <label class="field"><span>Unidad de medida (SUNAT)</span><select class="inp"><option>NIU · Unidad (bienes)</option></select></label>
+                <label class="field"><span>Nombre</span><input class="inp" value="Peluche oso"></label>
+                <label class="field"><span>Categoría</span><select class="inp"><option>Peluches</option></select></label>
+                <label class="field"><span>Marca</span><select class="inp"><option>Sin marca</option></select></label>
+                <label class="field"><span>Afectación al IGV</span><select class="inp"><option>Gravado con IGV (según empresa)</option></select></label>
+                <label class="field"><span>Controla stock</span><div class="seg"><button class="on">Sí</button><button>No</button></div></label>
+                <label class="field"><span>Código de producto SUNAT (UNSPSC)</span><input class="inp" placeholder="Buscar… 60141000"></label>
+              </div>
+              <div class="banner info">Si eliges <b>Servicio</b>: unidad por defecto <b>ZZ</b> y no controla stock.</div>
+            </div>
+
+            <div class="view" data-view="prod-var">
+              <div class="ph"><div><h4>Variantes · Peluche oso</h4><small>Atributos usados: Color, Tamaño</small></div><div class="row"><button class="btn">Generar combinaciones</button><button class="btn pri">+ Variante</button></div></div>
+              <table>
+                <tr><th>SKU</th><th>Color</th><th>Tamaño</th><th>Código de barras</th><th class="n">Precio</th><th class="n">Stock</th><th></th></tr>
+                <tr><td>P0012-CAF-S</td><td>Café</td><td>S</td><td>7750001000012</td><td class="n">25.00</td><td class="n">14</td><td><span class="chip ok">Activo</span></td></tr>
+                <tr><td>P0012-CAF-M</td><td>Café</td><td>M</td><td>7750001000029</td><td class="n">35.00</td><td class="n">22</td><td><span class="chip ok">Activo</span></td></tr>
+                <tr><td>P0012-BLA-M</td><td>Blanco</td><td>M</td><td>7750001000036</td><td class="n">35.00</td><td class="n">3</td><td><span class="chip warn">Stock bajo</span></td></tr>
+                <tr><td>P0012-ROS-L</td><td>Rosado</td><td>L</td><td>—</td><td class="n">49.00</td><td class="n">0</td><td><span class="chip">Inactivo</span></td></tr>
+              </table>
+              <div class="banner warn sp12">El producto no puede quedar activo sin al menos una variante activa. Desactivar el producto desactiva todas sus variantes.</div>
+            </div>
+
+            <div class="view" data-view="prod-emp">
+              <div class="ph"><div><h4>Empaques y precios · Peluche oso M</h4><small>Lista predeterminada · incluye IGV</small></div><button class="btn pri">Guardar</button></div>
+              <table>
+                <tr><th>Presentación</th><th class="n">Equivale a</th><th>Código</th><th class="n">Precio</th></tr>
+                <tr><td>Unidad (base)</td><td class="n">1</td><td>7750001000029</td><td class="n">35.00</td></tr>
+                <tr><td>Docena</td><td class="n">12</td><td>7750001000029-12</td><td class="n">390.00</td></tr>
+                <tr><td>Caja</td><td class="n">48</td><td>—</td><td class="n">1,440.00</td></tr>
+              </table>
+              <h5 class="muted sp12" style="margin-bottom:4px">Precios por cantidad (unidad)</h5>
+              <table>
+                <tr><th class="n">Desde</th><th class="n">Precio</th><th>Lista</th></tr>
+                <tr><td class="n">1</td><td class="n">35.00</td><td>General</td></tr>
+                <tr><td class="n">6</td><td class="n">32.00</td><td>General</td></tr>
+                <tr><td class="n">24</td><td class="n">29.50</td><td>Mayorista</td></tr>
+              </table>
+            </div>
+
+            <div class="view" data-view="prod-cod">
+              <div class="ph"><div><h4>Códigos de barras · Peluche oso M</h4><small>Un código no puede repetirse en la cuenta</small></div><div class="row"><button class="btn">Generar interno</button><button class="btn pri">Imprimir etiquetas</button></div></div>
+              <table>
+                <tr><th>Código</th><th>Tipo</th><th>Presentación</th><th></th></tr>
+                <tr><td>7750001000029</td><td>EAN-13</td><td>Unidad</td><td><button class="btn sm">Quitar</button></td></tr>
+                <tr><td>CAS-000045</td><td>Interno</td><td>Unidad</td><td><button class="btn sm">Quitar</button></td></tr>
+              </table>
+              <div class="card sp12"><h5>Agregar</h5><div class="row"><input class="inp" style="max-width:260px" placeholder="Escanea o escribe el código"><button class="btn pri">Agregar</button></div>
+              <div class="hint">⚠ Ese código ya pertenece a "Auto a control · Rojo". No se reasigna automáticamente.</div></div>
+            </div>
+
+            <div class="view" data-view="prod-list">
+              <div class="ph"><div><h4>Productos</h4><small>248 productos · 612 variantes</small></div><div class="row"><button class="btn">Importar</button><button class="btn pri">+ Nuevo producto</button></div></div>
+              <div class="row"><input class="inp" style="max-width:300px" placeholder="Buscar por nombre, código o código de barras"><span class="chip info">Activos</span><span class="chip">Inactivos</span><span class="chip">Stock bajo</span><span class="chip">Sin categoría</span></div>
+              <table class="sp8">
+                <tr><th>Producto</th><th>Categoría</th><th class="n">Variantes</th><th class="n">Stock</th><th class="n">Desde</th><th></th></tr>
+                <tr><td>Peluche oso</td><td>Peluches</td><td class="n">6</td><td class="n">39</td><td class="n">25.00</td><td><button class="btn sm">⋯</button></td></tr>
+                <tr><td>Rompecabezas 100 piezas</td><td>Rompecabezas</td><td class="n">1</td><td class="n">120</td><td class="n">18.00</td><td><button class="btn sm">⋯</button></td></tr>
+                <tr><td>Auto a control remoto</td><td>Autos</td><td class="n">3</td><td class="n">8</td><td class="n">79.90</td><td><button class="btn sm">⋯</button></td></tr>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">Página</span><span class="tag">Catálogo → Productos</span>
+      <h3>Permisos</h3><ul><li><code>catalog.item.view|create|update|deactivate|delete</code></li><li><code>catalog.price.update</code></li></ul>
+      <h3>Reglas</h3>
+      <ul><li>Todo producto tiene al menos una variante (la predeterminada).</li><li>Bien: UM por defecto NIU. Servicio: ZZ y sin stock.</li><li>Afectación por defecto según régimen de la empresa.</li><li>Los atributos los define el negocio.</li><li>Código de barras único por cuenta.</li></ul>
+      <h3>Estados vacíos</h3><ul><li>Sin productos: invitación a importar Excel o crear el primero.</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 3. PEDIDO ============================ -->
+<section class="screen" id="s-pedido">
+  <div class="screen-head"><div><h2>3 · Pedido</h2><p>El hilo central: de la solicitud del cliente a la entrega y el cobro.</p></div>
+    <div class="seg" data-views="pedido"><button class="on" data-v="ped-new">Crear</button><button data-v="ped-detail">Detalle</button><button data-v="ped-list">Lista</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="frame"><div class="app" data-sidebar="vender">
+        <div class="main">
+          <div class="top"><span class="pill">Mi Juguetería SAC</span><span class="pill">Sucursal Centro</span><span class="sp"></span><span class="pill">Vendedor</span></div>
+          <div class="page">
+
+            <div class="view on" data-view="ped-new">
+              <div class="ph"><div><h4>Nuevo pedido</h4><small>Borrador · se guarda al salir</small></div><div class="row"><button class="btn">Guardar borrador</button><button class="btn pri">Confirmar pedido</button></div></div>
+              <div class="grid g3">
+                <label class="field"><span>Cliente</span><input class="inp" value="Tienda Mi Mundo (RUC 20601234567)"></label>
+                <label class="field"><span>Origen</span><select class="inp"><option>WhatsApp</option></select></label>
+                <label class="field"><span>Fecha requerida</span><input class="inp" value="15/10/2026"></label>
+                <label class="field"><span>Entrega</span><select class="inp"><option>Envío por agencia</option></select></label>
+                <label class="field"><span>Destino</span><select class="inp"><option>Arequipa · Shalom Av. Venezuela</option></select></label>
+                <label class="field"><span>Vendedor</span><select class="inp"><option>María L.</option></select></label>
+              </div>
+              <table class="sp8">
+                <tr><th>Producto / variante</th><th>Presentación</th><th class="n">Cant.</th><th class="n">Disponible</th><th class="n">Precio</th><th class="n">Total</th><th></th></tr>
+                <tr><td>Peluche oso · Café · M</td><td>Docena</td><td class="n">5</td><td class="n">22 u</td><td class="n">390.00</td><td class="n">1,950.00</td><td>🗑</td></tr>
+                <tr><td>Auto a control · Rojo</td><td>Unidad</td><td class="n">10</td><td class="n"><span class="chip bad">8</span></td><td class="n">79.90</td><td class="n">799.00</td><td>🗑</td></tr>
+                <tr><td><input class="inp" placeholder="Escanea o busca para agregar…"></td><td></td><td></td><td></td><td></td><td></td><td></td></tr>
+              </table>
+              <div class="banner warn sp8">Auto a control · Rojo: faltan 2 unidades. Puedes reservar 8 y dejar 2 pendientes.</div>
+              <div class="grid g2-1 sp8">
+                <div class="card"><h5>Anticipo</h5><div class="row"><span class="chip ok">Recibido S/ 1,000.00</span><span class="muted">Transferencia · 12/10/2026</span></div><button class="btn sm sp8">+ Registrar anticipo</button></div>
+                <div class="card"><div class="row sb2"><span class="muted">Subtotal</span><span>2,749.00</span></div><div class="row sb2"><span class="muted">Descuento</span><span>0.00</span></div><div class="row sb2"><b>Total</b><b>S/ 2,749.00</b></div><div class="row sb2"><span class="muted">Saldo</span><span>1,749.00</span></div></div>
+              </div>
+            </div>
+
+            <div class="view" data-view="ped-detail">
+              <div class="ph"><div><h4>Pedido PED-000231</h4><small>Tienda Mi Mundo · WhatsApp · 12/10/2026</small></div>
+                <div class="row"><button class="btn">Enviar estado por WhatsApp</button><button class="btn">Facturar</button><button class="btn pri">Crear envío</button></div></div>
+              <div class="steps"><span class="done">Borrador</span><span class="done">Confirmado</span><span class="done">En despacho</span><span class="cur">Listo</span><span>Despachado</span><span>Entregado</span></div>
+              <div class="grid g2-1">
+                <div class="card"><h5>Líneas por etapa</h5>
+                  <table>
+                    <tr><th>Producto</th><th class="n">Pedido</th><th class="n">Reserv.</th><th class="n">Armado</th><th class="n">Enviado</th><th class="n">Facturado</th></tr>
+                    <tr><td>Peluche oso · Café · M</td><td class="n">60</td><td class="n">60</td><td class="n">60</td><td class="n">0</td><td class="n">0</td></tr>
+                    <tr><td>Auto a control · Rojo</td><td class="n">10</td><td class="n">8</td><td class="n">8</td><td class="n">0</td><td class="n">0</td></tr>
+                  </table>
+                </div>
+                <div class="card"><h5>Pagos y saldo</h5>
+                  <div class="row sb2"><span>Total</span><b>2,749.00</b></div>
+                  <div class="row sb2"><span>Anticipo</span><span>1,000.00</span></div>
+                  <div class="row sb2"><span>Saldo</span><b>1,749.00</b></div>
+                  <button class="btn sm sp8">Registrar cobro</button>
+                </div>
+              </div>
+              <div class="card sp8"><h5>Línea de tiempo</h5>
+                <ul class="tl">
+                  <li class="done"><b>Pedido listo para despachar</b><small>Hoy 10:42 · Armado por Luis R.</small></li>
+                  <li class="done"><b>Anticipo S/ 1,000.00 registrado</b><small>Ayer 16:10 · María L.</small></li>
+                  <li class="done"><b>Pedido confirmado · stock reservado</b><small>Ayer 15:58 · María L.</small></li>
+                  <li class="done"><b>Pedido creado desde WhatsApp</b><small>Ayer 15:30</small></li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="view" data-view="ped-list">
+              <div class="ph"><div><h4>Pedidos</h4></div><button class="btn pri">+ Nuevo pedido</button></div>
+              <div class="tabs"><span>Borrador (3)</span><span class="on">Confirmados (12)</span><span>En despacho (4)</span><span>Listos (2)</span><span>Despachados (9)</span><span>Entregados</span></div>
+              <table>
+                <tr><th>N°</th><th>Cliente</th><th>Fecha</th><th>Entrega</th><th class="n">Total</th><th class="n">Saldo</th><th>Estado</th></tr>
+                <tr><td>PED-000231</td><td>Tienda Mi Mundo</td><td>12/10</td><td>Agencia · Arequipa</td><td class="n">2,749.00</td><td class="n">1,749.00</td><td><span class="chip info">Listo</span></td></tr>
+                <tr><td>PED-000230</td><td>Carmen R.</td><td>12/10</td><td>Recojo</td><td class="n">120.00</td><td class="n">0.00</td><td><span class="chip warn">En despacho</span></td></tr>
+                <tr><td>PED-000229</td><td>Juguetes Lima</td><td>11/10</td><td>Agencia · Trujillo</td><td class="n">1,380.00</td><td class="n">690.00</td><td><span class="chip">Confirmado</span></td></tr>
+              </table>
+            </div>
+
+          </div>
+        </div>
+      </div></div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">Página</span><span class="tag">Vender → Pedidos</span>
+      <h3>Permisos</h3><ul><li><code>orders.order.create|confirm|cancel</code></li><li><code>orders.advance.register</code></li><li><code>shipping.shipment.create</code></li></ul>
+      <h3>Reglas</h3>
+      <ul><li>Confirmar reserva stock; si falta, permite reserva parcial.</li><li>Un pedido admite varios envíos y varias facturas.</li><li>Cancelar libera reservas; con anticipo decide devolver o saldo a favor.</li><li>Facturar copia las líneas y respeta el cálculo igual al de eFact.</li></ul>
+      <h3>Avisos</h3><ul><li>Cliente: confirmación, despacho (guía y clave), entrega.</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 4. ENVÍO ============================ -->
+<section class="screen" id="s-envio">
+  <div class="screen-head"><div><h2>4 · Envío</h2><p>Registro manual en v1: agencia, guía, clave, flete y cobro en destino.</p></div>
+    <div class="seg" data-views="envio"><button class="on" data-v="env-new">Alta (panel lateral)</button><button data-v="env-detail">Seguimiento</button><button data-v="env-label">Rótulo</button><button data-v="env-list">Tablero</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="view on" data-view="env-new">
+        <div class="frame" style="min-height:620px"><div class="app" data-sidebar="despachos">
+          <div class="main">
+            <div class="top"><span class="pill">Mi Juguetería SAC</span><span class="sp"></span><span class="pill">Almacenero</span></div>
+            <div class="page"><div class="ph"><h4>Envíos</h4><button class="btn pri">+ Nuevo envío</button></div>
+              <table><tr><th>N°</th><th>Pedido</th><th>Agencia</th><th>Destino</th><th>Estado</th></tr>
+              <tr><td>ENV-0087</td><td>PED-000228</td><td>Olva</td><td>Cusco</td><td><span class="chip warn">En tránsito</span></td></tr>
+              <tr><td>ENV-0086</td><td>PED-000226</td><td>Shalom</td><td>Huancayo</td><td><span class="chip ok">Entregado</span></td></tr></table>
+            </div>
+          </div>
+        </div>
+        <div class="scrim right"><div class="sheet">
+          <div class="mh"><h4>Nuevo envío · PED-000231</h4><button class="btn sm">✕</button></div>
+          <div class="mb">
+            <h5 class="muted" style="margin:0 0 6px">Agencia y ruta</h5>
+            <div class="grid g2">
+              <label class="field"><span>Agencia</span><select class="inp"><option>Shalom</option></select></label>
+              <label class="field"><span>Modalidad</span><select class="inp"><option>Terrestre</option><option>Aéreo</option></select></label>
+            </div>
+            <label class="field"><span>Oficina de origen</span><select class="inp"><option>Lima · Av. Malecón (sede del negocio)</option></select></label>
+            <label class="field"><span>Oficina de destino</span><select class="inp"><option>Arequipa · Av. Venezuela 450 (ref. frente al grifo)</option></select></label>
+            <div class="grid g2">
+              <label class="field"><span>Entrega</span><select class="inp"><option>Recoger en agencia</option><option>A domicilio</option></select></label>
+              <label class="field"><span>Fecha de traslado</span><input class="inp" value="13/10/2026"></label>
+            </div>
+            <h5 class="muted" style="margin:6px 0">Destinatario</h5>
+            <div class="grid g2">
+              <label class="field"><span>Nombre</span><input class="inp" value="María Quispe Rojas"></label>
+              <label class="field"><span>DNI / RUC</span><input class="inp" value="45123456"></label>
+              <label class="field"><span>Teléfono</span><input class="inp" value="954 123 456"></label>
+              <label class="field"><span>Referencia</span><input class="inp" placeholder="Opcional"></label>
+            </div>
+            <h5 class="muted" style="margin:6px 0">Datos que da la agencia (del ticket)</h5>
+            <div class="grid g2">
+              <label class="field"><span>N° de orden de la agencia</span><input class="inp" placeholder="Opcional al crear"></label>
+              <label class="field"><span>Código / clave de recojo</span><input class="inp" placeholder="Opcional al crear"></label>
+              <label class="field"><span>Fecha de emisión (agencia)</span><input class="inp" placeholder="Opcional"></label>
+              <label class="field"><span>N° de GRR (si emites guía)</span><input class="inp" placeholder="Opcional"></label>
+            </div>
+            <div class="card sp8"><h5>Comprobante de la agencia</h5>
+              <div class="row"><button class="btn sm">Subir foto o PDF</button><span class="muted">JPG, PNG o PDF · hasta 5 MB</span></div>
+              <p class="muted" style="font-size:12px;margin:6px 0 0">Se guarda con el envío y se muestra en el seguimiento. Más adelante podrá leer orden y código del QR.</p>
+            </div>
+            <h5 class="muted" style="margin:10px 0 6px">Carga, flete y cobro</h5>
+            <div class="grid g2">
+              <label class="field"><span>Descripción</span><input class="inp" value="Caja"></label>
+              <label class="field"><span>Bultos</span><input class="inp" value="6"></label>
+              <label class="field"><span>Peso real / cobrado (kg)</span><input class="inp" value="16.50 / 16.50"></label>
+              <label class="field"><span>Garantía contratada</span><select class="inp"><option>No</option><option>Sí</option></select></label>
+              <label class="field"><span>Flete (S/)</span><input class="inp" value="22.00"></label>
+              <label class="field"><span>Forma de pago del flete</span><select class="inp"><option>Pendiente de pago (destinatario)</option><option>Pagado por el remitente</option></select></label>
+              <label class="field"><span>Cobro en destino (S/)</span><input class="inp" value="1,749.00"></label>
+              <label class="field"><span>Observaciones</span><input class="inp" placeholder="Frágil, no apilar…"></label>
+            </div>
+            <div class="card"><h5>Líneas a despachar</h5><table><tr><td>Peluche oso · Café · M</td><td class="n">60</td></tr><tr><td>Auto a control · Rojo</td><td class="n">8</td></tr></table></div>
+            <label class="field sp8"><span>Emitir guía de remisión (opcional)</span><div class="seg"><button>Sí</button><button class="on">No</button></div></label>
+          </div>
+          <div class="mf"><button class="btn">Cancelar</button><button class="btn pri">Crear envío</button></div>
+        </div></div></div>
+      </div>
+
+      <div class="view" data-view="env-detail">
+        <div class="frame"><div class="app nosb"><div class="main"><div class="page">
+          <div class="ph"><div><h4>ENV-0088 · Shalom · Arequipa</h4><small>Pedido PED-000231 · Tienda Mi Mundo</small></div><div class="row"><button class="btn">Rótulo</button><button class="btn pri">+ Registrar evento</button></div></div>
+          <div class="grid g3">
+            <div class="card kpi"><span>Guía</span><b>SH-4452-98</b></div>
+            <div class="card kpi"><span>Clave de recojo</span><b>7K3F</b></div>
+            <div class="card kpi"><span>Cobro en destino</span><b>S/ 1,749.00</b></div>
+          </div>
+          <div class="grid g2-1 sp8">
+            <div class="card"><h5>Línea de tiempo</h5>
+              <ul class="tl">
+                <li class="cur"><b>En tránsito</b><small>Hoy 15:20 · Luis R.</small></li>
+                <li class="done"><b>Entregado a la agencia</b><small>Hoy 12:05 · foto del cargo adjunta</small></li>
+                <li class="done"><b>Por despachar</b><small>Hoy 10:50</small></li>
+              </ul>
+            </div>
+            <div class="card"><h5>Enlace de seguimiento</h5><input class="inp" value="caserito.app/s/xK29…"><div class="row sp8"><button class="btn sm">Copiar</button><button class="btn sm">WhatsApp</button></div><h5 class="sp12">Cargo de agencia</h5><div class="skel" style="height:90px"></div></div>
+          </div>
+        </div></div></div></div>
+      </div>
+
+      <div class="view" data-view="env-label">
+        <div class="frame"><div class="app nosb"><div class="main"><div class="page">
+          <div class="ph"><div><h4>Rótulo · ENV-0088</h4><small>Un rótulo por bulto · formato según la sucursal</small></div>
+            <div class="row"><select class="inp" style="width:210px"><option>100 × 150 mm (térmica)</option><option>A6</option><option>A4 · 4 por hoja</option></select><button class="btn">Imprimir los 6</button><button class="btn pri">Imprimir este</button></div></div>
+          <div class="grid g2">
+            <div class="card" style="border:2px solid var(--ink);border-radius:4px;padding:10px;max-width:380px">
+              <div class="row sb2"><b>MI JUGUETERÍA SAC</b><b style="font-size:20px">2 / 6</b></div>
+              <div class="muted" style="font-size:12px">Tel. 987 654 321 · Lima</div>
+              <hr style="border:0;border-top:1px solid var(--line);margin:8px 0">
+              <div class="muted" style="font-size:12px">DESTINO</div>
+              <div style="font-size:20px;font-weight:800">AREQUIPA · TERRESTRE</div>
+              <div style="font-size:13px">Shalom · Av. Venezuela 450 (ref. frente al grifo)</div>
+              <hr style="border:0;border-top:1px solid var(--line);margin:8px 0">
+              <div class="muted" style="font-size:12px">DESTINATARIO</div>
+              <div style="font-weight:700">María Quispe Rojas</div>
+              <div style="font-size:13px">DNI 45123456 · Tel. 954 123 456</div>
+              <hr style="border:0;border-top:1px solid var(--line);margin:8px 0">
+              <div class="row sb2"><div><div class="muted" style="font-size:12px">ORDEN AGENCIA · CÓDIGO</div><b>99029045 · J9W3</b><div class="muted" style="font-size:12px">Pedido PED-000231 · Envío ENV-0088</div></div>
+                <div style="width:74px;height:74px;background:repeating-linear-gradient(45deg,var(--ink) 0 4px,var(--surface) 4px 8px)"></div></div>
+              <div class="banner bad sp8" style="text-align:center;margin-bottom:0;font-weight:700">COBRAR EN DESTINO: S/ 1,749.00</div>
+              <div class="muted" style="font-size:12px;margin-top:6px">Flete: pendiente de pago · Observaciones: FRÁGIL</div>
+            </div>
+            <div class="card"><h5>Qué incluye</h5>
+              <ul><li>Remitente (logo y teléfono de la empresa)</li><li>Destino y modalidad: ciudad, agencia, oficina y referencia</li><li>Destinatario: nombre, DNI/RUC y teléfono</li><li>Bulto "n de N"</li><li>Orden y código de la agencia, N.° de pedido y envío</li><li>Cobro en destino y estado del flete</li><li>QR al seguimiento del pedido</li><li>Observaciones (frágil, no apilar)</li></ul>
+              <p class="muted" style="font-size:12px">El formato y la impresora se configuran por sucursal (pantalla 11).</p>
+            </div>
+          </div>
+        </div></div></div></div>
+      </div>
+
+      <div class="view" data-view="env-list">
+        <div class="frame"><div class="app" data-sidebar="despachos"><div class="main"><div class="page">
+          <div class="ph"><h4>Por armar (tablero)</h4><button class="btn">Ver envíos</button></div>
+          <div class="grid g3">
+            <div class="card"><h5>Confirmados</h5><div class="card sp8">PED-000229<br><span class="muted">Juguetes Lima · 2 líneas</span></div><div class="card sp8">PED-000227<br><span class="muted">Ana P. · 5 líneas</span></div></div>
+            <div class="card"><h5>En despacho</h5><div class="card sp8">PED-000230<br><span class="muted">Carmen R. · Luis R.</span></div></div>
+            <div class="card"><h5>Listos</h5><div class="card sp8">PED-000231<br><span class="muted">Tienda Mi Mundo</span><br><button class="btn sm sp8">Crear envío</button></div></div>
+          </div>
+        </div></div></div></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">Panel lateral</span><span class="tag">Despachos → Envíos</span>
+      <h3>Permisos</h3><ul><li><code>shipping.shipment.create|update|event</code></li></ul>
+      <h3>Reglas</h3>
+      <ul><li>Orden y código de la agencia pueden completarse después.</li><li>Se puede <b>subir el comprobante de la agencia</b> (foto o PDF).</li><li>Campos tomados de un ticket real: modalidad, fecha de traslado, orígen/destino con referencia, peso real y cobrado, garantía y forma de pago del flete.</li><li>Cobro en destino genera un pago pendiente ligado al pedido.</li><li>Cada evento notifica al cliente según las reglas.</li><li>Los eventos no se editan: se agrega uno nuevo.</li><li>Guía de remisión es opcional y configurable.</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 5. INICIO ============================ -->
+<section class="screen" id="s-inicio">
+  <div class="screen-head"><div><h2>5 · Panel de inicio</h2><p>Cuánto vendí, qué me deben, qué debo atender hoy.</p></div>
+    <div class="seg" data-views="inicio"><button class="on" data-v="ini-full">Con datos</button><button data-v="ini-new">Negocio nuevo</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="view on" data-view="ini-full">
+        <div class="frame"><div class="app" data-sidebar="inicio"><div class="main">
+          <div class="top"><span class="pill">Mi Juguetería SAC ▾</span><span class="pill">Todas las sucursales ▾</span><span class="pill">Hoy ▾</span><span class="sp"></span><span class="pill">Admin</span></div>
+          <div class="page">
+            <div class="grid g4">
+              <div class="card kpi"><span>Ventas de hoy</span><b>S/ 2,480</b><span>31 documentos</span></div>
+              <div class="card kpi"><span>Por cobrar</span><b>S/ 8,920</b><span class="chip bad">S/ 1,340 vencido</span></div>
+              <div class="card kpi"><span>Por pagar</span><b>S/ 3,150</b><span>2 vencen esta semana</span></div>
+              <div class="card kpi"><span>Caja actual</span><b>S/ 1,120</b><span>Turno abierto 08:02</span></div>
+            </div>
+            <div class="grid g2-1 sp8">
+              <div class="card"><h5>Ventas · últimos 7 días</h5><div class="chart"><i style="height:45%"></i><i style="height:60%"></i><i style="height:38%"></i><i style="height:72%"></i><i style="height:55%"></i><i style="height:90%"></i><i style="height:66%"></i></div></div>
+              <div class="card"><h5>Pedidos por estado</h5>
+                <div class="row sb2"><span>Confirmados</span><b>12</b></div><div class="row sb2"><span>En despacho</span><b>4</b></div><div class="row sb2"><span>Listos</span><b>2</b></div><div class="row sb2"><span>Despachados</span><b>9</b></div></div>
+            </div>
+            <div class="grid g3 sp8">
+              <div class="card"><h5>Atención hoy</h5><div class="banner bad">2 comprobantes rechazados</div><div class="banner warn">3 productos con stock bajo</div><div class="banner info">5 envíos sin guía</div></div>
+              <div class="card"><h5>Envíos pendientes</h5><div class="row sb2"><span>ENV-0087 Cusco</span><span class="chip warn">En tránsito</span></div><div class="row sb2"><span>ENV-0088 Arequipa</span><span class="chip warn">En tránsito</span></div></div>
+              <div class="card"><h5>Accesos rápidos</h5><div class="grid"><button class="btn">Nueva venta</button><button class="btn">Nuevo pedido</button><button class="btn">Nuevo cliente</button></div></div>
+            </div>
+          </div>
+        </div></div></div>
+      </div>
+
+      <div class="view" data-view="ini-new">
+        <div class="frame"><div class="app" data-sidebar="inicio"><div class="main"><div class="page">
+          <div class="banner info"><b>Empieza aquí.</b> Completa estos pasos para dejar tu negocio listo.</div>
+          <div class="card"><h5>Primeros pasos · 2 de 6</h5><div class="bar"><i style="width:33%"></i></div>
+            <table class="sp8">
+              <tr><td>✔ Datos de tu empresa</td><td></td></tr>
+              <tr><td>✔ Sucursal y almacén</td><td></td></tr>
+              <tr><td>○ Cargar productos</td><td class="right"><button class="btn sm pri">Importar de Excel</button> <button class="btn sm">Crear uno</button></td></tr>
+              <tr><td>○ Cargar clientes</td><td class="right"><button class="btn sm">Importar</button></td></tr>
+              <tr><td>○ Registrar tu primera venta</td><td class="right"><button class="btn sm">Ver tutorial</button></td></tr>
+              <tr><td>○ Activar facturación electrónica (opcional)</td><td class="right"><button class="btn sm">Activar</button></td></tr>
+            </table>
+          </div>
+        </div></div></div></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">Página</span><span class="tag">Inicio</span>
+      <h3>Permisos</h3><ul><li><code>dashboard.view</code>; cada tarjeta respeta el permiso del módulo.</li></ul>
+      <h3>Reglas</h3>
+      <ul><li>Las tarjetas dependen de lo activo (sin caja: no aparece Caja).</li><li>Filtro por empresa, sucursal y rango.</li><li>Carga por tarjeta con esqueleto independiente.</li><li>Negocio nuevo: lista de pasos con tutoriales.</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 6. CAJA ============================ -->
+<section class="screen" id="s-caja">
+  <div class="screen-head"><div><h2>6 · Caja</h2><p>Con o sin turnos. Conteo por denominación o por monto final.</p></div>
+    <div class="seg" data-views="caja"><button class="on" data-v="caja-open">Abrir turno</button><button data-v="caja-now">Turno actual</button><button data-v="caja-close">Cerrar turno</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="view on" data-view="caja-open">
+        <div class="frame" style="min-height:560px"><div class="app" data-sidebar="caja"><div class="main"><div class="page"><div class="ph"><h4>Caja</h4></div><div class="card"><div class="skel"></div></div></div></div></div>
+        <div class="scrim"><div class="modal">
+          <div class="mh"><h4>Abrir turno · Caja 1</h4><button class="btn sm">✕</button></div>
+          <div class="mb">
+            <div class="seg"><button class="on">Contar por denominación</button><button>Monto total</button></div>
+            <table class="sp8">
+              <tr><th>Denominación</th><th class="n">Cantidad</th><th class="n">Subtotal</th></tr>
+              <tr><td>Billete S/ 200</td><td class="n"><input class="inp" style="width:70px;text-align:right" value="0"></td><td class="n">0.00</td></tr>
+              <tr><td>Billete S/ 100</td><td class="n"><input class="inp" style="width:70px;text-align:right" value="1"></td><td class="n">100.00</td></tr>
+              <tr><td>Billete S/ 50</td><td class="n"><input class="inp" style="width:70px;text-align:right" value="2"></td><td class="n">100.00</td></tr>
+              <tr><td>Billete S/ 20</td><td class="n"><input class="inp" style="width:70px;text-align:right" value="5"></td><td class="n">100.00</td></tr>
+              <tr><td>Billete S/ 10</td><td class="n"><input class="inp" style="width:70px;text-align:right" value="0"></td><td class="n">0.00</td></tr>
+              <tr><td>Moneda S/ 5, 2, 1</td><td class="n"><input class="inp" style="width:70px;text-align:right" value="30"></td><td class="n">60.00</td></tr>
+              <tr><td>Moneda S/ 0.50, 0.20, 0.10</td><td class="n"><input class="inp" style="width:70px;text-align:right" value="20"></td><td class="n">8.00</td></tr>
+            </table>
+            <div class="row sb2 sp8"><b>Monto inicial</b><b style="font-size:18px">S/ 368.00</b></div>
+          </div>
+          <div class="mf"><button class="btn">Cancelar</button><button class="btn pri">Abrir turno</button></div>
+        </div></div></div>
+      </div>
+
+      <div class="view" data-view="caja-now">
+        <div class="frame"><div class="app" data-sidebar="caja"><div class="main"><div class="page">
+          <div class="ph"><div><h4>Turno actual · Caja 1</h4><small>Abierto 08:02 · Juan P.</small></div><div class="row"><button class="btn">+ Ingreso</button><button class="btn">+ Egreso</button><button class="btn pri">Cerrar turno</button></div></div>
+          <div class="grid g4">
+            <div class="card kpi"><span>Apertura</span><b>368.00</b></div>
+            <div class="card kpi"><span>Cobros en efectivo</span><b>1,420.00</b></div>
+            <div class="card kpi"><span>Egresos</span><b>−120.00</b></div>
+            <div class="card kpi"><span>Efectivo esperado</span><b>1,668.00</b></div>
+          </div>
+          <div class="grid g2 sp8">
+            <div class="card"><h5>Ventas por medio</h5>
+              <div class="row sb2"><span>Efectivo</span><b>1,420.00</b></div><div class="row sb2"><span>Yape / Plin</span><b>610.00</b></div><div class="row sb2"><span>Tarjeta</span><b>450.00</b></div></div>
+            <div class="card"><h5>Movimientos</h5>
+              <table><tr><td>09:40</td><td>Egreso · Compra de bolsas</td><td class="n">−40.00</td></tr><tr><td>12:15</td><td>Egreso · Pago a repartidor</td><td class="n">−80.00</td></tr></table></div>
+          </div>
+        </div></div></div></div>
+      </div>
+
+      <div class="view" data-view="caja-close">
+        <div class="frame" style="min-height:560px"><div class="app" data-sidebar="caja"><div class="main"><div class="page"><div class="ph"><h4>Turno actual</h4></div><div class="card"><div class="skel"></div></div></div></div></div>
+        <div class="scrim"><div class="modal wide">
+          <div class="mh"><h4>Cerrar turno · Caja 1</h4><button class="btn sm">✕</button></div>
+          <div class="mb">
+            <div class="grid g2">
+              <div><div class="seg"><button>Por denominación</button><button class="on">Monto total (rápido)</button></div>
+                <label class="field sp12"><span>Efectivo contado</span><input class="inp" value="1,650.00"></label>
+                <label class="field"><span>Observación</span><input class="inp" placeholder="Opcional"></label></div>
+              <div class="card"><div class="row sb2"><span>Esperado</span><b>1,668.00</b></div><div class="row sb2"><span>Contado</span><b>1,650.00</b></div><div class="row sb2"><span>Diferencia</span><b style="color:var(--bad)">−18.00</b></div>
+                <div class="banner warn sp8">Faltan S/ 18.00. Agrega una observación para cerrar.</div></div>
+            </div>
+          </div>
+          <div class="mf"><button class="btn">Cancelar</button><button class="btn pri">Cerrar turno</button></div>
+        </div></div></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">Modal</span><span class="tag">Caja → Turnos</span>
+      <h3>Permisos</h3><ul><li><code>cash.session.open|close</code></li><li><code>cash.movement.create</code></li><li><code>cash.difference.approve</code></li></ul>
+      <h3>Reglas</h3>
+      <ul><li>Caja configurable: sin turnos, los movimientos van por día.</li><li>Conteo por denominación PEN o monto final.</li><li>Una caja con turno abierto no se desactiva.</li><li>Diferencia sobre un umbral exige observación o aprobación.</li><li>El cierre exige sincronizar ventas pendientes.</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 7. COBRAR ============================ -->
+<section class="screen" id="s-cobrar">
+  <div class="screen-head"><div><h2>7 · Por cobrar y registrar cobro</h2><p>Antigüedad por cliente; cobro parcial, mixto y con saldo a favor.</p></div>
+    <div class="seg" data-views="cobrar"><button class="on" data-v="cob-list">Por cobrar</button><button data-v="cob-pay">Registrar cobro</button><button data-v="cob-acc">Estado de cuenta</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="view on" data-view="cob-list">
+        <div class="frame"><div class="app" data-sidebar="cobranzas"><div class="main"><div class="page">
+          <div class="ph"><div><h4>Por cobrar</h4><small>Total S/ 8,920.00</small></div><button class="btn">Exportar</button></div>
+          <table>
+            <tr><th>Cliente</th><th class="n">Por vencer</th><th class="n">0–30</th><th class="n">31–60</th><th class="n">+60</th><th class="n">Total</th><th></th></tr>
+            <tr><td>Tienda Mi Mundo</td><td class="n">1,749.00</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n">1,749.00</td><td><button class="btn sm pri">Cobrar</button></td></tr>
+            <tr><td>Juguetes Lima</td><td class="n">690.00</td><td class="n">900.00</td><td class="n">440.00</td><td class="n">—</td><td class="n">2,030.00</td><td><button class="btn sm pri">Cobrar</button></td></tr>
+            <tr><td>Carmen R.</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td class="n"><span class="chip bad">340.00</span></td><td class="n">340.00</td><td><button class="btn sm pri">Cobrar</button></td></tr>
+          </table>
+        </div></div></div></div>
+      </div>
+
+      <div class="view" data-view="cob-pay">
+        <div class="frame" style="min-height:600px"><div class="app" data-sidebar="cobranzas"><div class="main"><div class="page"><div class="ph"><h4>Por cobrar</h4></div><div class="card"><div class="skel"></div></div></div></div></div>
+        <div class="scrim"><div class="modal wide">
+          <div class="mh"><h4>Registrar cobro · Juguetes Lima</h4><button class="btn sm">✕</button></div>
+          <div class="mb">
+            <table>
+              <tr><th></th><th>Documento</th><th>Vence</th><th class="n">Saldo</th><th class="n">Aplicar</th></tr>
+              <tr class="sel"><td>☑</td><td>F001-000045</td><td>05/10 <span class="chip bad">vencido</span></td><td class="n">440.00</td><td class="n">440.00</td></tr>
+              <tr class="sel"><td>☑</td><td>F001-000051</td><td>25/10</td><td class="n">900.00</td><td class="n">700.00</td></tr>
+              <tr><td>☐</td><td>B001-000099</td><td>10/11</td><td class="n">690.00</td><td class="n">0.00</td></tr>
+            </table>
+            <h5 class="muted sp12" style="margin-bottom:4px">Medios de pago</h5>
+            <table><tr><td>Transferencia</td><td>BCP · Op. 99120</td><td class="n">1,000.00</td></tr><tr><td>Efectivo</td><td>—</td><td class="n">200.00</td></tr></table>
+            <div class="row sb2 sp8"><span>Recibido 1,200.00 · Aplicado 1,140.00</span><span class="chip ok">Saldo a favor 60.00</span></div>
+          </div>
+          <div class="mf"><button class="btn">Cancelar</button><button class="btn pri">Registrar cobro</button></div>
+        </div></div></div>
+      </div>
+
+      <div class="view" data-view="cob-acc">
+        <div class="frame"><div class="app nosb"><div class="main"><div class="page">
+          <div class="ph"><div><h4>Estado de cuenta · Juguetes Lima</h4><small>RUC 20555112233 · al 12/10/2026</small></div><div class="row"><button class="btn">PDF</button><button class="btn">WhatsApp</button></div></div>
+          <table>
+            <tr><th>Fecha</th><th>Documento</th><th class="n">Cargo</th><th class="n">Abono</th><th class="n">Saldo</th></tr>
+            <tr><td>01/09</td><td>F001-000045</td><td class="n">1,100.00</td><td></td><td class="n">1,100.00</td></tr>
+            <tr><td>12/09</td><td>Cobro · Transferencia</td><td></td><td class="n">660.00</td><td class="n">440.00</td></tr>
+            <tr><td>25/09</td><td>F001-000051</td><td class="n">900.00</td><td></td><td class="n">1,340.00</td></tr>
+          </table>
+        </div></div></div></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">Modal</span><span class="tag">Cobranzas → Por cobrar</span>
+      <h3>Permisos</h3><ul><li><code>payments.collection.create|void</code></li><li><code>customers.statement.view</code></li></ul>
+      <h3>Reglas</h3>
+      <ul><li>Cobro mixto y parcial; el excedente queda como saldo a favor.</li><li>La deuda se calcula por empresa.</li><li>Anular un cobro revierte asignaciones y caja.</li><li>En efectivo entra al turno abierto.</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 8. PORTAL ============================ -->
+<section class="screen" id="s-portal">
+  <div class="screen-head"><div><h2>8 · Portal del cliente</h2><p>Sin contraseña, por enlace. Pensado para el celular del comprador.</p></div>
+    <div class="seg" data-views="portal"><button class="on" data-v="por-list">Mis pedidos</button><button data-v="por-detail">Detalle</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="view on" data-view="por-list">
+        <div class="frame phone"><div class="top"><b>Mi Juguetería</b><span class="sp"></span><span class="pill">Tienda Mi Mundo</span></div>
+          <div class="page">
+            <div class="card kpi"><span>Saldo pendiente</span><b>S/ 1,749.00</b></div>
+            <h5 class="muted sp12" style="margin-bottom:6px">Mis pedidos</h5>
+            <div class="card"><div class="row sb2"><b>PED-000231</b><span class="chip warn">En tránsito</span></div><span class="muted">12/10 · S/ 2,749.00</span></div>
+            <div class="card sp8"><div class="row sb2"><b>PED-000214</b><span class="chip ok">Entregado</span></div><span class="muted">28/09 · S/ 1,180.00</span><br><button class="btn sm sp8">Pedir de nuevo a mi vendedor</button></div>
+          </div>
+        </div>
+      </div>
+      <div class="view" data-view="por-detail">
+        <div class="frame phone"><div class="top"><b>← PED-000231</b></div>
+          <div class="page">
+            <div class="steps"><span class="done">Confirmado</span><span class="done">Armado</span><span class="cur">En tránsito</span><span>Entregado</span></div>
+            <div class="card"><h5>Envío</h5><div class="row sb2"><span>Agencia</span><b>Shalom</b></div><div class="row sb2"><span>Guía</span><b>SH-4452-98</b></div><div class="row sb2"><span>Clave</span><b>7K3F</b></div><div class="row sb2"><span>Oficina</span><span>Arequipa · Av. Venezuela</span></div></div>
+            <div class="card sp8"><h5>Productos</h5><div class="row sb2"><span>60 × Peluche oso M</span></div><div class="row sb2"><span>8 × Auto a control</span></div></div>
+            <div class="card sp8"><h5>Pagos</h5><div class="row sb2"><span>Total</span><span>2,749.00</span></div><div class="row sb2"><span>Pagado</span><span>1,000.00</span></div><div class="row sb2"><b>A pagar en destino</b><b>1,749.00</b></div></div>
+            <button class="btn block sp8">Descargar comprobante</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">Público por enlace</span><span class="tag">Solo consulta y solicitud</span>
+      <h3>Seguridad</h3><ul><li>Enlace firmado con caducidad y revocable.</li><li>Solo ve lo del tercero verificado.</li><li>Límite de solicitudes por IP.</li></ul>
+      <h3>Reglas</h3><ul><li>Marca blanca: logo y color de la empresa.</li><li>El cliente <b>no crea pedidos</b>: "Pedir de nuevo" envía una solicitud al vendedor, que crea y confirma el pedido.</li><li>No muestra costos ni datos de otros clientes.</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 9. BAJA ============================ -->
+<section class="screen" id="s-baja">
+  <div class="screen-head"><div><h2>9 · Eliminar, desactivar y fusionar</h2><p>Un mismo patrón para todos los maestros (cliente, producto, almacén…).</p></div>
+    <div class="seg" data-views="baja"><button class="on" data-v="baja-block">Con historia</button><button data-v="baja-free">Sin uso</button><button data-v="baja-merge">Fusionar</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="view on" data-view="baja-block">
+        <div class="frame" style="min-height:520px"><div class="app nosb"><div class="main"><div class="page"><div class="ph"><h4>Clientes</h4></div><div class="card"><div class="skel"></div></div></div></div></div>
+        <div class="scrim"><div class="modal">
+          <div class="mh"><h4>No se puede eliminar "Juguetes Lima"</h4></div>
+          <div class="mb">
+            <div class="banner warn">Este cliente tiene historial y no puede eliminarse.</div>
+            <ul><li>14 pedidos</li><li>3 ventas</li><li>S/ 420.00 por cobrar</li></ul>
+            <div class="card sp8"><b>Desactivar (recomendado)</b><p class="muted" style="margin:4px 0 0">Desaparece de buscadores y del POS. Su historial se conserva y puedes reactivarlo.</p></div>
+            <div class="card sp8"><b>Fusionar con otro cliente</b><p class="muted" style="margin:4px 0 0">Úsalo si está duplicado: se mueve todo su historial al cliente que elijas.</p></div>
+          </div>
+          <div class="mf"><button class="btn">Cancelar</button><button class="btn">Fusionar…</button><button class="btn pri">Desactivar</button></div>
+        </div></div></div>
+      </div>
+      <div class="view" data-view="baja-free">
+        <div class="frame" style="min-height:420px"><div class="app nosb"><div class="main"><div class="page"><div class="ph"><h4>Categorías</h4></div><div class="card"><div class="skel"></div></div></div></div></div>
+        <div class="scrim"><div class="modal">
+          <div class="mh"><h4>Eliminar "Accesorios varios"</h4></div>
+          <div class="mb"><p>Esta categoría nunca se usó. Se eliminará y dejará de mostrarse.</p><p class="muted">Un administrador podrá restaurarla durante 90 días.</p></div>
+          <div class="mf"><button class="btn">Cancelar</button><button class="btn dng">Eliminar</button></div>
+        </div></div></div>
+      </div>
+      <div class="view" data-view="baja-merge">
+        <div class="frame" style="min-height:560px"><div class="app nosb"><div class="main"><div class="page"><div class="ph"><h4>Clientes</h4></div><div class="card"><div class="skel"></div></div></div></div></div>
+        <div class="scrim"><div class="modal wide">
+          <div class="mh"><h4>Fusionar clientes</h4></div>
+          <div class="mb">
+            <div class="grid g2">
+              <div class="card"><h5>Se elimina</h5><b>Juguetes Lima E.I.R.L.</b><br><span class="muted">RUC 20555112233 · 14 pedidos</span></div>
+              <div class="card" style="border-color:var(--accent)"><h5>Se conserva</h5><b>Juguetes Lima</b><br><span class="muted">RUC 20555112233 · 22 pedidos</span></div>
+            </div>
+            <div class="banner info sp8">Se moverán: 14 pedidos, 3 ventas, 6 cobros, 2 direcciones. Esta acción no se puede deshacer.</div>
+          </div>
+          <div class="mf"><button class="btn">Cancelar</button><button class="btn pri">Fusionar</button></div>
+        </div></div></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <h3>Regla única</h3><ul><li>Sin uso → eliminar (lógico, restaurable).</li><li>Con historia → desactivar o fusionar.</li><li>Documentos confirmados → anular, nunca eliminar.</li></ul>
+      <h3>Visibilidad</h3><ul><li>Inactivo: visible con etiqueta y filtro.</li><li>Eliminado: no aparece en el sistema.</li></ul>
+      <h3>Permisos</h3><ul><li><code>*.deactivate</code>, <code>*.delete</code>, <code>*.merge</code></li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 10. INTERACCIÓN ============================ -->
+<section class="screen" id="s-interaccion">
+  <div class="screen-head"><div><h2>10 · Bloqueo de formularios y avisos</h2><p>Contrato de interacción: nada cambia ni se cierra mientras el servidor trabaja.</p></div>
+    <div class="seg" data-views="inter"><button class="on" data-v="int-form">Formulario</button><button data-v="int-toasts">Avisos</button><button data-v="int-load">Carga</button></div></div>
+  <div class="layout">
+    <div>
+      <div class="view on" data-view="int-form">
+        <div class="seg" style="margin-bottom:8px" data-states="int-frame"><button class="on" data-s="normal">Normal</button><button data-s="processing">Procesando</button><button data-s="error">Error corregible</button><button data-s="timeout">Sin respuesta</button><button data-s="success">Éxito</button></div>
+        <div class="frame" id="int-frame" data-state="normal" style="min-height:520px"><div class="app nosb"><div class="main"><div class="page"><div class="ph"><h4>Clientes</h4><button class="btn pri">+ Nuevo cliente</button></div><div class="card"><div class="skel"></div></div></div></div></div>
+          <div class="scrim"><div class="modal">
+            <div class="mh"><h4>Nuevo cliente</h4><button class="btn sm" id="int-x">✕</button></div>
+            <div class="mb">
+              <div class="banner info only processing">Registrando… no cierres esta ventana.</div>
+              <div class="banner bad only timeout">No pudimos confirmar si se guardó. Verificaremos antes de dejarte reintentar.</div>
+              <div id="int-fields">
+                <label class="field"><span>Tipo de documento</span><select class="inp"><option>RUC</option></select></label>
+                <label class="field"><span>Número</span><input class="inp" id="int-ruc" value="20601234567"><div class="hint only error">El RUC debe tener 11 dígitos y pasar la validación.</div></label>
+                <label class="field"><span>Nombre o razón social</span><input class="inp" value="Tienda Mi Mundo"></label>
+                <label class="field"><span>Teléfono / WhatsApp</span><input class="inp" value="954123456"></label>
+              </div>
+            </div>
+            <div class="mf">
+              <button class="btn" id="int-cancel">Cancelar</button>
+              <button class="btn pri" id="int-save"><span class="only inline normal">Registrar cliente</span><span class="only inline processing"><i class="spin"></i>Registrando…</span><span class="only inline error">Registrar cliente</span></button>
+            </div>
+          </div></div>
+          <div class="toasts">
+            <div class="toast warn only error"><b>Revisa el RUC</b><small>No pudimos registrarlo: el número no es válido. Corrígelo e inténtalo de nuevo.</small></div>
+            <div class="toast bad only timeout"><b>Sin respuesta del servidor</b><small>Verificando si se guardó… <u>Reintentar</u> · Código S-7F3A</small></div>
+            <div class="toast ok only success"><b>Cliente registrado</b><small>Tienda Mi Mundo ya está disponible. <u>Ver cliente</u></small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" data-view="int-toasts">
+        <div class="frame" style="padding:16px">
+          <div class="grid">
+            <div class="toast ok"><b>Éxito · Venta registrada</b><small>Boleta B001-000124 por S/ 167.00. <u>Imprimir</u></small></div>
+            <div class="toast warn"><b>Advertencia · Stock insuficiente</b><small>Quedan 3 de "Peluche oso · Blanco · M". Reduce la cantidad o reserva parcial.</small></div>
+            <div class="toast bad"><b>Peligro · No pudimos emitir a SUNAT</b><small>El servicio no responde. Tu venta está guardada y se enviará sola. <u>Ver pendientes</u> · Código S-91C2</small></div>
+            <div class="toast"><b>Información · Importación en curso</b><small>Procesando 1,240 de 5,000 filas. Puedes seguir trabajando.</small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="view" data-view="int-load">
+        <div class="frame"><div class="app" data-sidebar="catalogo"><div class="main"><div class="page">
+          <div class="ph"><h4>Productos</h4><div class="skel" style="width:120px;height:32px"></div></div>
+          <div class="row"><div class="skel" style="width:280px;height:32px"></div><div class="skel" style="width:70px;height:24px"></div><div class="skel" style="width:70px;height:24px"></div></div>
+          <table class="sp8">
+            <tr><th>Producto</th><th>Categoría</th><th class="n">Stock</th><th></th></tr>
+            <tr><td><div class="skel" style="width:70%"></div></td><td><div class="skel" style="width:50%"></div></td><td><div class="skel"></div></td><td></td></tr>
+            <tr><td><div class="skel" style="width:60%"></div></td><td><div class="skel" style="width:40%"></div></td><td><div class="skel"></div></td><td></td></tr>
+            <tr><td><div class="skel" style="width:80%"></div></td><td><div class="skel" style="width:55%"></div></td><td><div class="skel"></div></td><td></td></tr>
+          </table>
+          <div class="banner info sp12">Esqueleto con la forma de la tabla; al refrescar se mantienen los datos anteriores sin saltos.</div>
+        </div></div></div></div>
+      </div>
+    </div>
+    <aside class="notes">
+      <h3>Mientras corre el servidor</h3>
+      <ul><li>Campos deshabilitados, no solo el botón.</li><li>El botón cambia a <b>"Registrando…"</b> con indicador.</li><li>No se cierra: X, Esc, clic fuera y Cancelar quedan inactivos.</li><li>Aviso al salir de la pestaña.</li></ul>
+      <h3>Al terminar</h3>
+      <ul><li><b>Éxito:</b> cierra, aviso verde, actualiza lista.</li><li><b>Corregible:</b> queda abierto, marca campos, aviso ámbar.</li><li><b>Sistema:</b> queda abierto, aviso rojo con Reintentar y código.</li></ul>
+      <h3>Salida segura</h3>
+      <ul><li>15 s: "Sigue procesando…".</li><li>30 s: se corta y se verifica con la misma llave de idempotencia antes de reintentar.</li></ul>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ 11. IMPRESIÓN ============================ -->
+<section class="screen" id="s-impresion">
+  <div class="screen-head"><div><h2>11 · Impresión por sucursal</h2><p>Cada sucursal elige qué formato usa para cada documento.</p></div></div>
+  <div class="layout">
+    <div>
+      <div class="frame"><div class="app nosb"><div class="main"><div class="page">
+        <div class="ph"><div><h4>Configuración · Impresión</h4><small>Sucursal</small></div><div class="row"><select class="inp" style="width:220px"><option>Sucursal Centro</option><option>Sucursal Norte</option></select><button class="btn pri">Guardar</button></div></div>
+        <table>
+          <tr><th>Documento</th><th>Formato</th><th class="n">Copias</th><th>Impresión automática</th></tr>
+          <tr><td>Ticket de venta / nota de venta</td><td><select class="inp"><option>Ticket 80 mm</option><option>Ticket 58 mm</option><option>A5</option><option>A4</option></select></td><td class="n">1</td><td>Sí</td></tr>
+          <tr><td>Boleta electrónica</td><td><select class="inp"><option>Ticket 80 mm</option></select></td><td class="n">1</td><td>Sí</td></tr>
+          <tr><td>Factura electrónica</td><td><select class="inp"><option>A4</option><option>A5</option></select></td><td class="n">2</td><td>No</td></tr>
+          <tr><td>Cotización</td><td><select class="inp"><option>A4</option><option>A5</option></select></td><td class="n">1</td><td>No</td></tr>
+          <tr><td>Pedido / reserva</td><td><select class="inp"><option>A5</option><option>A4</option></select></td><td class="n">1</td><td>No</td></tr>
+          <tr><td>Recibo de cobro</td><td><select class="inp"><option>Ticket 58 mm</option></select></td><td class="n">1</td><td>Sí</td></tr>
+          <tr><td>Lista de armado</td><td><select class="inp"><option>A4</option></select></td><td class="n">1</td><td>No</td></tr>
+          <tr><td>Rótulo de envío</td><td><select class="inp"><option>100 × 150 mm</option><option>A6</option><option>A4 · 4 por hoja</option></select></td><td class="n">por bulto</td><td>No</td></tr>
+          <tr><td>Etiqueta de producto</td><td><select class="inp"><option>40 × 25 mm</option><option>A4 · 24 por hoja</option></select></td><td class="n">1</td><td>No</td></tr>
+        </table>
+        <div class="banner info sp12">Los comprobantes electrónicos usan el PDF de eFact en el formato elegido (A4, A5 o ticket). Los demás documentos los genera el sistema con la plantilla de la empresa.</div>
+      </div></div></div></div>
+    </div>
+    <aside class="notes">
+      <h3>Dónde vive</h3><span class="tag">Página</span><span class="tag">Configuración → Sucursales</span>
+      <h3>Permisos</h3><ul><li><code>settings.printing.update</code></li></ul>
+      <h3>Reglas</h3><ul><li>El formato es <b>por sucursal y por tipo de documento</b>.</li><li>Formatos: ticket 58/80 mm, A5, A4 y etiquetas.</li><li>Siempre se puede reimprimir en otro formato desde el documento.</li><li>Impresora y tamaño de papel se confirman en el cuadro de impresión del navegador.</li></ul>
+    </aside>
+  </div>
+</section>
+
+  </main>
+</div>
+
+<script>
+(function () {
+  var MENU = [
+    { item: 'Inicio' },
+    { group: 'Comercialización', items: ['POS', 'Cotizaciones', 'Pedidos', 'Ventas', 'Devoluciones y notas'] },
+    { group: 'Despacho y envíos', items: ['Por armar', 'Envíos', 'Agencias'] },
+    { group: 'Cobranzas y pagos', items: ['Por cobrar', 'Cobros', 'Por pagar', 'Pagos'] },
+    { group: 'Compras', items: ['Compras', 'Gastos'] },
+    { group: 'Inventario', items: ['Stock', 'Kardex', 'Ajustes', 'Traslados', 'Toma física'] },
+    { group: 'Catálogo', items: ['Productos', 'Categorías', 'Marcas', 'Atributos', 'Listas de precios', 'Etiquetas'] },
+    { group: 'Terceros', items: ['Clientes', 'Proveedores'] },
+    { group: 'Caja', items: ['Turnos', 'Movimientos'] },
+    { group: 'Facturación', items: ['Comprobantes', 'Pendientes y rechazados', 'Guías', 'Series'] },
+    { item: 'Reportes' },
+    { group: 'Configuración', items: ['Empresa', 'Sucursales y almacenes', 'Usuarios y perfiles', 'Medios de pago', 'Plantillas y marca', 'Notificaciones', 'Importar', 'Ayuda'] }
+  ];
+  var ACTIVE = { inicio: 'Inicio', vender: 'Pedidos', despachos: 'Envíos', cobranzas: 'Por cobrar', catalogo: 'Productos', caja: 'Turnos' };
+
+  document.querySelectorAll('[data-sidebar]').forEach(function (el) {
+    var active = ACTIVE[el.getAttribute('data-sidebar')];
+    var sb = document.createElement('div');
+    sb.className = 'sb';
+    var html = '<div class="brand"><span class="logo"></span>Mi Juguetería</div>';
+    MENU.forEach(function (m) {
+      if (m.item) {
+        html += '<a class="top-item' + (m.item === active ? ' on' : '') + '">' + m.item + '</a>';
+        return;
+      }
+      var open = m.items.indexOf(active) !== -1;
+      html += '<div class="grp' + (open ? ' open' : '') + '">' +
+        '<button class="grp-btn" type="button"><span>' + m.group + '</span><i>▸</i></button>' +
+        '<div class="sub">' +
+        m.items.map(function (it) { return '<a class="' + (it === active ? 'on' : '') + '">' + it + '</a>'; }).join('') +
+        '</div></div>';
+    });
+    sb.innerHTML = html;
+    sb.addEventListener('click', function (e) {
+      var b = e.target.closest('.grp-btn');
+      if (b) b.parentNode.classList.toggle('open');
+    });
+    el.insertBefore(sb, el.firstChild);
+  });
+
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(function (s) { s.classList.toggle('on', s.id === 's-' + id); });
+    document.querySelectorAll('.index a').forEach(function (a) { a.classList.toggle('on', a.getAttribute('data-go') === id); });
+    window.scrollTo(0, 0);
+  }
+  function route() { var id = (location.hash || '#home').slice(1); if (!document.getElementById('s-' + id)) id = 'home'; show(id); }
+  window.addEventListener('hashchange', route);
+  route();
+
+  document.querySelectorAll('[data-views]').forEach(function (seg) {
+    seg.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      var scr = seg.closest('.screen');
+      scr.querySelectorAll('.view').forEach(function (v) { v.classList.toggle('on', v.getAttribute('data-view') === b.getAttribute('data-v')); });
+    });
+  });
+
+  function toast(host, kind, title, body) {
+    var t = document.createElement('div');
+    t.className = 'toast ' + kind;
+    t.innerHTML = '<b>' + title + '</b><small>' + body + '</small>';
+    host.appendChild(t);
+    setTimeout(function () { t.remove(); }, 4200);
+  }
+
+  document.querySelectorAll('[data-states]').forEach(function (seg) {
+    var frame = document.getElementById(seg.getAttribute('data-states'));
+    seg.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      seg.querySelectorAll('button').forEach(function (x) { x.classList.toggle('on', x === b); });
+      var s = b.getAttribute('data-s');
+      if (frame.id === 'pos-frame') {
+        var pay = document.getElementById('pos-pay'), done = document.getElementById('pos-done');
+        pay.style.display = (s === 'pay' || s === 'processing') ? 'flex' : 'none';
+        done.style.display = (s === 'done') ? 'flex' : 'none';
+        frame.setAttribute('data-state', s === 'processing' ? 'processing' : 'normal');
+        var btn = document.getElementById('pos-confirm'), cancel = document.getElementById('pos-cancel');
+        var body = document.getElementById('pos-pay-body');
+        var proc = s === 'processing';
+        btn.innerHTML = proc ? '<i class="spin"></i>Registrando…' : 'Confirmar venta';
+        btn.disabled = proc; cancel.disabled = proc;
+        body.classList.toggle('lock', proc);
+      } else {
+        frame.setAttribute('data-state', s);
+        var lock = (s === 'processing' || s === 'timeout');
+        document.getElementById('int-fields').classList.toggle('lock', s === 'processing');
+        var x = document.getElementById('int-x'), c = document.getElementById('int-cancel'), save = document.getElementById('int-save');
+        x.disabled = s === 'processing'; c.disabled = s === 'processing'; save.disabled = s === 'processing';
+        document.getElementById('int-ruc').classList.toggle('err', s === 'error');
+      }
+    });
+  });
+
+  var confirmBtn = document.getElementById('pos-confirm');
+  if (confirmBtn) confirmBtn.addEventListener('click', function () {
+    var host = document.getElementById('pos-toasts');
+    toast(host, 'ok', 'Venta registrada', 'Mira los estados con los botones de arriba.');
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,13 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    # Nivel máximo razonable para código de aplicación.
+    level: 8
+    paths:
+        - app
+        - database
+        - routes
+    tmpDir: .phpstan
+    checkMissingCallableSignature: true
+    treatPhpDocTypesAsCertain: false
