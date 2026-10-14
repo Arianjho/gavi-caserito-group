@@ -6,12 +6,14 @@
 #   docker compose logs -f api web        (ver registros)
 #   docker compose down                   (detener; los datos de Redis/PostgreSQL se conservan)
 #
-# Puertos: web http://127.0.0.1:5173 (incluye /operador) · API http://127.0.0.1:8000
+# Puertos: web http://127.0.0.1:5173 (cambiable con WEB_PORT; incluye /operador) · API http://127.0.0.1:8000
 # El código se monta como volumen: los cambios se ven al instante (hot reload).
 # Si tenías `php artisan serve` o `vite` corriendo en tu equipo, deténlos: usan los mismos puertos.
 #
 # Base de datos: por defecto la de tu equipo (host.docker.internal:5432). Para usar el
 # PostgreSQL del perfil `db` ejecuta con:  DB_HOST=postgres DB_PORT=5432 docker compose --profile db up -d
+name: gavi-caserito
+
 x-api: &api
   build:
     context: ./apps/api
@@ -91,7 +93,7 @@ services:
              pnpm install --frozen-lockfile &&
              pnpm exec vite --host 0.0.0.0 --port 5173"
     ports:
-      - "5173:5173"
+      - "${WEB_PORT:-5173}:5173"
     volumes:
       - ./apps/web:/app
       - web_node_modules:/app/node_modules
