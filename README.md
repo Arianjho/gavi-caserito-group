@@ -27,7 +27,7 @@ docker-compose.prod.yml  Despliegue (ver construccion/05-despliegue.md)
 ## Puesta en marcha de la API
 
 ```bash
-docker compose up -d        # levanta todo (o solo Redis: docker compose up -d redis)
+docker compose up -d        # levanta todo: web :5380, API :8380, Redis :6390 (o solo Redis: docker compose up -d redis)
 
 cd apps/api
 composer install

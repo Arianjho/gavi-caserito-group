@@ -2,11 +2,13 @@
 #
 # Uso:
 #   docker compose up -d                  (todo; usa PostgreSQL del equipo en el puerto 5432)
-#   docker compose --profile db up -d     (también un PostgreSQL propio en el puerto 5433)
+#   docker compose --profile db up -d     (también un PostgreSQL propio en el puerto 5490)
 #   docker compose logs -f api web        (ver registros)
 #   docker compose down                   (detener; los datos de Redis/PostgreSQL se conservan)
 #
-# Puertos: web http://127.0.0.1:5173 (cambiable con WEB_PORT; incluye /operador) · API http://127.0.0.1:8000
+# Puertos del equipo (elegidos para no chocar con otros proyectos; cambiables con variables):
+#   web 5380 (WEB_PORT, incluye /operador) · API 8380 (API_PORT) · Redis 6390 (REDIS_PORT)
+#   PostgreSQL perfil db 5490 (PG_PORT) · Mailpit 1125/8125 (MAIL_SMTP_PORT/MAIL_UI_PORT)
 # El código se monta como volumen: los cambios se ven al instante (hot reload).
 # Si tenías `php artisan serve` o `vite` corriendo en tu equipo, deténlos: usan los mismos puertos.
 #
@@ -29,7 +31,7 @@ x-api: &api
     QUEUE_CONNECTION: redis
     CACHE_STORE: redis
     SESSION_DRIVER: redis
-    FRONTEND_URL: http://127.0.0.1:5173
+    FRONTEND_URL: http://127.0.0.1:${WEB_PORT:-5380}
   extra_hosts:
     - "host.docker.internal:host-gateway"
   depends_on:
@@ -41,7 +43,7 @@ services:
     image: redis:7-alpine
     container_name: caserito-redis
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT:-6390}:6379"
     command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - caserito_redis:/data
@@ -55,7 +57,7 @@ services:
     <<: *api
     container_name: caserito-api
     ports:
-      - "8000:8000"
+      - "${API_PORT:-8380}:8000"
     environment:
       <<: *api-env
       RUN_MIGRATIONS: "true"
@@ -93,7 +95,7 @@ services:
              pnpm install --frozen-lockfile &&
              pnpm exec vite --host 0.0.0.0 --port 5173"
     ports:
-      - "${WEB_PORT:-5173}:5173"
+      - "${WEB_PORT:-5380}:5173"
     volumes:
       - ./apps/web:/app
       - web_node_modules:/app/node_modules
@@ -110,7 +112,7 @@ services:
     container_name: caserito-postgres
     profiles: ["db"]
     ports:
-      - "5433:5432"
+      - "${PG_PORT:-5490}:5432"
     environment:
       POSTGRES_DB: caserito
       POSTGRES_USER: caserito_owner
@@ -128,8 +130,8 @@ services:
     container_name: caserito-mailpit
     profiles: ["mail"]
     ports:
-      - "1025:1025"
-      - "8025:8025"
+      - "${MAIL_SMTP_PORT:-1125}:1025"
+      - "${MAIL_UI_PORT:-8125}:8025"
 
 volumes:
   caserito_redis:

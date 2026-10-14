@@ -10,7 +10,7 @@ docker compose logs -f api web
 docker compose down
 ```
 
-- Web: http://127.0.0.1:5173 (el panel del proveedor está en `/operador`) · API: http://127.0.0.1:8000.
+- Web: http://127.0.0.1:5380 (el panel del proveedor está en `/operador`) · API: http://127.0.0.1:8380 (Redis 6390).
 - Usa el PostgreSQL de tu equipo (puerto 5432, base `caserito`); la API migra y siembra al arrancar.
 - Si tenías `php artisan serve` o `vite` corriendo en el equipo, deténlos: usan los mismos puertos.
 - La primera vez instala dependencias dentro de los contenedores (tarda unos minutos).
