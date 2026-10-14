@@ -13,7 +13,8 @@ apps/
 diseno/           Decisiones, alcance, arquitectura, modelo de datos, flujos y sistema visual
 investigacion/    Referencias y análisis de mercado
 construccion/     Plan de construcción y estándares de código
-docker-compose.yml  Servicios de apoyo (Redis; PostgreSQL y Mailpit opcionales)
+docker-compose.yml  Entorno local completo (API, cola, planificador, web y Redis; PostgreSQL y Mailpit opcionales)
+docker-compose.prod.yml  Despliegue (ver construccion/05-despliegue.md)
 ```
 
 ## Requisitos
@@ -26,7 +27,7 @@ docker-compose.yml  Servicios de apoyo (Redis; PostgreSQL y Mailpit opcionales)
 ## Puesta en marcha de la API
 
 ```bash
-docker compose up -d redis
+docker compose up -d        # levanta todo (o solo Redis: docker compose up -d redis)
 
 cd apps/api
 composer install

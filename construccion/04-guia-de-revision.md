@@ -2,17 +2,20 @@
 
 Para revisar todo lo construido sin perderse. Estado detallado: `03-estado-actual.md`.
 
-## Cómo levantar
+## Cómo levantar (un solo comando)
 
 ```
-# API (desde apps/api)
-php artisan serve --port=8000
-php artisan queue:work          # cola de mensajes y facturación
-php artisan schedule:work       # reconciliador fiscal y recordatorio de deudas
-
-# Web (desde apps/web)
-npx vite --host 127.0.0.1 --port 5173
+docker compose up -d        # Redis + API + cola + planificador + web
+docker compose logs -f api web
+docker compose down
 ```
+
+- Web: http://127.0.0.1:5173 (el panel del proveedor está en `/operador`) · API: http://127.0.0.1:8000.
+- Usa el PostgreSQL de tu equipo (puerto 5432, base `caserito`); la API migra y siembra al arrancar.
+- Si tenías `php artisan serve` o `vite` corriendo en el equipo, deténlos: usan los mismos puertos.
+- La primera vez instala dependencias dentro de los contenedores (tarda unos minutos).
+
+Sin Docker, a mano: `php artisan serve`, `queue:work`, `schedule:work` en `apps/api` y `npx vite` en `apps/web`.
 
 Usuario de desarrollo del seeder: `dev@caserito.test` / `caserito-dev` (solo local).
 

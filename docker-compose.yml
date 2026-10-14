@@ -1,6 +1,39 @@
-# Servicios de apoyo para desarrollo local de Gavi Caserito.
-# Uso:  docker compose up -d redis            (solo Redis; PostgreSQL local ya existe)
-#       docker compose --profile db up -d     (también PostgreSQL en el puerto 5433)
+# Entorno local completo de Gavi Caserito: API, cola, planificador, web y Redis.
+#
+# Uso:
+#   docker compose up -d                  (todo; usa PostgreSQL del equipo en el puerto 5432)
+#   docker compose --profile db up -d     (también un PostgreSQL propio en el puerto 5433)
+#   docker compose logs -f api web        (ver registros)
+#   docker compose down                   (detener; los datos de Redis/PostgreSQL se conservan)
+#
+# Puertos: web http://127.0.0.1:5173 (incluye /operador) · API http://127.0.0.1:8000
+# El código se monta como volumen: los cambios se ven al instante (hot reload).
+# Si tenías `php artisan serve` o `vite` corriendo en tu equipo, deténlos: usan los mismos puertos.
+#
+# Base de datos: por defecto la de tu equipo (host.docker.internal:5432). Para usar el
+# PostgreSQL del perfil `db` ejecuta con:  DB_HOST=postgres DB_PORT=5432 docker compose --profile db up -d
+x-api: &api
+  build:
+    context: ./apps/api
+    dockerfile: Dockerfile.dev
+  volumes:
+    - ./apps/api:/app
+    - api_vendor:/app/vendor
+  environment: &api-env
+    DB_HOST: ${DB_HOST:-host.docker.internal}
+    DB_PORT: ${DB_PORT:-5432}
+    REDIS_HOST: redis
+    REDIS_CLIENT: predis
+    QUEUE_CONNECTION: redis
+    CACHE_STORE: redis
+    SESSION_DRIVER: redis
+    FRONTEND_URL: http://127.0.0.1:5173
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
+  depends_on:
+    redis:
+      condition: service_healthy
+
 services:
   redis:
     image: redis:7-alpine
@@ -15,6 +48,60 @@ services:
       interval: 10s
       timeout: 3s
       retries: 5
+
+  api:
+    <<: *api
+    container_name: caserito-api
+    ports:
+      - "8000:8000"
+    environment:
+      <<: *api-env
+      RUN_MIGRATIONS: "true"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8000/up"]
+      interval: 10s
+      timeout: 5s
+      retries: 40
+      start_period: 20s
+
+  queue:
+    <<: *api
+    container_name: caserito-queue
+    command: ["php", "artisan", "queue:work", "--sleep=1", "--tries=3"]
+    depends_on:
+      api:
+        condition: service_healthy
+
+  scheduler:
+    <<: *api
+    container_name: caserito-scheduler
+    command: ["php", "artisan", "schedule:work"]
+    depends_on:
+      api:
+        condition: service_healthy
+
+  web:
+    image: node:22-alpine
+    container_name: caserito-web
+    working_dir: /app
+    # pnpm se instala una vez; node_modules vive en un volumen para no usar el del equipo.
+    command: >
+      sh -c "npm install -g pnpm@10 --no-fund --no-audit &&
+             pnpm config set store-dir /pnpm-store &&
+             pnpm install --frozen-lockfile &&
+             pnpm exec vite --host 0.0.0.0 --port 5173"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/web:/app
+      - web_node_modules:/app/node_modules
+      - web_pnpm_store:/pnpm-store
+    environment:
+      VITE_API_PROXY: http://api:8000
+      VITE_POLLING: "true"
+      CI: "true"
+    depends_on:
+      - api
 
   postgres:
     image: postgres:17-alpine
@@ -45,3 +132,6 @@ services:
 volumes:
   caserito_redis:
   caserito_pg:
+  api_vendor:
+  web_node_modules:
+  web_pnpm_store:

@@ -1,0 +1,16 @@
+# Imagen de desarrollo de la API: PHP CLI con las extensiones y Composer.
+# El código se monta como volumen (ver docker-compose.yml); no se copia aquí.
+FROM php:8.3-cli-alpine
+
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+RUN install-php-extensions pdo_pgsql bcmath intl pcntl
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+COPY docker/dev-entrypoint.sh /usr/local/bin/dev-entrypoint.sh
+RUN chmod +x /usr/local/bin/dev-entrypoint.sh
+EXPOSE 8000
+ENTRYPOINT ["dev-entrypoint.sh"]
+# No se usa `artisan serve`: descarta las variables del contenedor y leería el .env del equipo.
+ENV PHP_CLI_SERVER_WORKERS=4
+CMD ["php", "-S", "0.0.0.0:8000", "-t", "public", "vendor/laravel/framework/src/Illuminate/Foundation/resources/server.php"]
