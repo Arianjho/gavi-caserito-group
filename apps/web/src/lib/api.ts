@@ -69,6 +69,8 @@ export interface RequestOptions {
   method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
   /** Cuerpo JSON. */
   body?: unknown;
+  /** Cuerpo multipart (subida de archivos); reemplaza a `body`. */
+  formData?: FormData;
   /** Llave de idempotencia para operaciones que crean registros. */
   idempotencyKey?: string;
   /** Señal para cancelar la petición. */
@@ -92,13 +94,14 @@ export async function api<T>(path: string, options: RequestOptions = {}): Promis
   const operator = options.scope === "operator";
   const token = operator ? getOperatorToken() : getToken();
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  if (options.body !== undefined) headers["Content-Type"] = "application/json";
+  if (options.body !== undefined && !options.formData) headers["Content-Type"] = "application/json";
   if (options.idempotencyKey) headers["Idempotency-Key"] = options.idempotencyKey;
 
   let response: Response;
   try {
     const init: RequestInit = { method: options.method ?? "GET", headers };
-    if (options.body !== undefined) init.body = JSON.stringify(options.body);
+    if (options.formData) init.body = options.formData;
+    else if (options.body !== undefined) init.body = JSON.stringify(options.body);
     if (options.signal) init.signal = options.signal;
     response = await fetch(`${BASE_URL}${path}`, init);
   } catch (error) {

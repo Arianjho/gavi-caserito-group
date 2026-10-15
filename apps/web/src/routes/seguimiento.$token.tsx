@@ -3,6 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { ExternalLink } from "lucide-react";
 
 import { StatusChip } from "@/components/common/status-chip";
+import { DEFAULT_BRAND } from "@/lib/brand";
 import { AuthShell } from "@/features/auth/auth-shell";
 import { api } from "@/lib/api";
 import { formatPen } from "@/lib/money";
@@ -22,7 +23,16 @@ interface ShipmentView {
 interface TrackingView extends ShipmentView {
   kind: "order" | "shipment";
   business: string;
-  brand?: { color: string | null; tagline: string | null };
+  brand?: {
+    color: string | null;
+    tagline: string | null;
+    name: string;
+    logo_url: string | null;
+    email: string | null;
+    phone: string | null;
+    footer: string | null;
+    powered_by: boolean;
+  };
   status: string;
   total?: string;
   prepaid?: string;
@@ -111,6 +121,7 @@ function TrackingPage() {
     <AuthShell
       title={data.kind === "order" ? `Pedido #${data.number}` : `Envío #${data.number}`}
       description={data.business}
+      brand={{ ...DEFAULT_BRAND, ...(data.brand ?? {}), custom: true }}
     >
       <div className="space-y-4">
         {data.brand?.color && (
@@ -145,6 +156,14 @@ function TrackingPage() {
         {data.shipments?.map((shipment) => (
           <Timeline key={shipment.number} shipment={shipment} />
         ))}
+        {(data.brand?.phone || data.brand?.email || data.brand?.footer) && (
+          <div className="border-t border-border pt-3 text-xs text-muted-foreground">
+            {(data.brand.phone || data.brand.email) && (
+              <p>{[data.brand.phone, data.brand.email].filter(Boolean).join(" · ")}</p>
+            )}
+            {data.brand.footer && <p className="mt-1">{data.brand.footer}</p>}
+          </div>
+        )}
       </div>
     </AuthShell>
   );

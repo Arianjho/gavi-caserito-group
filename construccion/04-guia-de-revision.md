@@ -48,5 +48,5 @@ cd apps/web && pnpm quality && pnpm build
 
 ## Pendiente conocido
 
-Notas de crédito y baja fiscales, aprovisionamiento por bridge, portal del cliente con cuenta, marca blanca
-completa (dominio y logo), guía de remisión, picking con ubicaciones, lotes/series, staging y precios/planes.
+Aprovisionamiento por bridge, portal del cliente con cuenta, plantillas de PDF propias, picking con ubicaciones,
+lotes/series, staging y precios/planes.

@@ -125,7 +125,7 @@ Tamaño total: **M–L**. Salida: ADRs resueltos (§20 de `02-arquitectura.md`) 
 - `Notifier` con Evolution; plantillas, reglas, consentimiento, límites y bitácora.
 - Portal del cliente por enlace mágico; repetir pedido.
 - Panel de inicio y reportes de v1.
-- Marca blanca: logo, color y plantillas de PDF por documento.
+- Marca blanca: logo, color, nombre, contacto, pie y dominio propio (hecho); plantillas de PDF por documento (pendiente; hoy se imprime desde el navegador).
 - Tutoriales dentro de la aplicación y ayuda contextual.
 
 **Aceptación:** el cliente recibe aviso por cada cambio de estado; el portal no expone datos de otros clientes (pruebas de seguridad); las plantillas respetan el logo subido.
@@ -205,7 +205,7 @@ Antes de completar la Fase 0, construir un recorrido mínimo, en un sprint corto
 | 7 Fiscal | Parcial | `FiscalEngine` + cliente Gavi eFact (idempotente con `external_id`), cola con reintentos, webhook con HMAC y deduplicación, bandeja y configuración. Reconciliador cada 10 min. Faltan aprovisionamiento por bridge, NC/baja y cupo mensual |
 | 1 Inventario | Parcial | Saldos, movimientos con costo promedio, ajustes, kardex, traslados entre almacenes y toma física. Faltan reservas por ubicación y lotes/series |
 | 2 Catálogo | Parcial | Importación de productos desde Excel con validación previa. Variantes por combinación, listas de precios con escalas y etiquetas con código de barras. Catálogo de atributos con valores sugeridos |
-| 8 Panel | Parcial | Panel de inicio con datos reales por permiso. Reportes de ventas, margen y resultado estimado. Avisos por WhatsApp (Evolution) con consentimiento. Recordatorio automático de deudas. Faltan portal del cliente con cuenta y marca blanca |
+| 8 Panel | Parcial | Panel de inicio con datos reales por permiso. Reportes de ventas, margen y resultado estimado. Avisos por WhatsApp (Evolution) con consentimiento. Recordatorio automático de deudas. Marca blanca (logo, color, nombre, dominio propio verificado, sincronía de logo con eFact). Falta portal del cliente con cuenta |
 
 ## 9. Puertas de calidad por fase
 Una fase no se da por cerrada hasta cumplir:

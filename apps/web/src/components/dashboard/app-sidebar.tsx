@@ -1,8 +1,9 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { ChevronRight, Sparkles } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { navigation, type NavEntry, type NavLeaf } from "@/app/navigation";
+import { BrandLogo } from "@/features/brand/brand-logo";
 import { hasPermission, useSession } from "@/features/auth/use-session";
 import { Badge } from "@/components/ui/badge";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -103,14 +104,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-3 py-4">
         <Link to="/" className="flex items-center gap-2.5">
-          <span className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-brand text-sidebar-primary-foreground">
-            <Sparkles className="size-5" />
-          </span>
-          {!collapsed && (
-            <span className="min-w-0 truncate font-display text-lg font-extrabold tracking-tight">
-              Gavi <span className="text-sidebar-primary">Caserito</span>
-            </span>
-          )}
+          <BrandLogo compact={collapsed} />
         </Link>
       </SidebarHeader>
 

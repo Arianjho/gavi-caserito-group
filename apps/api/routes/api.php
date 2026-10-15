@@ -27,6 +27,8 @@ use App\Modules\Notifications\Http\Controllers\NotificationController;
 use App\Modules\Platform\Http\Controllers\AuditLogController;
 use App\Modules\Platform\Http\Controllers\AuthController;
 use App\Modules\Platform\Http\Controllers\BranchController;
+use App\Modules\Platform\Http\Controllers\BrandAssetController;
+use App\Modules\Platform\Http\Controllers\BrandDomainController;
 use App\Modules\Platform\Http\Controllers\BrandingController;
 use App\Modules\Platform\Http\Controllers\CompanyController;
 use App\Modules\Platform\Http\Controllers\OperatorAuthController;
@@ -75,6 +77,10 @@ Route::prefix('v1')->group(function () {
 
     Route::get('public/tracking/{token}', [PublicTrackingController::class, 'show'])
         ->middleware('throttle:60,1')->name('public.tracking');
+    Route::get('public/brand', [BrandDomainController::class, 'resolve'])
+        ->middleware('throttle:120,1')->name('public.brand');
+    Route::get('public/brand/{tenant}/{variant}', [BrandAssetController::class, 'show'])
+        ->middleware('throttle:240,1')->name('public.brand.asset');
 
     Route::post('webhooks/efact/{companyId}', EfactWebhookController::class)
         ->middleware('throttle:120,1')->name('webhooks.efact');
@@ -243,10 +249,21 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:fiscal.queue.retry')->name('fiscal.guides.retry');
 
         Route::get('plan', [PlanController::class, 'show'])->name('plan.show');
+        Route::get('brand', [BrandingController::class, 'mine'])->name('brand.mine');
         Route::get('branding', [BrandingController::class, 'show'])
             ->middleware('permission:settings.template.view')->name('branding.show');
         Route::put('branding', [BrandingController::class, 'update'])
             ->middleware('permission:settings.template.update')->name('branding.update');
+        Route::post('branding/assets/{variant}', [BrandAssetController::class, 'store'])
+            ->middleware('permission:settings.template.update')->name('branding.assets.store');
+        Route::delete('branding/assets/{variant}', [BrandAssetController::class, 'destroy'])
+            ->middleware('permission:settings.template.update')->name('branding.assets.destroy');
+        Route::post('branding/logo/sync', [BrandAssetController::class, 'syncEfact'])
+            ->middleware('permission:settings.template.update')->name('branding.logo.sync');
+        Route::put('branding/domain', [BrandDomainController::class, 'update'])
+            ->middleware('permission:settings.template.update')->name('branding.domain.update');
+        Route::post('branding/domain/verify', [BrandDomainController::class, 'verify'])
+            ->middleware('permission:settings.template.update')->name('branding.domain.verify');
         Route::get('collections', [PaymentLedgerController::class, 'collections'])
             ->middleware('permission:payments.collection.view')->name('collections.index');
         Route::get('payments', [PaymentLedgerController::class, 'payments'])

@@ -77,7 +77,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Devolución de anticipos | `POST orders/{id}/refund` (solo pedidos cancelados; total o parcial; efectivo sale como egreso del turno abierto); `sales.order_refunds` append-only |
 | Cola de armado | `GET orders?status=confirmed,in_dispatch&with_lines=1`; pantalla Por armar ordena por fecha solicitada y avanza el estado. Sin asignación a armador ni ubicaciones todavía |
 | Estado de cuenta | `GET customers/{id}/statement`: ventas y cobros en orden con saldo corrido; diálogo con impresión en Clientes |
-| Marca | `GET/PUT branding` (color #RRGGBB y lema por cuenta); el seguimiento público devuelve `brand` y la pantalla lo aplica. Marca blanca completa (dominio propio, logo) pendiente |
+| Marca blanca | `GET/PUT branding` (nombre comercial, color #RRGGBB, lema, correo, teléfono, pie, «Con tecnología de…»), `GET brand` (marca para cualquier usuario), `POST|DELETE branding/assets/{logo\|logo_dark\|icon}` (PNG/JPG/WebP ≤ 2 MB, validación de medidas; el logo principal se envía a eFact con `POST empresa/logo` y `POST branding/logo/sync` lo reenvía), `PUT branding/domain` + `POST branding/domain/verify` (dominio propio verificado por TXT `_caserito.{dominio}`), públicos `GET public/brand?domain=` y `GET public/brand/{tenant}/{variant}`. El panel aplica color (con contraste AA calculado, claro/oscuro), logo, nombre, favicon y título; login, seguimiento y ticket usan la marca. Archivos en disco `local` bajo `brand/{tenant}`. Sin plantillas de PDF propias: los impresos son de navegador |
 | Exportar y valorizar | CSV (con BOM para Excel) desde Cobros, Pagos y Ventas por producto (`lib/csv.ts`); Stock muestra valor a costo promedio |
 | Panel SaaS (proveedor) | Operadores en `core.operators` (fuera de toda cuenta), login propio `POST v1/operator/auth/login` con throttle y tokens que no sirven en rutas de cuentas (ni al revés). `GET/POST operator/tenants`, `GET operator/tenants/{id}`, `PUT operator/tenants/{id}/plan` (plan, estado, fin de prueba, topes), con bitácora inmutable. Cuenta `suspended`/`closed`: 403 `account_suspended` en login y API. Pantallas `/operador/login` y `/operador`. Crear operador: `php artisan operator:create correo nombre`; en desarrollo lo crea el seeder |
 | Pedidos | `orders`, `orders/{id}/advance`, `orders/{id}/deliver`, `orders/{id}/cancel` |
@@ -109,3 +109,9 @@ Notas de crédito y baja fiscales, portal del cliente con cuenta (estado de cuen
 - Forma exacta de `descuentos` por ítem y de `cuotas` para ventas a crédito (la documentación local no las muestra completas).
 - Host de producción (`apifact.gavi-cloud.com` según OpenAPI vs. `apisunatv2.kodevo.es` en `CONTEXT.md`).
 - Probar emisión end-to-end en entorno beta antes de activar producción.
+
+### Marca blanca: qué falta para producción
+- **Dominio propio**: la verificación prueba propiedad por DNS, pero el servidor web debe atender ese nombre (CNAME/A al host del front y proxy de `/api` hacia la API) y tener su certificado TLS (p. ej. Caddy con TLS bajo demanda). Sin eso, el dominio verificado no abre la aplicación.
+- **Límite por plan**: el plan `white_label` aún no condiciona logos ni dominio (no existe tabla de features); hoy cualquier cuenta puede usarlos.
+- **Logo en eFact**: el contrato `POST /empresa/logo` (campo `logo`, multipart) se tomó del código de `plataform-api-sunat`; verificar en beta.
+- **Plantillas de PDF**: no hay generador propio; los tickets y el estado de cuenta se imprimen desde el navegador con el logo, teléfono y pie de la marca.

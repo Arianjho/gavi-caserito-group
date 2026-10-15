@@ -1,9 +1,9 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, redirect, useNavigate } from "@tanstack/react-router";
-import { Sparkles } from "lucide-react";
 import { useState, type FormEvent } from "react";
 
 import { ActionButton } from "@/components/common/action-button";
+import { BrandLogo, PoweredBy } from "@/features/brand/brand-logo";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -49,13 +49,8 @@ function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="w-full max-w-sm">
-        <div className="mb-6 flex items-center justify-center gap-2.5">
-          <span className="grid size-10 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
-            <Sparkles className="size-5" />
-          </span>
-          <span className="font-display text-2xl font-extrabold tracking-tight">
-            Gavi <span className="text-primary">Caserito</span>
-          </span>
+        <div className="mb-6 flex items-center justify-center">
+          <BrandLogo size="lg" />
         </div>
         <Card>
           <CardContent className="p-6">
@@ -106,6 +101,7 @@ function LoginPage() {
             </p>
           </CardContent>
         </Card>
+        <PoweredBy />
       </div>
     </div>
   );

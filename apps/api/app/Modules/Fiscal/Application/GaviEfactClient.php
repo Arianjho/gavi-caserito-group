@@ -88,6 +88,21 @@ final class GaviEfactClient implements FiscalEngine
     }
 
     /**
+     * Envía el logo de la empresa para el PDF de sus comprobantes.
+     *
+     * @param array{base_url: string, api_key: string, api_secret: string} $credentials Conexión.
+     * @param string $path Ruta absoluta de la imagen (PNG, JPG o WebP de hasta 2 MB).
+     *
+     * @throws FiscalException Si eFact no lo acepta o no responde.
+     */
+    public function uploadLogo(array $credentials, string $path): void
+    {
+        $contents = (string) file_get_contents($path);
+        $this->send(fn (): Response => $this->http($credentials)->asMultipart()
+            ->attach('logo', $contents, basename($path))->post('empresa/logo'));
+    }
+
+    /**
      * Cliente HTTP con credenciales y tiempos de espera.
      *
      * @param array{base_url: string, api_key: string, api_secret: string} $credentials Conexión.

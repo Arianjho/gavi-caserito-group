@@ -55,5 +55,6 @@ it('el seguimiento publico lleva la marca configurada del negocio', function ():
 
     $view = $this->getJson("/api/v1/public/tracking/{$order['public_token']}")->assertOk()->json('data');
 
-    expect($view['brand'])->toBe(['color' => '#ff6600', 'tagline' => 'Juguetes con cariño']);
+    expect($view['brand'])->toMatchArray(['color' => '#ff6600', 'tagline' => 'Juguetes con cariño'])
+        ->and($view['brand'])->toHaveKeys(['name', 'logo_url', 'email', 'phone', 'footer', 'powered_by']);
 });

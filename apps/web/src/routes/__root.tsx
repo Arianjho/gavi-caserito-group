@@ -7,6 +7,7 @@ import {
   type ErrorComponentProps,
 } from "@tanstack/react-router";
 
+import { BrandEffects } from "@/features/brand/brand-effects";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
@@ -73,6 +74,7 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <TooltipProvider delayDuration={200}>
+          <BrandEffects />
           <Outlet />
           <Toaster richColors closeButton position="bottom-right" />
         </TooltipProvider>

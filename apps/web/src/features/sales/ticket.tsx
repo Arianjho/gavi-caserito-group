@@ -1,3 +1,4 @@
+import { useBrand } from "@/features/brand/use-brand";
 import { formatPen } from "@/lib/money";
 
 /** Línea de un documento de venta tal como la entrega la API. */
@@ -54,10 +55,15 @@ interface TicketProps {
  * oculta (ver estilos de impresión en `styles.css`).
  */
 export function Ticket({ sale, companyName }: TicketProps) {
+  const brand = useBrand();
   const issued = new Date(sale.issued_at);
   return (
     <div className="print-area mx-auto w-[80mm] bg-white p-3 font-mono text-[11px] leading-tight text-black">
+      {brand.logo_url && (
+        <img src={brand.logo_url} alt="" className="mx-auto mb-1 max-h-12 grayscale" />
+      )}
       <p className="text-center text-sm font-bold">{companyName}</p>
+      {brand.phone && <p className="text-center">{brand.phone}</p>}
       <p className="text-center">NOTA DE VENTA</p>
       <p className="text-center font-bold">
         {sale.series}-{String(sale.number).padStart(6, "0")}
@@ -96,7 +102,7 @@ export function Ticket({ sale, companyName }: TicketProps) {
           <span>{formatPen(payment.amount)}</span>
         </p>
       ))}
-      <p className="mt-3 text-center">Gracias por tu compra</p>
+      <p className="mt-3 text-center">{brand.footer ?? "Gracias por tu compra"}</p>
     </div>
   );
 }

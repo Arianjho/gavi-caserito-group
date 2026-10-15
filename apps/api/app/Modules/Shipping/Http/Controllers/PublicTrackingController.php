@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Shipping\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Platform\Application\Branding\BrandProfile;
 use App\Shared\Tenancy\TenantContext;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
@@ -17,6 +18,11 @@ use stdClass;
  */
 class PublicTrackingController extends Controller
 {
+    /**
+     * @param BrandProfile $brand Marca de la cuenta.
+     */
+    public function __construct(private readonly BrandProfile $brand) {}
+
     /**
      * Estados del pedido en lenguaje para el cliente.
      *
@@ -148,16 +154,20 @@ class PublicTrackingController extends Controller
     }
 
     /**
-     * Color y lema de la marca de la cuenta dueña de la empresa.
+     * Marca de la cuenta dueña de la empresa: color, lema, logo, contacto y pie.
      *
      * @param string $companyId Empresa.
-     * @return array{color: string|null, tagline: string|null}
+     * @return array<string, mixed>
      */
     private function brandOf(string $companyId): array
     {
-        $row = DB::table('core.companies as c')->join('core.tenants as t', 't.id', '=', 'c.tenant_id')
-            ->where('c.id', $companyId)->first(['t.brand_color', 't.brand_tagline']);
+        $tenantId = (string) DB::table('core.companies')->where('id', $companyId)->value('tenant_id');
+        $brand = $this->brand->forTenant($tenantId);
 
-        return ['color' => $row->brand_color ?? null, 'tagline' => $row->brand_tagline ?? null];
+        return [
+            'color' => $brand['color'], 'tagline' => $brand['tagline'], 'name' => $brand['name'],
+            'logo_url' => $brand['logo_url'], 'email' => $brand['email'], 'phone' => $brand['phone'],
+            'footer' => $brand['footer'], 'powered_by' => $brand['powered_by'],
+        ];
     }
 }
