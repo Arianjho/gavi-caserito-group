@@ -36,7 +36,7 @@ cd apps/web && pnpm quality && pnpm build
 6. **Cobranza:** por cobrar, cobro repartido entre deudas, estado de cuenta, recordatorio manual y automático.
 7. **Compras:** compra con ingreso de stock, pago parcial, devolución al proveedor, gastos por rubro.
 8. **Caja:** turno, arqueo, caja chica.
-9. **Facturación:** configurar Gavi eFact, comprobantes, bandeja de pendientes.
+9. **Facturación:** configurar Gavi eFact y series (boletas, facturas, notas de crédito, guías), comprobantes, bandeja de pendientes; sobre un comprobante aceptado: nota de crédito (total, parcial o por monto, con devolución de stock opcional), baja (hasta 7 días) y guía de remisión; bandejas de notas y guías.
 10. **Administración:** usuarios, perfiles y permisos, auditoría, plan y límites, marca.
 11. **Panel del proveedor:** `/operador` (operador de desarrollo `operador@caserito.test` / `caserito-operador`): crear cuenta, plan y límites, suspender y reactivar.
 

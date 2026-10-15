@@ -15,6 +15,8 @@ use App\Modules\Catalog\Http\Controllers\ItemImportController;
 use App\Modules\Catalog\Http\Controllers\PriceListController;
 use App\Modules\Catalog\Http\Controllers\SupplierController;
 use App\Modules\Catalog\Http\Controllers\VariantController;
+use App\Modules\Fiscal\Http\Controllers\CreditNoteController;
+use App\Modules\Fiscal\Http\Controllers\DispatchGuideController;
 use App\Modules\Fiscal\Http\Controllers\EfactWebhookController;
 use App\Modules\Fiscal\Http\Controllers\FiscalDocumentController;
 use App\Modules\Fiscal\Http\Controllers\FiscalSettingsController;
@@ -225,6 +227,20 @@ Route::prefix('v1')->group(function () {
             ->middleware('permission:fiscal.document.emit')->name('fiscal.documents.emit');
         Route::post('fiscal/documents/{id}/retry', [FiscalDocumentController::class, 'retry'])
             ->middleware('permission:fiscal.queue.retry')->name('fiscal.documents.retry');
+        Route::post('fiscal/documents/{id}/void', [FiscalDocumentController::class, 'void'])
+            ->middleware('permission:fiscal.document.void')->name('fiscal.documents.void');
+        Route::post('fiscal/documents/{id}/credit-notes', [CreditNoteController::class, 'store'])
+            ->middleware('permission:fiscal.document.emit')->name('fiscal.credit_notes.store');
+        Route::get('fiscal/credit-notes', [CreditNoteController::class, 'index'])
+            ->middleware('permission:fiscal.document.view')->name('fiscal.credit_notes.index');
+        Route::post('fiscal/credit-notes/{id}/retry', [CreditNoteController::class, 'retry'])
+            ->middleware('permission:fiscal.queue.retry')->name('fiscal.credit_notes.retry');
+        Route::get('fiscal/dispatch-guides', [DispatchGuideController::class, 'index'])
+            ->middleware('permission:fiscal.dispatch.view')->name('fiscal.guides.index');
+        Route::post('fiscal/dispatch-guides', [DispatchGuideController::class, 'store'])
+            ->middleware('permission:fiscal.dispatch.emit')->name('fiscal.guides.store');
+        Route::post('fiscal/dispatch-guides/{id}/retry', [DispatchGuideController::class, 'retry'])
+            ->middleware('permission:fiscal.queue.retry')->name('fiscal.guides.retry');
 
         Route::get('plan', [PlanController::class, 'show'])->name('plan.show');
         Route::get('branding', [BrandingController::class, 'show'])

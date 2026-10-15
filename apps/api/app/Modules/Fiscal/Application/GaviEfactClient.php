@@ -56,6 +56,38 @@ final class GaviEfactClient implements FiscalEngine
     }
 
     /**
+     * Envía un documento a un recurso de eFact.
+     *
+     * @param array{base_url: string, api_key: string, api_secret: string} $credentials Conexión.
+     * @param string $resource Recurso (`notas-credito`, `anulaciones`, `resumenes`, `guias-remision`).
+     * @param array<string, mixed> $payload Cuerpo del documento.
+     * @return array{efact_id: string, series: string|null, number: string|null, status: string, code: string|null, description: string|null}
+     */
+    public function submit(array $credentials, string $resource, array $payload): array
+    {
+        return $this->parse($this->send(fn (): Response => $this->http($credentials)->post($resource, $payload)));
+    }
+
+    /**
+     * Consulta el estado de un documento de un recurso de eFact.
+     *
+     * Las notas de crédito se consultan por su detalle; bajas, resúmenes y
+     * guías tienen un endpoint `/estado` que consulta el ticket en SUNAT.
+     *
+     * @param array{base_url: string, api_key: string, api_secret: string} $credentials Conexión.
+     * @param string $resource Recurso.
+     * @param string $efactId Identificador en eFact.
+     * @return array{status: string, code: string|null, description: string|null}
+     */
+    public function query(array $credentials, string $resource, string $efactId): array
+    {
+        $path = $resource === 'notas-credito' ? "{$resource}/{$efactId}" : "{$resource}/{$efactId}/estado";
+        $parsed = $this->parse($this->send(fn (): Response => $this->http($credentials)->get($path)));
+
+        return ['status' => $parsed['status'], 'code' => $parsed['code'], 'description' => $parsed['description']];
+    }
+
+    /**
      * Cliente HTTP con credenciales y tiempos de espera.
      *
      * @param array{base_url: string, api_key: string, api_secret: string} $credentials Conexión.
@@ -129,13 +161,24 @@ final class GaviEfactClient implements FiscalEngine
         }
         $sunat = is_array($data['sunat'] ?? null) ? $data['sunat'] : [];
 
+        // Facturas y notas anidan el estado en `sunat`; bajas, resúmenes y guías lo traen plano.
         return [
-            'efact_id' => (string) ($data['id'] ?? ''),
+            'efact_id' => (string) ($data['id'] ?? $data['id_resumen'] ?? ''),
             'series' => isset($data['serie']) ? (string) $data['serie'] : null,
             'number' => isset($data['correlativo']) ? (string) $data['correlativo'] : null,
-            'status' => (string) ($sunat['estado'] ?? 'pendiente'),
-            'code' => isset($sunat['codigo']) ? (string) $sunat['codigo'] : null,
-            'description' => isset($sunat['descripcion']) ? (string) $sunat['descripcion'] : null,
+            'status' => (string) ($sunat['estado'] ?? $data['sunat_status'] ?? $data['estado_sunat'] ?? 'pendiente'),
+            'code' => $this->text($sunat['codigo'] ?? $data['sunat_code'] ?? $data['codigo_sunat'] ?? null),
+            'description' => $this->text($sunat['descripcion'] ?? $data['sunat_description'] ?? $data['descripcion_sunat'] ?? null),
         ];
+    }
+
+    /**
+     * Convierte un valor opcional de la respuesta en texto o nulo.
+     *
+     * @param mixed $value Valor recibido.
+     */
+    private function text(mixed $value): ?string
+    {
+        return is_scalar($value) ? (string) $value : null;
     }
 }

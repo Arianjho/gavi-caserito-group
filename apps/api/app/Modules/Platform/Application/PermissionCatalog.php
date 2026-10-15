@@ -68,6 +68,7 @@ final class PermissionCatalog
         'shipping.label.print',
         'fiscal.document.view',
         'fiscal.document.emit',
+        'fiscal.document.void',
         'fiscal.queue.view',
         'fiscal.queue.retry',
         'fiscal.dispatch.view',

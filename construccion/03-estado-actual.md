@@ -21,7 +21,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | `Platform` | Cuentas (tenants), usuarios, login por token, perfiles y permisos (RBAC con `deny` prioritario), empresas (RUC validado), sucursales, almacenes |
 | `Catalog` | Categorías, marcas, productos con variante predeterminada y código de barras, clientes (DNI/RUC validados) |
 | `Inventory` | Libro de movimientos de solo anexado, saldos, costo promedio, reservas, saldo inicial y ajustes, kardex |
-| `Fiscal` | `EfactCompatibleCalculator` (importes como eFact, pruebas de oro), `FiscalEngine` + `GaviEfactClient` (idempotente por `external_id`, reintentos con espera creciente, errores reintentables o definitivos), configuración cifrada por empresa, comprobantes con estado SUNAT, webhook firmado con deduplicación |
+| `Fiscal` | Notas de crédito (`CreditNoteService`: por ítems o por monto, con reingreso de stock opcional), baja de comprobantes (`FiscalVoidService`: factura con comunicación de baja, boleta con resumen de anulación; anula la venta al aceptarse), guías de remisión remitente (`DispatchGuideService`), envío/consulta genérico `FiscalRecordSync` y trabajo `SendFiscalRecord`. Base: `EfactCompatibleCalculator` (importes como eFact, pruebas de oro), `FiscalEngine` + `GaviEfactClient` (idempotente por `external_id`, reintentos con espera creciente, errores reintentables o definitivos), configuración cifrada por empresa, comprobantes con estado SUNAT, webhook firmado con deduplicación |
 | `Reporting` | Panel de inicio (`GET /dashboard`): ventas del día, más vendidos, por cobrar/pagar, pedidos y envíos abiertos, según permisos |
 | `Cash` | Cajas por sucursal, turnos (uno abierto por caja y por usuario), movimientos de caja chica, arqueo con diferencia; exige turno para cobrar en efectivo si la caja lo requiere |
 | `Purchasing` | Compras con ingreso de stock a costo (contado o crédito), pagos parciales, anulación sin pagos, cuentas por pagar; proveedores como terceros con `is_supplier` |
@@ -51,7 +51,7 @@ cd apps/web && pnpm install && pnpm dev   # http://127.0.0.1:5173 (proxy /api)
 | Caja | `cash-registers`, `cash-sessions`, `cash-sessions/current`, `POST cash-sessions/{id}/movements`, `POST cash-sessions/{id}/close` |
 | Compras | `suppliers`, `purchases`, `POST purchases/{id}/payments`, `POST purchases/{id}/void`, `payables` |
 | Envíos | `carriers`, `shipments`, `POST shipments/{id}/status` |
-| Facturación | `PUT/GET fiscal/settings/{company}`, `POST sales/{id}/emit`, `GET fiscal/documents`, `POST fiscal/documents/{id}/retry`, `POST webhooks/efact/{company}` (público, firmado) |
+| Facturación | `PUT/GET fiscal/settings/{company}`, `POST sales/{id}/emit`, `GET fiscal/documents`, `POST fiscal/documents/{id}/retry`, `POST fiscal/documents/{id}/void` (baja), `POST fiscal/documents/{id}/credit-notes`, `GET fiscal/credit-notes`, `POST fiscal/credit-notes/{id}/retry`, `GET|POST fiscal/dispatch-guides`, `POST fiscal/dispatch-guides/{id}/retry`, `POST webhooks/efact/{company}` (público, firmado) |
 | Panel | `GET dashboard` |
 | Cotizaciones | `GET/POST quotations`, `GET quotations/{id}`, `POST quotations/{id}/reject`, `POST quotations/{id}/convert` (convertir crea el pedido y reserva stock) |
 | Importación | `POST import/items` (filas leídas del Excel en el navegador; `dry_run` valida sin escribir; categorías/marcas por nombre; stock inicial como apertura) |
@@ -98,6 +98,13 @@ Notas de crédito y baja fiscales, portal del cliente con cuenta (estado de cuen
 - Sin repositorio remoto (decisión del usuario). Hay commits locales en `main`. CI lista en `.github/workflows/ci.yml` (API con PostgreSQL sin superusuario + web), sin ejecutar aún.
 
 ## Pendientes de verificar contra eFact real
+
+- **Notas de crédito, baja y guías** se implementaron leyendo el código y la documentación de `plataform-api-sunat` (`06-Notas-credito`, `08-Resumen-diario`, `09-Anular`, `10-Guia-remision-RM`), sin probar contra beta. Verificar en beta:
+  - Series de notas: `FC01` (facturas) y `BC01` (boletas) deben existir en eFact; la guía usa `T001`.
+  - La baja de boleta va por `POST /resumenes` con `anular[{id}]` (el `id` es el de eFact) y se consulta en `/resumenes/{id}/estado`; la de factura por `POST /anulaciones` y `/anulaciones/{id}/estado`.
+  - Las guías no admiten `external_id` hoy (pendiente en eFact): un reintento tras un corte entre eFact y nosotros podría duplicar la guía. Riesgo conocido: pedir `external_id` en guías al equipo de eFact.
+  - Las guías requieren el plan con `guias_remision` y credenciales GRE configuradas en eFact (si no, 403).
+  - Webhook: se ubica el documento por `document.tipo_documento` (`07` nota, `09` guía); los eventos `voided.*` y `summary.*` no se leen, la baja se consulta por el reconciliador.
 
 - Forma exacta de `descuentos` por ítem y de `cuotas` para ventas a crédito (la documentación local no las muestra completas).
 - Host de producción (`apifact.gavi-cloud.com` según OpenAPI vs. `apisunatv2.kodevo.es` en `CONTEXT.md`).

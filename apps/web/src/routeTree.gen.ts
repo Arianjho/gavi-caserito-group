@@ -46,6 +46,8 @@ import { Route as AppEnviosIndexRouteImport } from './routes/_app.envios.index'
 import { Route as AppEnviosAgenciasRouteImport } from './routes/_app.envios.agencias'
 import { Route as AppEnviosPorArmarRouteImport } from './routes/_app.envios.por-armar'
 import { Route as AppFacturacionComprobantesRouteImport } from './routes/_app.facturacion.comprobantes'
+import { Route as AppFacturacionGuiasRouteImport } from './routes/_app.facturacion.guias'
+import { Route as AppFacturacionNotasRouteImport } from './routes/_app.facturacion.notas'
 import { Route as AppInventarioKardexRouteImport } from './routes/_app.inventario.kardex'
 import { Route as AppInventarioStockRouteImport } from './routes/_app.inventario.stock'
 import { Route as AppInventarioTomaFisicaRouteImport } from './routes/_app.inventario.toma-fisica'
@@ -255,6 +257,16 @@ const AppFacturacionComprobantesRoute =
     path: '/facturacion/comprobantes',
     getParentRoute: () => AppRoute,
   } as any)
+const AppFacturacionGuiasRoute = AppFacturacionGuiasRouteImport.update({
+  id: '/facturacion/guias',
+  path: '/facturacion/guias',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppFacturacionNotasRoute = AppFacturacionNotasRouteImport.update({
+  id: '/facturacion/notas',
+  path: '/facturacion/notas',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppInventarioKardexRoute = AppInventarioKardexRouteImport.update({
   id: '/inventario/kardex',
   path: '/inventario/kardex',
@@ -363,6 +375,8 @@ export interface FileRoutesByFullPath {
   '/envios/agencias': typeof AppEnviosAgenciasRoute
   '/envios/por-armar': typeof AppEnviosPorArmarRoute
   '/facturacion/comprobantes': typeof AppFacturacionComprobantesRoute
+  '/facturacion/guias': typeof AppFacturacionGuiasRoute
+  '/facturacion/notas': typeof AppFacturacionNotasRoute
   '/inventario/kardex': typeof AppInventarioKardexRoute
   '/inventario/stock': typeof AppInventarioStockRoute
   '/inventario/toma-fisica': typeof AppInventarioTomaFisicaRoute
@@ -415,6 +429,8 @@ export interface FileRoutesByTo {
   '/envios/agencias': typeof AppEnviosAgenciasRoute
   '/envios/por-armar': typeof AppEnviosPorArmarRoute
   '/facturacion/comprobantes': typeof AppFacturacionComprobantesRoute
+  '/facturacion/guias': typeof AppFacturacionGuiasRoute
+  '/facturacion/notas': typeof AppFacturacionNotasRoute
   '/inventario/kardex': typeof AppInventarioKardexRoute
   '/inventario/stock': typeof AppInventarioStockRoute
   '/inventario/toma-fisica': typeof AppInventarioTomaFisicaRoute
@@ -469,6 +485,8 @@ export interface FileRoutesById {
   '/_app/envios/agencias': typeof AppEnviosAgenciasRoute
   '/_app/envios/por-armar': typeof AppEnviosPorArmarRoute
   '/_app/facturacion/comprobantes': typeof AppFacturacionComprobantesRoute
+  '/_app/facturacion/guias': typeof AppFacturacionGuiasRoute
+  '/_app/facturacion/notas': typeof AppFacturacionNotasRoute
   '/_app/inventario/kardex': typeof AppInventarioKardexRoute
   '/_app/inventario/stock': typeof AppInventarioStockRoute
   '/_app/inventario/toma-fisica': typeof AppInventarioTomaFisicaRoute
@@ -523,6 +541,8 @@ export interface FileRouteTypes {
     | '/envios/agencias'
     | '/envios/por-armar'
     | '/facturacion/comprobantes'
+    | '/facturacion/guias'
+    | '/facturacion/notas'
     | '/inventario/kardex'
     | '/inventario/stock'
     | '/inventario/toma-fisica'
@@ -575,6 +595,8 @@ export interface FileRouteTypes {
     | '/envios/agencias'
     | '/envios/por-armar'
     | '/facturacion/comprobantes'
+    | '/facturacion/guias'
+    | '/facturacion/notas'
     | '/inventario/kardex'
     | '/inventario/stock'
     | '/inventario/toma-fisica'
@@ -628,6 +650,8 @@ export interface FileRouteTypes {
     | '/_app/envios/agencias'
     | '/_app/envios/por-armar'
     | '/_app/facturacion/comprobantes'
+    | '/_app/facturacion/guias'
+    | '/_app/facturacion/notas'
     | '/_app/inventario/kardex'
     | '/_app/inventario/stock'
     | '/_app/inventario/toma-fisica'
@@ -917,6 +941,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppFacturacionComprobantesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/facturacion/guias': {
+      id: '/_app/facturacion/guias'
+      path: '/facturacion/guias'
+      fullPath: '/facturacion/guias'
+      preLoaderRoute: typeof AppFacturacionGuiasRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/_app/facturacion/notas': {
+      id: '/_app/facturacion/notas'
+      path: '/facturacion/notas'
+      fullPath: '/facturacion/notas'
+      preLoaderRoute: typeof AppFacturacionNotasRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/inventario/kardex': {
       id: '/_app/inventario/kardex'
       path: '/inventario/kardex'
@@ -1047,6 +1085,8 @@ interface AppRouteChildren {
   AppEnviosAgenciasRoute: typeof AppEnviosAgenciasRoute
   AppEnviosPorArmarRoute: typeof AppEnviosPorArmarRoute
   AppFacturacionComprobantesRoute: typeof AppFacturacionComprobantesRoute
+  AppFacturacionGuiasRoute: typeof AppFacturacionGuiasRoute
+  AppFacturacionNotasRoute: typeof AppFacturacionNotasRoute
   AppInventarioKardexRoute: typeof AppInventarioKardexRoute
   AppInventarioStockRoute: typeof AppInventarioStockRoute
   AppInventarioTomaFisicaRoute: typeof AppInventarioTomaFisicaRoute
@@ -1094,6 +1134,8 @@ const AppRouteChildren: AppRouteChildren = {
   AppEnviosAgenciasRoute: AppEnviosAgenciasRoute,
   AppEnviosPorArmarRoute: AppEnviosPorArmarRoute,
   AppFacturacionComprobantesRoute: AppFacturacionComprobantesRoute,
+  AppFacturacionGuiasRoute: AppFacturacionGuiasRoute,
+  AppFacturacionNotasRoute: AppFacturacionNotasRoute,
   AppInventarioKardexRoute: AppInventarioKardexRoute,
   AppInventarioStockRoute: AppInventarioStockRoute,
   AppInventarioTomaFisicaRoute: AppInventarioTomaFisicaRoute,

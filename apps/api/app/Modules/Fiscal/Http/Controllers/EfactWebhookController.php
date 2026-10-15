@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Modules\Fiscal\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Modules\Fiscal\Application\FiscalRecordSync;
 use App\Modules\Fiscal\Application\FiscalService;
 use App\Shared\Tenancy\TenantContext;
 use Illuminate\Http\JsonResponse;
@@ -92,15 +93,49 @@ class EfactWebhookController extends Controller
         if ($efactId === '') {
             return;
         }
-        $local = DB::table('fiscal.documents')->where('company_id', $companyId)->where('efact_id', $efactId)->first();
-        if ($local === null) {
+        $type = isset($document['tipo_documento']) ? (string) $document['tipo_documento'] : '';
+        $state = $this->state($document);
+
+        $kinds = ['07' => 'note', '09' => 'guide'];
+        if (isset($kinds[$type])) {
+            $this->applyRecord($kinds[$type], $companyId, $efactId, $state);
+
             return;
         }
-        $fiscal->applyStatus(
-            (string) $local->id,
-            (string) ($document['sunat_status'] ?? 'pendiente'),
-            isset($document['sunat_code']) ? (string) $document['sunat_code'] : null,
-            isset($document['sunat_description']) ? (string) $document['sunat_description'] : null,
-        );
+        $query = DB::table('fiscal.documents')->where('company_id', $companyId)->where('efact_id', $efactId);
+        $local = ($type === '' ? $query : $query->where('cpe_type', $type))->first();
+        if ($local !== null) {
+            $fiscal->applyStatus((string) $local->id, ...$state);
+        }
+    }
+
+    /**
+     * Estado, código y descripción SUNAT del documento del evento.
+     *
+     * @param array<array-key, mixed> $document Documento del evento.
+     * @return array{0: string, 1: string|null, 2: string|null}
+     */
+    private function state(array $document): array
+    {
+        $text = fn (string $key): ?string => isset($document[$key]) ? (string) $document[$key] : null;
+
+        return [$text('sunat_status') ?? 'pendiente', $text('sunat_code'), $text('sunat_description')];
+    }
+
+    /**
+     * Aplica el estado a una nota de crédito o guía.
+     *
+     * @param string $kind `note` o `guide`.
+     * @param string $companyId Empresa.
+     * @param string $efactId Identificador en eFact.
+     * @param array{0: string, 1: string|null, 2: string|null} $state Estado, código y descripción.
+     */
+    private function applyRecord(string $kind, string $companyId, string $efactId, array $state): void
+    {
+        $row = DB::table(FiscalRecordSync::KINDS[$kind]['table'])
+            ->where('company_id', $companyId)->where('efact_id', $efactId)->first();
+        if ($row !== null) {
+            app(FiscalRecordSync::class)->apply($kind, (string) $row->id, ...$state);
+        }
     }
 }

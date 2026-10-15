@@ -17,6 +17,9 @@ interface Settings {
   environment: "beta" | "production";
   boleta_series: string;
   invoice_series: string;
+  credit_invoice_series: string;
+  credit_boleta_series: string;
+  dispatch_series: string;
   enabled: boolean;
   has_credentials: boolean;
   has_webhook_secret: boolean;
@@ -46,6 +49,9 @@ function FiscalSettingsPage() {
     webhook_secret: "",
     boleta_series: "B001",
     invoice_series: "F001",
+    credit_invoice_series: "FC01",
+    credit_boleta_series: "BC01",
+    dispatch_series: "T001",
   });
 
   useEffect(() => {
@@ -56,6 +62,10 @@ function FiscalSettingsPage() {
         environment: settings.data?.environment ?? current.environment,
         boleta_series: settings.data?.boleta_series ?? current.boleta_series,
         invoice_series: settings.data?.invoice_series ?? current.invoice_series,
+        credit_invoice_series:
+          settings.data?.credit_invoice_series ?? current.credit_invoice_series,
+        credit_boleta_series: settings.data?.credit_boleta_series ?? current.credit_boleta_series,
+        dispatch_series: settings.data?.dispatch_series ?? current.dispatch_series,
       }));
     }
   }, [settings.data]);
@@ -147,6 +157,9 @@ function FiscalSettingsPage() {
             <div className="grid grid-cols-2 gap-3">
               {field("boleta_series", "Serie de boletas")}
               {field("invoice_series", "Serie de facturas")}
+              {field("credit_boleta_series", "Serie de notas de crédito (boletas)")}
+              {field("credit_invoice_series", "Serie de notas de crédito (facturas)")}
+              {field("dispatch_series", "Serie de guías de remisión")}
             </div>
             <p className="text-xs text-muted-foreground">
               URL del webhook para configurar en eFact:{" "}

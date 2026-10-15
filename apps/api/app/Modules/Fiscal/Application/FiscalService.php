@@ -6,7 +6,6 @@ namespace App\Modules\Fiscal\Application;
 
 use App\Modules\Sales\Application\SaleException;
 use App\Shared\Support\Decimal;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use stdClass;
@@ -26,13 +25,6 @@ final class FiscalService
         'cash' => 'efectivo', 'yape' => 'yape', 'plin' => 'plin', 'card' => 'tarjeta_credito',
         'transfer' => 'transferencia', 'other' => 'otro',
     ];
-
-    /**
-     * Tipos de documento de identidad del ERP y su código SUNAT.
-     *
-     * @var array<string, string>
-     */
-    private const DOC_TYPES = ['NONE' => '0', 'DNI' => '1', 'CE' => '4', 'RUC' => '6', 'PAS' => '7'];
 
     /**
      * Crea el servicio.
@@ -89,13 +81,13 @@ final class FiscalService
     public function send(string $documentId): bool
     {
         $doc = DB::table('fiscal.documents')->where('id', $documentId)->first();
-        if ($doc === null || in_array($doc->status, ['accepted', 'rejected'], true)) {
+        if ($doc === null || in_array($doc->status, ['accepted', 'rejected', 'voided'], true)) {
             return false;
         }
 
         try {
             $result = $this->engine->emit(
-                $this->credentials((string) $doc->company_id),
+                EfactCredentials::forCompany((string) $doc->company_id),
                 (string) $doc->cpe_type,
                 $this->payload((string) $doc->sales_document_id, $doc),
             );
@@ -127,11 +119,7 @@ final class FiscalService
      */
     public function applyStatus(string $documentId, string $efactStatus, ?string $code, ?string $description): void
     {
-        $status = match ($efactStatus) {
-            'aceptado' => 'accepted',
-            'rechazado' => 'rejected',
-            default => 'pending',
-        };
+        $status = PayloadParts::status($efactStatus);
 
         $changes = ['status' => $status, 'sunat_code' => $code, 'sunat_description' => $description, 'updated_at' => now()];
         if ($status !== 'pending') {
@@ -148,35 +136,15 @@ final class FiscalService
     public function refresh(string $documentId): void
     {
         $doc = DB::table('fiscal.documents')->where('id', $documentId)->first();
-        if ($doc === null || $doc->efact_id === null || in_array($doc->status, ['accepted', 'rejected'], true)) {
+        if ($doc === null || $doc->efact_id === null || in_array($doc->status, ['accepted', 'rejected', 'voided'], true)) {
             return;
         }
         try {
-            $result = $this->engine->status($this->credentials((string) $doc->company_id), (string) $doc->cpe_type, (string) $doc->efact_id);
+            $result = $this->engine->status(EfactCredentials::forCompany((string) $doc->company_id), (string) $doc->cpe_type, (string) $doc->efact_id);
         } catch (FiscalException) {
             return;
         }
         $this->applyStatus($documentId, $result['status'], $result['code'], $result['description']);
-    }
-
-    /**
-     * Descifra las credenciales de la empresa.
-     *
-     * @param string $companyId Empresa.
-     * @return array{base_url: string, api_key: string, api_secret: string}
-     */
-    private function credentials(string $companyId): array
-    {
-        $settings = DB::table('fiscal.efact_settings')->where('company_id', $companyId)->first();
-        if ($settings === null) {
-            throw new FiscalException('La empresa no tiene eFact configurado.', false);
-        }
-
-        return [
-            'base_url' => (string) $settings->base_url,
-            'api_key' => Crypt::decryptString((string) $settings->api_key),
-            'api_secret' => Crypt::decryptString((string) $settings->api_secret),
-        ];
     }
 
     /**
@@ -240,7 +208,7 @@ final class FiscalService
             'fecha_emision' => substr((string) $sale->issued_at, 0, 10),
             'tipo_moneda' => 'PEN',
             'forma_pago' => $credit ? 'Credito' : 'Contado',
-            'cliente' => $this->customer($party),
+            'cliente' => PayloadParts::customer($party),
             'items' => $this->items($saleId),
         ];
         if ($credit) {
@@ -253,24 +221,6 @@ final class FiscalService
     }
 
     /**
-     * Datos del cliente en formato eFact.
-     *
-     * @param stdClass|null $party Tercero de la venta.
-     * @return array<string, string>
-     */
-    private function customer(?stdClass $party): array
-    {
-        if ($party === null || $party->doc_type === 'NONE') {
-            return ['tipo_doc' => '0', 'num_doc' => '-', 'razon_social' => $party->name ?? 'CLIENTES VARIOS'];
-        }
-
-        return [
-            'tipo_doc' => self::DOC_TYPES[$party->doc_type] ?? '0', 'num_doc' => (string) $party->doc_number,
-            'razon_social' => (string) $party->name, 'direccion' => (string) ($party->address ?? ''),
-        ];
-    }
-
-    /**
      * Ítems del comprobante.
      *
      * @param string $saleId Venta.
@@ -280,15 +230,7 @@ final class FiscalService
     {
         $items = [];
         foreach (DB::table('sales.sales_document_lines')->where('document_id', $saleId)->orderBy('line_no')->get() as $line) {
-            $item = [
-                'descripcion' => (string) $line->description, 'unidad' => 'NIU',
-                'cantidad' => (float) $line->qty, 'precio_unitario' => (float) $line->unit_price,
-                'tip_afe_igv' => (string) $line->affectation,
-            ];
-            if (bccomp(Decimal::of($line->discount_pct), '0', 3) > 0) {
-                $item['descuentos'] = [['cod_tipo' => '00', 'porcentaje' => (float) $line->discount_pct]];
-            }
-            $items[] = $item;
+            $items[] = PayloadParts::item($line, (string) $line->qty);
         }
 
         return $items;

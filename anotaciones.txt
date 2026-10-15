@@ -1,0 +1,30 @@
+Hay un panel SaaS mínimo y funcionando, ya subido a main. Pasaron 129 pruebas de la API, y la web no dio errores de tsc, eslint ni vite build.
+
+Qué incluye
+
+- Operadores: una tabla core.operators, separada de los usuarios de cuentas, con su propio ingreso (POST /api/v1/operator/auth/login, limitado a 10 intentos por minuto).
+- Aislamiento: un token de operador no sirve en las rutas de las cuentas, y uno de cuenta no sirve en las de operador. Está cubierto por pruebas.
+- Cuentas:
+  - Listar con uso (usuarios, empresas y documentos del mes, último ingreso).
+  - Crear cuenta con su propietario y 14 días de prueba.
+  - Cambiar plan, estado, fin de prueba y topes.
+  - Cada cambio queda en la bitácora inmutable.
+- Suspensión real: una cuenta suspended o closed recibe 403 account_suspended al iniciar sesión y en cualquier llamada con un token que ya tuviera. Al reactivarla vuelve a funcionar.
+- Pantallas: /operador/login y /operador, con tabla de cuentas, "Plan y límites", "Nueva cuenta" y "Suspender/Reactivar".
+
+Cómo entrar
+
+- En desarrollo: operador@caserito.test / caserito-operador. El seeder lo crea, y lo comprobé en el navegador (login, tabla y diálogo de plan).
+- En producción: php artisan operator:create correo "Nombre" pide la contraseña, con mínimo de 12 caracteres.
+
+Cambios que toqué por seguridad
+
+- TenantContext::asProvider: ahora restaura el contexto anterior en vez de limpiarlo. Antes, un uso anidado dejaba la petición sin contexto de proveedor.
+- Redis local: estaba caído y el limitador de intentos fallaba con error 500. Lo levanté con docker compose up -d redis; en desarrollo hay que tenerlo encendido.
+
+Cosas que no hice
+
+- Entrar a una cuenta como soporte ("impersonar"): lo dejé fuera porque rompe a propósito el aislamiento y merece su propia revisión de seguridad.
+- Gestión de operadores desde pantalla: hoy se crean solo por comando.
+- Cobro recurrente: va junto con la definición de precios.
+- Verificación de la suspensión en pantalla: la suspensión la cubren las pruebas de la API, pero no hice clic en "Suspender" en el navegador para no dejar la cuenta de desarrollo bloqueada.

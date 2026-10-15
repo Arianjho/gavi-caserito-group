@@ -36,12 +36,13 @@ final class SaleReturnService
      * @param list<array{line_id: string, qty: numeric-string}> $lines Cantidades devueltas por línea.
      * @param string $method Medio con el que se devuelve el dinero.
      * @param string $reason Motivo.
+     * @param bool $viaCreditNote `true` si la corrige una nota de crédito electrónica (permite el comprobante vigente).
      * @return array<string, mixed>
      */
-    public function create(string $saleId, array $lines, string $method, string $reason): array
+    public function create(string $saleId, array $lines, string $method, string $reason, bool $viaCreditNote = false): array
     {
-        return DB::transaction(function () use ($saleId, $lines, $method, $reason): array {
-            $sale = $this->lockSale($saleId);
+        return DB::transaction(function () use ($saleId, $lines, $method, $reason, $viaCreditNote): array {
+            $sale = $this->lockSale($saleId, $viaCreditNote);
             $userId = (string) request()->user()?->getAuthIdentifier();
             $items = $this->collect($saleId, $lines);
 
@@ -116,10 +117,11 @@ final class SaleReturnService
      * Bloquea la venta y verifica que admita devoluciones.
      *
      * @param string $saleId Venta.
+     * @param bool $viaCreditNote Si la devolución la respalda una nota de crédito.
      *
      * @throws SaleException Si está anulada, tiene comprobante vigente o saldo pendiente.
      */
-    private function lockSale(string $saleId): stdClass
+    private function lockSale(string $saleId, bool $viaCreditNote = false): stdClass
     {
         $sale = DB::table('sales.sales_documents')->where('id', $saleId)->lockForUpdate()->first();
         if ($sale === null) {
@@ -128,7 +130,7 @@ final class SaleReturnService
         if ($sale->status !== 'confirmed') {
             throw new SaleException('document_voided', 'La venta está anulada.', 409);
         }
-        $issued = DB::table('fiscal.documents')->where('sales_document_id', $saleId)
+        $issued = ! $viaCreditNote && DB::table('fiscal.documents')->where('sales_document_id', $saleId)
             ->whereIn('status', ['pending', 'accepted'])->exists();
         if ($issued) {
             throw new SaleException('fiscal_document_issued', 'La venta tiene comprobante electrónico; corrígela con nota de crédito.', 409);

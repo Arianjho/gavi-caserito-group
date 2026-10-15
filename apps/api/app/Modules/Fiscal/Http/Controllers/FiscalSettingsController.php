@@ -51,6 +51,9 @@ class FiscalSettingsController extends Controller
             'webhook_secret' => ['nullable', 'string', 'max:200'],
             'boleta_series' => ['required', 'string', 'size:4'],
             'invoice_series' => ['required', 'string', 'size:4'],
+            'credit_invoice_series' => ['sometimes', 'string', 'size:4'],
+            'credit_boleta_series' => ['sometimes', 'string', 'size:4'],
+            'dispatch_series' => ['sometimes', 'string', 'size:4'],
             'enabled' => ['sometimes', 'boolean'],
         ]);
 
@@ -60,6 +63,7 @@ class FiscalSettingsController extends Controller
             'enabled' => $data['enabled'] ?? true, 'updated_at' => now(),
             'updated_by' => $request->user()?->getAuthIdentifier(),
         ];
+        $values += $this->extraSeries($data);
         foreach (['api_key', 'api_secret', 'webhook_secret'] as $secret) {
             if (! empty($data[$secret])) {
                 $values[$secret] = Crypt::encryptString($data[$secret]);
@@ -79,6 +83,24 @@ class FiscalSettingsController extends Controller
     }
 
     /**
+     * Series opcionales de notas de crédito y guías, en mayúsculas.
+     *
+     * @param array<string, mixed> $data Datos validados.
+     * @return array<string, string>
+     */
+    private function extraSeries(array $data): array
+    {
+        $series = [];
+        foreach (['credit_invoice_series', 'credit_boleta_series', 'dispatch_series'] as $key) {
+            if (isset($data[$key])) {
+                $series[$key] = strtoupper((string) $data[$key]);
+            }
+        }
+
+        return $series;
+    }
+
+    /**
      * Presenta la configuración sin exponer secretos.
      *
      * @param stdClass $settings Fila de configuración.
@@ -90,6 +112,8 @@ class FiscalSettingsController extends Controller
             'company_id' => $settings->company_id, 'base_url' => $settings->base_url,
             'environment' => $settings->environment, 'boleta_series' => $settings->boleta_series,
             'invoice_series' => $settings->invoice_series, 'enabled' => (bool) $settings->enabled,
+            'credit_invoice_series' => $settings->credit_invoice_series,
+            'credit_boleta_series' => $settings->credit_boleta_series, 'dispatch_series' => $settings->dispatch_series,
             'has_credentials' => $settings->api_key !== null && $settings->api_secret !== null,
             'has_webhook_secret' => $settings->webhook_secret !== null,
         ];

@@ -6,7 +6,9 @@ namespace App\Modules\Fiscal\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Fiscal\Application\FiscalService;
+use App\Modules\Fiscal\Application\FiscalVoidService;
 use App\Modules\Fiscal\Jobs\SendFiscalDocument;
+use App\Modules\Fiscal\Jobs\SendFiscalRecord;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -45,7 +47,7 @@ class FiscalDocumentController extends Controller
             ->join('sales.sales_documents as s', 's.id', '=', 'f.sales_document_id')
             ->orderByDesc('f.created_at')->limit(200)
             ->select(['f.id', 'f.cpe_type', 'f.series', 'f.number', 'f.status', 'f.sunat_code', 'f.sunat_description',
-                'f.last_error', 'f.attempts', 'f.created_at', 's.total', 's.series as sale_series', 's.number as sale_number']);
+                'f.last_error', 'f.attempts', 'f.created_at', 'f.void_status', 'f.void_error', 'f.sales_document_id', 's.total', 's.series as sale_series', 's.number as sale_number']);
 
         if ($request->filled('status')) {
             $query->where('f.status', $request->query('status'));
@@ -65,7 +67,11 @@ class FiscalDocumentController extends Controller
         $doc = DB::table('fiscal.documents')->where('id', $id)->first();
         abort_if($doc === null, 404);
 
-        if ($doc->efact_id !== null) {
+        if ($doc->void_status === 'pending') {
+            $doc->void_efact_id !== null
+                ? app(FiscalVoidService::class)->refresh($id)
+                : SendFiscalRecord::dispatch((string) $doc->tenant_id, 'void', $id);
+        } elseif ($doc->efact_id !== null) {
             $fiscal->refresh($id);
         } else {
             DB::table('fiscal.documents')->where('id', $id)->update(['status' => 'queued', 'last_error' => null]);
@@ -73,6 +79,24 @@ class FiscalDocumentController extends Controller
         }
 
         return response()->json(['data' => $this->detail($id)]);
+    }
+
+    /**
+     * Solicita la baja de un comprobante aceptado (factura: comunicación de
+     * baja; boleta: resumen de anulación).
+     *
+     * @param Request $request Datos: `reason`.
+     * @param string $id Comprobante.
+     * @param FiscalVoidService $voids Servicio de bajas.
+     */
+    public function void(Request $request, string $id, FiscalVoidService $voids): JsonResponse
+    {
+        $reason = $request->validate(['reason' => ['required', 'string', 'max:255']])['reason'];
+
+        $queued = $voids->request($id, $reason);
+        SendFiscalRecord::dispatch($queued['tenant_id'], 'void', $queued['id']);
+
+        return response()->json(['data' => $this->detail($id)], 202);
     }
 
     /**
