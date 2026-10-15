@@ -115,3 +115,6 @@ Notas de crédito y baja fiscales, portal del cliente con cuenta (estado de cuen
 - **Límite por plan**: el plan `white_label` aún no condiciona logos ni dominio (no existe tabla de features); hoy cualquier cuenta puede usarlos.
 - **Logo en eFact**: el contrato `POST /empresa/logo` (campo `logo`, multipart) se tomó del código de `plataform-api-sunat`; verificar en beta.
 - **Plantillas de PDF**: no hay generador propio; los tickets y el estado de cuenta se imprimen desde el navegador con el logo, teléfono y pie de la marca.
+
+### Cupo mensual de comprobantes
+`PlanLimits::ensureCanEmit` cuenta facturas, boletas y notas de crédito del mes (sin rechazados) contra `max_documents_month`; `GET plan` devuelve `used`, `max` y `level` (`ok`, `warning` desde el 80 %, `reached`). Al llegar al tope, `POST sales/{id}/emit` responde 403 `document_quota_reached` y la venta queda como nota de venta; las notas de crédito no se bloquean. El cupo se cuenta por cuenta, no por empresa (eFact sí cuenta por empresa).
