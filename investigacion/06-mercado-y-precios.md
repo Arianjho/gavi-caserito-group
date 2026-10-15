@@ -38,8 +38,7 @@ Lectura:
 - Es **un plan eFact por empresa (RUC)**, así que una empresa adicional cuesta al menos S/ 30.
 - No hay excedente en eFact: al llegar al cupo responde 403. Por eso el cupo del plan debe ser
   menor o igual al de eFact.
-- Otros costos: servidor, WhatsApp (Evolution propio), correo, soporte. No cuantificados aquí;
-  asumir ~S/ 8–12 por cuenta activa hasta medirlos.
+- Otros costos (servidor, IA, licencia, correo): ver la sección 6, tomados de la documentación de eFact.
 
 ## 3. Propuesta de planes (IGV incluido, como el mercado)
 
@@ -81,8 +80,74 @@ Lectura:
 5. **Competidor con plan gratis (Keyfacil, 30 documentos):** considerar un plan «Gratis» de 30
    comprobantes solo si el costo de eFact lo permite (hoy no: S/ 30 de piso).
 
-## 5. Qué ya está implementado para soportarlo
+## 5. Qué ya está implementado para soportarlo (ver también las secciones 6 y 7)
 - Cupo mensual por cuenta (`max_documents_month`) sobre facturas, boletas y notas de crédito del mes,
   sin contar rechazados; aviso desde el 80 % y bloqueo de nuevas emisiones al 100 %, sin perder la venta.
 - Límites de usuarios y empresas; panel del proveedor para fijar plan y topes.
 - Falta: catálogo de planes con funciones por plan (guías, WhatsApp, marca blanca, dominio) y cobro.
+
+## 6. Costos reales compartidos con eFact
+
+Fuente: `plataform-api-sunat/documentacion/26-Planes-y-Precios.md` y `20-Despliegue-VPS.md`
+(octubre 2026, US$ 1 ≈ S/ 3.75, sin IGV).
+
+| Concepto | S/ al mes | Comentario |
+|---|---|---|
+| Dos suscripciones de IA | 168 | 73 % del total; baja a la mitad con una sola cuando el proyecto esté estable |
+| VPS Contabo (6 vCPU, 12 GB, 200 GB) | 27 | Sube a ≈ 34 tras 24 meses de promoción |
+| Dominio | 3 | |
+| Licencia anual de eFact (≈ 250 ÷ 12) | 21 | Solo del producto eFact |
+| Correo transaccional y otros | 10 | |
+| **Total fijo del grupo** | **≈ 229** | Infraestructura 40 + desarrollo 189 |
+
+- **Es un solo costo fijo para los dos productos**: mismo VPS, mismas IAs. No se suma otro S/ 229.
+  Para Gavi Caserito se reparte; con 50/50 le tocan ≈ S/ 115 (supuesto, no decisión).
+- **Costo variable por cuenta ≈ S/ 2–3**: un emisor chico guarda ≈ 0.2 GB al año y usa RAM
+  despreciable (sección 6 del doc de eFact). WhatsApp con Evolution suma RAM por número
+  conectado: **no medido**; medir con 3–5 cuentas reales de la beta.
+- **El S/ 30 / 59 / 130 de eFact es un precio de transferencia**, no caja: emitir un comprobante
+  más cuesta casi cero. Sirve para ver el margen de cada producto por separado; el margen
+  consolidado es mayor al de la tabla de la sección 3.
+- **Punto de equilibrio consolidado**: con mezcla 30 % Gestión / 40 % Inicio / 25 % Negocio /
+  5 % Empresa, el ingreso neto promedio es ≈ S/ 71 por cuenta (S/ 65 con tarjeta). Cubrir S/ 229 pide
+  ≈ 4 cuentas; cubrir solo la mitad (S/ 115), 2. El costo que no aparece es **tu tiempo de soporte**.
+- **Licencia**: el doc de eFact (sección 8) advierte que los términos de reventa y marca blanca
+  no se verificaron. La marca blanca de Caserito y el servicio a terceros dependen de eso:
+  revisarlo antes de cobrar.
+- **El certificado digital y la clave SOL de cada cliente** son la mayor fricción de alta en eFact y
+  un costo de soporte. Los clientes sin SUNAT no la tienen.
+
+## 7. Plan para quienes aún no emiten comprobantes
+
+Mucho comercio micro vende con notas o sin papel, sin certificado ni clave SOL y sin intención de
+facturar todavía. Hoy el sistema los atiende (la venta queda como nota de venta) pero no hay un plan
+pensado para ellos. Como no consumen eFact, su costo real es casi nulo y se puede competir donde
+la facturación no deja margen.
+
+| | **Gratis** | **Gestión** |
+|---|---|---|
+| Precio (IGV incl.) | S/ 0 | **S/ 39** |
+| Comprobantes electrónicos | 0 (notas de venta) | 0 (notas de venta) |
+| Usuarios / sucursales | 1 / 1 | 3 / 1 |
+| Ventas al mes | hasta 50 | sin tope |
+| Productos | hasta 100 | sin tope |
+| POS, caja, inventario, clientes | sí | sí |
+| Pedidos con anticipo y seguimiento al cliente | — | sí |
+| Envíos por agencia y cobranzas | — | sí |
+| WhatsApp, marca blanca, dominio propio | — | — |
+| Paso a facturar | subir a Inicio o Negocio | subir a Inicio o Negocio |
+| Ingreso neto mensual | 0 | ≈ 33 |
+| Costo real aproximado | ≈ 2 | ≈ 3 |
+
+- **Frente a la competencia**: Keyfacil regala 30 documentos, Treinta cobra ≈ S/ 35–75 y Alegra POS
+  S/ 81+. Gestión a S/ 39 incluye inventario y cobranzas; el plan Gratis evita que el comercio
+  se quede con Keyfacil o con una libreta.
+- **Por qué Gratis sí es viable aquí y no en eFact**: eFact tiene piso de S/ 30 por empresa; este plan no
+  usa eFact y no lleva WhatsApp (el único costo escalable sin medir).
+- **Embudo**: al cumplir con SUNAT suben a Inicio sin migrar datos. Hoy la API responde
+  `document_quota_reached` si el cupo es 0; para estos planes conviene un código propio
+  (`plan_without_invoicing`) y que la pantalla de venta ofrezca «Activar facturación».
+- **Riesgos**: abuso de cuentas gratis (una por correo y teléfono, sin WhatsApp), soporte sin ingreso
+  (solo guías), y canibalizar Inicio (S/ 69): por eso Gestión no trae guías, WhatsApp ni comprobantes.
+  Revisar a los 90 días cuántas cuentas pasan a pago.
+- **Escalera completa**: Gratis S/ 0 · Gestión S/ 39 · Inicio S/ 69 · Negocio S/ 129 · Empresa S/ 249.
