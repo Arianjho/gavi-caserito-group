@@ -330,3 +330,31 @@ it('emite una guia de remision de transporte privado desde una venta', function 
     $this->withToken($token)->postJson('/api/v1/fiscal/dispatch-guides', array_diff_key($payload, ['driver' => 1]))
         ->assertStatus(422)->assertJsonPath('code', 'driver_required');
 });
+
+it('el cupo mensual bloquea nuevas emisiones sin perder la venta', function (): void {
+    $token = ownerToken();
+    $f = fiscalFixture($token);
+    $second = $this->withToken($token)->postJson('/api/v1/sales', [
+        'warehouse_id' => $f['warehouse'], 'lines' => [['variant_id' => $f['variant'], 'qty' => 1]],
+        'payments' => [['method' => 'yape', 'amount' => 118]],
+    ])->assertCreated()->json('data.id');
+    TenantContext::asProvider(fn () => DB::table('core.tenants')->update(['max_documents_month' => 2]));
+    efactResponds([
+        'estado' => 'exito',
+        'datos' => ['id' => 1, 'serie' => 'B001', 'correlativo' => '00000001', 'sunat' => ['estado' => 'aceptado']],
+    ]);
+
+    $this->withToken($token)->postJson("/api/v1/sales/{$f['sale']}/emit", ['cpe_type' => '03'])->assertStatus(202);
+    $plan = $this->withToken($token)->getJson('/api/v1/plan')->json('data.limits.documents_month');
+    expect($plan['used'])->toBe(1)->and($plan['level'])->toBe('ok');
+
+    $this->withToken($token)->postJson("/api/v1/sales/{$second}/emit", ['cpe_type' => '03'])->assertStatus(202);
+    $this->withToken($token)->getJson('/api/v1/plan')->assertJsonPath('data.limits.documents_month.level', 'reached');
+
+    $third = $this->withToken($token)->postJson('/api/v1/sales', [
+        'warehouse_id' => $f['warehouse'], 'lines' => [['variant_id' => $f['variant'], 'qty' => 1]],
+        'payments' => [['method' => 'yape', 'amount' => 118]],
+    ])->assertCreated()->json('data.id');
+    $this->withToken($token)->postJson("/api/v1/sales/{$third}/emit", ['cpe_type' => '03'])
+        ->assertStatus(403)->assertJsonPath('code', 'document_quota_reached');
+});

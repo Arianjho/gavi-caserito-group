@@ -116,7 +116,7 @@ Requisitos: consentimiento (opt-in), límite de envíos, cola con reintentos, pl
 | Funcional | **empresas**, usuarios, sucursales, almacenes, ítems, módulos (caja, compras, WhatsApp, marca blanca, etc.) |
 | Emisión SUNAT | cupo mensual de comprobantes (alineado a 200 / 1,000 / 5,000 del SaaS) |
 
-- Los precios se fijan por margen sobre el costo del SaaS (S/0.15 / 0.059 / 0.026 por comprobante). Pendiente de definir.
+- Los precios se fijan por margen sobre el costo del SaaS (S/0.15 / 0.059 / 0.026 por comprobante). **Propuesta con análisis de mercado en `investigacion/06-mercado-y-precios.md` (pendiente de aprobar).**
 - El proveedor revende la suscripción de eFact dentro del plan.
 - Sin plan de emisión: modo fiscal `none`, solo notas de venta.
 

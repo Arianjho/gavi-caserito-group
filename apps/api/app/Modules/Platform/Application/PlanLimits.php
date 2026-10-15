@@ -38,6 +38,49 @@ final class PlanLimits
     }
 
     /**
+     * Falla si emitir un comprobante electrónico más superaría el cupo mensual del plan.
+     *
+     * La venta ya registrada no se pierde: queda como nota de venta y se puede
+     * emitir al ampliar el plan o al iniciar el mes siguiente.
+     *
+     * @param string $tenantId Cuenta.
+     *
+     * @throws SaleException Con código `document_quota_reached`.
+     */
+    public function ensureCanEmit(string $tenantId): void
+    {
+        $max = DB::table('core.tenants')->where('id', $tenantId)->value('max_documents_month');
+        if ($max === null) {
+            return;
+        }
+        if ($this->monthlyDocuments($tenantId) >= (int) $max) {
+            throw new SaleException(
+                'document_quota_reached',
+                "Llegaste al cupo de {$max} comprobantes electrónicos de tu plan este mes. La venta queda como nota de venta; amplía tu plan o emítela el mes siguiente.",
+                403,
+            );
+        }
+    }
+
+    /**
+     * Comprobantes electrónicos (facturas, boletas y notas de crédito) del mes en curso.
+     *
+     * Los rechazados por SUNAT no consumen cupo.
+     *
+     * @param string $tenantId Cuenta.
+     */
+    public function monthlyDocuments(string $tenantId): int
+    {
+        $start = now()->startOfMonth();
+        $documents = DB::table('fiscal.documents')->where('tenant_id', $tenantId)
+            ->where('status', '<>', 'rejected')->where('created_at', '>=', $start)->count();
+        $notes = DB::table('fiscal.credit_notes')->where('tenant_id', $tenantId)
+            ->where('status', '<>', 'rejected')->where('created_at', '>=', $start)->count();
+
+        return $documents + $notes;
+    }
+
+    /**
      * Plan, límites y uso actual de la cuenta.
      *
      * @param string $tenantId Cuenta.
@@ -47,8 +90,7 @@ final class PlanLimits
     {
         $tenant = DB::table('core.tenants')->where('id', $tenantId)
             ->first(['plan_code', 'plan_status', 'trial_ends_at', 'max_users', 'max_companies', 'max_documents_month']);
-        $documents = DB::table('sales.sales_documents')->where('tenant_id', $tenantId)
-            ->whereRaw("created_at >= date_trunc('month', now())")->count();
+        $documents = $this->monthlyDocuments($tenantId);
 
         return [
             'plan_code' => $tenant->plan_code ?? null,
@@ -57,9 +99,32 @@ final class PlanLimits
             'limits' => [
                 'users' => ['max' => $tenant->max_users ?? null, 'used' => $this->active('core.users', $tenantId)],
                 'companies' => ['max' => $tenant->max_companies ?? null, 'used' => $this->active('core.companies', $tenantId)],
-                'documents_month' => ['max' => $tenant->max_documents_month ?? null, 'used' => $documents],
+                'documents_month' => [
+                    'max' => $tenant->max_documents_month ?? null,
+                    'used' => $documents,
+                    'level' => $this->level($documents, $tenant->max_documents_month ?? null),
+                ],
             ],
         ];
+    }
+
+    /**
+     * Nivel de consumo del cupo: `ok`, `warning` desde el 80 % y `reached` al llegar al tope.
+     *
+     * @param int $used Comprobantes del mes.
+     * @param int|string|null $max Tope del plan o `null` si no hay.
+     */
+    private function level(int $used, int|string|null $max): string
+    {
+        if ($max === null || (int) $max <= 0) {
+            return 'ok';
+        }
+
+        return match (true) {
+            $used >= (int) $max => 'reached',
+            $used * 100 >= (int) $max * 80 => 'warning',
+            default => 'ok',
+        };
     }
 
     /**

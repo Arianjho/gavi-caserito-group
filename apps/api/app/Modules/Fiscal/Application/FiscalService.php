@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Modules\Fiscal\Application;
 
+use App\Modules\Platform\Application\PlanLimits;
 use App\Modules\Sales\Application\SaleException;
 use App\Shared\Support\Decimal;
 use Illuminate\Support\Facades\DB;
@@ -55,6 +56,7 @@ final class FiscalService
             if (DB::table('fiscal.documents')->where('sales_document_id', $saleId)->exists()) {
                 throw new SaleException('already_emitted', 'La venta ya tiene un comprobante electrónico.', 409);
             }
+            app(PlanLimits::class)->ensureCanEmit((string) $sale->tenant_id);
 
             $id = (string) Str::uuid();
             DB::table('fiscal.documents')->insert([

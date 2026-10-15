@@ -11,6 +11,8 @@ import { api } from "@/lib/api";
 interface Limit {
   max: number | null;
   used: number;
+  /** Consumo del cupo; solo lo informa el cupo mensual de comprobantes. */
+  level?: "ok" | "warning" | "reached";
 }
 
 /** Plan de la cuenta con su uso. */
@@ -24,7 +26,7 @@ interface PlanSummary {
 const LABELS: Record<keyof PlanSummary["limits"], string> = {
   users: "Usuarios activos",
   companies: "Empresas activas",
-  documents_month: "Documentos de venta este mes",
+  documents_month: "Comprobantes electrónicos este mes",
 };
 
 /** Barra de uso; sin tope solo muestra el número. */
@@ -38,10 +40,21 @@ function UsageRow({ label, limit }: { label: string; limit: Limit }) {
           {limit.used} / {limit.max ?? "sin tope"}
         </span>
       </div>
+      {limit.level === "reached" && (
+        <p className="text-xs text-destructive">
+          Llegaste al cupo: las ventas siguen, pero los comprobantes nuevos no se emiten hasta
+          ampliar el plan o iniciar el mes siguiente.
+        </p>
+      )}
+      {limit.level === "warning" && (
+        <p className="text-xs text-muted-foreground">
+          Estás cerca del cupo del mes; considera ampliar tu plan.
+        </p>
+      )}
       {limit.max !== null && (
         <div className="h-2 overflow-hidden rounded-full bg-muted">
           <div
-            className={`h-full ${percent >= 90 ? "bg-destructive" : "bg-primary"}`}
+            className={`h-full ${limit.level === "reached" || percent >= 90 ? "bg-destructive" : "bg-primary"}`}
             style={{ width: `${percent}%` }}
           />
         </div>
