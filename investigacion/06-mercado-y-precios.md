@@ -54,7 +54,7 @@ Lectura:
 | Envíos y seguimiento al cliente | sí | sí | sí |
 | Guías de remisión | — | sí | sí |
 | WhatsApp (avisos y deudas) | — | sí | sí |
-| Marca blanca (logo, color, nombre) | — | sí | sí |
+| Marca blanca (logo, color, nombre) | sí | sí | sí |
 | Dominio propio | — | — | sí |
 | Costo eFact | 30 | 59 | 130 |
 | Margen bruto aprox. (sin IGV, antes de infra) | ~49 % | ~46 % | ~38 % |
@@ -84,7 +84,7 @@ Lectura:
 - Cupo mensual por cuenta (`max_documents_month`) sobre facturas, boletas y notas de crédito del mes,
   sin contar rechazados; aviso desde el 80 % y bloqueo de nuevas emisiones al 100 %, sin perder la venta.
 - Límites de usuarios y empresas; panel del proveedor para fijar plan y topes.
-- Falta: catálogo de planes con funciones por plan (guías, WhatsApp, marca blanca, dominio) y cobro.
+- Falta: catálogo de planes con funciones por plan (guías, WhatsApp, dominio; la marca blanca va en todos) y cobro.
 
 ## 6. Costos reales compartidos con eFact
 
@@ -134,7 +134,8 @@ la facturación no deja margen.
 | POS, caja, inventario, clientes | sí | sí |
 | Pedidos con anticipo y seguimiento al cliente | — | sí |
 | Envíos por agencia y cobranzas | — | sí |
-| WhatsApp, marca blanca, dominio propio | — | — |
+| Marca blanca (logo, color, nombre, contacto) | sí | sí |
+| WhatsApp y dominio propio | — | — |
 | Paso a facturar | subir a Inicio o Negocio | subir a Inicio o Negocio |
 | Ingreso neto mensual | 0 | ≈ 33 |
 | Costo real aproximado | ≈ 2 | ≈ 3 |
@@ -151,3 +152,5 @@ la facturación no deja margen.
   (solo guías), y canibalizar Inicio (S/ 69): por eso Gestión no trae guías, WhatsApp ni comprobantes.
   Revisar a los 90 días cuántas cuentas pasan a pago.
 - **Escalera completa**: Gratis S/ 0 · Gestión S/ 39 · Inicio S/ 69 · Negocio S/ 129 · Empresa S/ 249.
+- **Decisión**: la marca blanca (logo, color, nombre, contacto, pie) va en **todos** los planes,
+  incluido Gratis. Solo el dominio propio queda en Empresa (requiere proxy y TLS).
