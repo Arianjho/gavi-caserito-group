@@ -1,0 +1,258 @@
+<meta charset="utf-8">
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Planes de Gavi Caserito</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  /* Concepto: cartel de mercado. Cinco tarjetas en escalera de precio y, debajo, una sola tabla de lectura. */
+  :root {
+    --bg: #f6f4f8;
+    --surface: #ffffff;
+    --surface-2: #efebf4;
+    --fg: #1d1530;
+    --muted: #5f5772;
+    --line: #ddd6e8;
+    --accent: #c4175f;
+    --accent-fg: #ffffff;
+    --gold: #f2b705;
+    --gold-fg: #2a1f00;
+    --ok: #1b7f4b;
+    --font-display: "Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+    --font-body: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #140f1f; --surface: #1d1730; --surface-2: #2a2242; --fg: #f1ecfa; --muted: #b3a9c9;
+      --line: #3a3057; --accent: #ff5c9a; --accent-fg: #1b0610; --gold: #f2b705; --gold-fg: #2a1f00;
+      --ok: #5fd39a; color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #140f1f; --surface: #1d1730; --surface-2: #2a2242; --fg: #f1ecfa; --muted: #b3a9c9;
+    --line: #3a3057; --accent: #ff5c9a; --accent-fg: #1b0610; --gold: #f2b705; --gold-fg: #2a1f00;
+    --ok: #5fd39a; color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 15px; line-height: 1.5;
+    padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 32px 56px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+  h1, h2, h3 { font-family: var(--font-display); text-wrap: balance; margin: 0; line-height: 1.1; }
+  h1 { font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; letter-spacing: -0.02em; }
+  h2 { font-size: 1.5rem; font-weight: 800; }
+  p { margin: 0; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); font-weight: 700; }
+  header { display: flex; flex-direction: column; gap: 12px; max-width: 70ch; }
+  header p { color: var(--muted); font-size: 1.05rem; }
+
+  .plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 16px; align-items: stretch; }
+  .plan {
+    background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px;
+    display: flex; flex-direction: column; gap: 12px; min-width: 0;
+  }
+  .plan.featured { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent); }
+  .plan .tag { display: inline-block; align-self: flex-start; background: var(--gold); color: var(--gold-fg); font-size: 11px;
+    font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 8px; border-radius: 999px; }
+  .plan .tag.quiet { background: var(--surface-2); color: var(--muted); }
+  .plan h3 { font-size: 1.6rem; font-weight: 800; }
+  .plan .alias { color: var(--muted); font-size: 13px; }
+  .price { display: flex; align-items: baseline; gap: 6px; font-variant-numeric: tabular-nums; }
+  .price strong { font-family: var(--font-display); font-size: 2.4rem; font-weight: 800; letter-spacing: -0.02em; }
+  .price span { color: var(--muted); font-size: 13px; }
+  .annual { color: var(--muted); font-size: 13px; font-variant-numeric: tabular-nums; min-height: 1.4em; }
+  .pitch { font-weight: 500; }
+  .plan ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--line); padding-top: 12px; }
+  .plan li { display: flex; gap: 8px; font-size: 14px; }
+  .plan li::before { content: "+"; color: var(--accent); font-weight: 800; }
+  .plan li.base::before { content: "="; color: var(--muted); }
+  .who { margin-top: auto; padding-top: 4px; font-size: 13px; color: var(--muted); }
+
+  .scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 760px; font-variant-numeric: tabular-nums; }
+  th, td { padding: 11px 14px; text-align: center; border-bottom: 1px solid var(--line); font-size: 14px; }
+  thead th { background: var(--surface-2); font-family: var(--font-display); font-weight: 800; font-size: 15px; position: sticky; top: 0; }
+  thead th small { display: block; font-family: var(--font-body); font-weight: 500; color: var(--muted); font-size: 12px; }
+  th[scope="row"], thead th:first-child { text-align: left; font-family: var(--font-body); font-weight: 500; position: sticky; left: 0; background: var(--surface); }
+  thead th:first-child { background: var(--surface-2); }
+  tbody tr.group th { background: var(--surface-2); color: var(--muted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; padding-block: 8px; }
+  tbody tr:last-child th, tbody tr:last-child td { border-bottom: 0; }
+  td.hl, th.hl { background: color-mix(in srgb, var(--accent) 7%, var(--surface)); }
+  thead th.hl { background: color-mix(in srgb, var(--accent) 16%, var(--surface-2)); }
+  .yes { color: var(--ok); font-weight: 800; }
+  .no { color: var(--muted); }
+  tr.money td { font-weight: 700; font-size: 15px; }
+
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+  .box { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+  .box h3 { font-size: 1.1rem; }
+  .box dl { margin: 0; display: grid; grid-template-columns: 1fr auto; gap: 8px 16px; }
+  .box dt { color: var(--fg); }
+  .box dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
+  .box ul { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 6px; }
+  .box li { color: var(--fg); }
+  .foot { color: var(--muted); font-size: 13px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Gavi Caserito · propuesta de planes</span>
+    <h1>De la probadita al jefazo: cinco planes para vender mejor</h1>
+    <p>Precios mensuales en soles con IGV incluido. La marca blanca (logo, color, nombre y contacto) viene en todos los planes. El dominio propio sale de la escalera y se venderá aparte cuando el proxy esté listo.</p>
+  </header>
+
+  <section class="plans" aria-label="Los cinco planes">
+    <article class="plan">
+      <span class="tag quiet">Gratis</span>
+      <h3>Probadita</h3>
+      <span class="alias">Antes: Gratis</span>
+      <div class="price"><strong>S/ 0</strong><span>al mes</span></div>
+      <div class="annual">Sin costo, sin tarjeta</div>
+      <p class="pitch">Para ver cómo funciona antes de soltar un sol.</p>
+      <ul>
+        <li class="base">1 usuario y 1 sucursal</li>
+        <li class="base">50 ventas al mes y 100 productos</li>
+        <li class="base">POS, caja, inventario y clientes</li>
+        <li class="base">Marca blanca propia</li>
+      </ul>
+      <p class="who">Quien recién empieza o se anima a dejar la libreta.</p>
+    </article>
+
+    <article class="plan">
+      <span class="tag quiet">Sin SUNAT</span>
+      <h3>Cachuelo</h3>
+      <span class="alias">Antes: Gestión</span>
+      <div class="price"><strong>S/ 39</strong><span>al mes</span></div>
+      <div class="annual">S/ 390 al año (2 meses de yapa)</div>
+      <p class="pitch">Ordena el negocio completo sin pelear con SUNAT.</p>
+      <ul>
+        <li>Ventas y productos sin tope</li>
+        <li>3 usuarios</li>
+        <li>Pedidos con anticipo y seguimiento al cliente</li>
+        <li>Envíos por agencia y cobranzas</li>
+        <li>Compras y cuentas por pagar</li>
+      </ul>
+      <p class="who">Quien vende con nota de venta y no tiene certificado ni clave SOL.</p>
+    </article>
+
+    <article class="plan">
+      <span class="tag">Ya factura</span>
+      <h3>Chamba</h3>
+      <span class="alias">Antes: Inicio</span>
+      <div class="price"><strong>S/ 69</strong><span>al mes</span></div>
+      <div class="annual">S/ 690 al año</div>
+      <p class="pitch">Todo lo anterior, más facturas y boletas electrónicas.</p>
+      <ul>
+        <li>200 comprobantes SUNAT al mes</li>
+        <li>Facturación electrónica con eFact</li>
+        <li>Notas de crédito y baja de comprobantes</li>
+        <li>2 usuarios y 1 sucursal</li>
+      </ul>
+      <p class="who">El negocio que ya emite y quiere todo en un solo sistema.</p>
+    </article>
+
+    <article class="plan featured">
+      <span class="tag">El que más conviene</span>
+      <h3>Full</h3>
+      <span class="alias">Antes: Negocio</span>
+      <div class="price"><strong>S/ 129</strong><span>al mes</span></div>
+      <div class="annual">S/ 1,290 al año</div>
+      <p class="pitch">Para el que despacha, avisa y cobra con orden.</p>
+      <ul>
+        <li>1,000 comprobantes SUNAT al mes</li>
+        <li>Guías de remisión</li>
+        <li>WhatsApp para avisos y deudas</li>
+        <li>3 sucursales y 5 usuarios</li>
+      </ul>
+      <p class="who">Tiendas con varios locales y despachos.</p>
+    </article>
+
+    <article class="plan">
+      <span class="tag">Varios RUC</span>
+      <h3>Jefazo</h3>
+      <span class="alias">Antes: Empresa</span>
+      <div class="price"><strong>S/ 249</strong><span>al mes</span></div>
+      <div class="annual">S/ 2,490 al año</div>
+      <p class="pitch">Para el que maneja varias empresas y mucho volumen.</p>
+      <ul>
+        <li>5,000 comprobantes SUNAT al mes</li>
+        <li>3 empresas (RUC)</li>
+        <li>10 sucursales y 15 usuarios</li>
+      </ul>
+      <p class="who">Distribuidoras y grupos con más de un RUC.</p>
+    </article>
+  </section>
+
+  <section style="display:flex;flex-direction:column;gap:16px">
+    <h2>Tabla resumen</h2>
+    <div class="scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Característica</th>
+            <th scope="col">Probadita<small>S/ 0</small></th>
+            <th scope="col">Cachuelo<small>S/ 39</small></th>
+            <th scope="col">Chamba<small>S/ 69</small></th>
+            <th scope="col" class="hl">Full<small>S/ 129</small></th>
+            <th scope="col">Jefazo<small>S/ 249</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="group"><th colspan="6" scope="colgroup">Precio</th></tr>
+          <tr class="money"><th scope="row">Mensual (IGV incluido)</th><td>S/ 0</td><td>S/ 39</td><td>S/ 69</td><td class="hl">S/ 129</td><td>S/ 249</td></tr>
+          <tr><th scope="row">Anual (10 meses)</th><td class="no">—</td><td>S/ 390</td><td>S/ 690</td><td class="hl">S/ 1,290</td><td>S/ 2,490</td></tr>
+
+          <tr class="group"><th colspan="6" scope="colgroup">Facturación</th></tr>
+          <tr><th scope="row">Comprobantes electrónicos SUNAT al mes</th><td>0</td><td>0</td><td>200</td><td class="hl">1,000</td><td>5,000</td></tr>
+          <tr><th scope="row">Venta como nota de venta</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><th scope="row">Facturación electrónica (eFact)</th><td class="no">—</td><td class="no">—</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><th scope="row">Guías de remisión</th><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+
+          <tr class="group"><th colspan="6" scope="colgroup">Tamaño</th></tr>
+          <tr><th scope="row">Empresas (RUC)</th><td>1</td><td>1</td><td>1</td><td class="hl">1 (+ extra)</td><td>3</td></tr>
+          <tr><th scope="row">Sucursales</th><td>1</td><td>1</td><td>1</td><td class="hl">3</td><td>10</td></tr>
+          <tr><th scope="row">Usuarios</th><td>1</td><td>3</td><td>2</td><td class="hl">5</td><td>15</td></tr>
+          <tr><th scope="row">Ventas al mes</th><td>50</td><td>Sin tope</td><td>Sin tope</td><td class="hl">Sin tope</td><td>Sin tope</td></tr>
+          <tr><th scope="row">Productos</th><td>100</td><td>Sin tope</td><td>Sin tope</td><td class="hl">Sin tope</td><td>Sin tope</td></tr>
+
+          <tr class="group"><th colspan="6" scope="colgroup">Operación</th></tr>
+          <tr><th scope="row">POS, caja, inventario y clientes</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><th scope="row">Pedidos con anticipo y seguimiento al cliente</th><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><th scope="row">Envíos por agencia y cobranzas</th><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><th scope="row">Compras y cuentas por pagar</th><td class="no">—</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><th scope="row">WhatsApp (avisos y deudas)</th><td class="no">—</td><td class="no">—</td><td class="no">—</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+
+          <tr class="group"><th colspan="6" scope="colgroup">Marca</th></tr>
+          <tr><th scope="row">Marca blanca (logo, color, nombre, contacto)</th><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes hl">✓</td><td class="yes">✓</td></tr>
+          <tr><th scope="row">Dominio propio</th><td class="no">Adicional</td><td class="no">Adicional</td><td class="no">Adicional</td><td class="no hl">Adicional</td><td class="no">Adicional</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="foot">Deslice la tabla hacia los lados en pantallas angostas. «Adicional» significa que se venderá aparte cuando esté el proxy con certificados automáticos.</p>
+  </section>
+
+  <section class="two">
+    <div class="box">
+      <h3>Adicionales</h3>
+      <dl>
+        <dt>Empresa (RUC) extra</dt><dd>S/ 59</dd>
+        <dt>Usuario extra</dt><dd>S/ 10</dd>
+        <dt>Paquete de 500 comprobantes</dt><dd>S/ 25</dd>
+        <dt>Dominio propio</dt><dd>Por definir</dd>
+      </dl>
+      <p class="foot">La prueba de 14 días trae las funciones de Full y 50 comprobantes.</p>
+    </div>
+    <div class="box">
+      <h3>Qué sigue pendiente</h3>
+      <ul>
+        <li>Confirmar los precios de la competencia en cada sitio antes de publicar tarifas.</li>
+        <li>Revisar los términos de licencia de eFact para reventa y marca blanca.</li>
+        <li>Medir el consumo de RAM de WhatsApp con las cuentas de la beta.</li>
+        <li>Cachuelo trae 3 usuarios y Chamba 2: decidir si se iguala.</li>
+        <li>Implementar el catálogo de planes con funciones y el aviso «Activar facturación».</li>
+      </ul>
+    </div>
+  </section>
+</div>
